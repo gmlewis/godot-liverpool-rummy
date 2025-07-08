@@ -55,6 +55,13 @@ and significantly scaled them up and cropped them mercilously.
 
 The SVG card backs are from this collection.
 
+# Why English and German?
+
+I have a friend in Switzerland who does not speak a word of English. (Hi Zdenek!)
+He's an avid game writer, who also inspired me to start writing this game.
+I figured that it might be nice for him to be able to play the game too, which
+required that it could be built it using German text.
+
 # AI Assistance
 
 After spending hundreds of hours developing this game, I came to the point
