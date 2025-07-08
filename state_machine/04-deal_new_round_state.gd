@@ -110,4 +110,8 @@ func deal_cards_to_players(round_num: int, cards_per_player: int) -> void:
 				playing_card.is_tappable = false
 		card_tween.tween_callback(hide_or_flip_card).set_delay(card_duration)
 		await card_tween.finished
+	# Finally, force all cards in the player's hand to be face up in case any were dealt face down (due to a bug above?!?!?)
+	for card_key in Global.private_player_info.card_keys_in_hand:
+		var card = Global.playing_cards.get(card_key) as PlayingCard
+		card.force_face_up()
 	Global.dbg("Dealt %d cards to %d players for round %d." % [total_cards, num_players, round_num])
