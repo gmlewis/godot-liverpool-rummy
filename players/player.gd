@@ -252,6 +252,10 @@ func _on_card_clicked_signal(playing_card, _global_position):
 		Global.draw_card_from_stock_pile(Global.private_player_info.id)
 		return
 	if game_state_machine.get_current_state_name() == 'PlayerDrewState':
+		# If the player can meld their hand, interpret this click as an accident and ignore it.
+		if is_meldable:
+			Global.dbg("Player('%s'): _on_card_clicked_signal: Ignoring click on meldable hand card '%s' for player %s" % [player_id, playing_card.key, player_id])
+			return
 		var player_won = len(Global.private_player_info['card_keys_in_hand']) == 1
 		Global.discard_card(player_id, playing_card.key, player_won)
 		return
