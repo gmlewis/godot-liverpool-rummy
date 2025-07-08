@@ -77,7 +77,11 @@ With the huge assistance from sketch.dev, I also asked it to write unit tests
 and GitHub Actions workflows. Although it had more challenges with these last
 two tasks, it still was a huge timesaver, and I highly recommend it.
 
-All the rest of the code, I wrote.
+Early on, I had https://claude.ai help writing the shuffling animations, but
+those ended up being pretty buggy and needed a lot of work to get something
+remotely usable. The results from [DeepSeek](https://www.deepseek.com/en) were worse.
+
+I believe that's the extent of the involvement of AI in this project.
 
 # Status
 
