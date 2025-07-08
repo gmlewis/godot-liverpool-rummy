@@ -54,7 +54,7 @@ func shuffle_deck(shuffle_type: ShuffleType = ShuffleType.SPIRAL_SWIRL):
 
 func random_shuffle():
 	var shuffle_types = [
-		# ShuffleType.SPIRAL_SWIRL,
+		ShuffleType.SPIRAL_SWIRL,
 		ShuffleType.TORNADO_FLIP,
 		#ShuffleType.WAVE_COLLAPSE,
 		#ShuffleType.EXPLOSION_GATHER,
