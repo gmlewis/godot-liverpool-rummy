@@ -1,0 +1,15 @@
+[gd_scene load_steps=4 format=3 uid="uid://cb4e8dncfl685"]
+
+[ext_resource type="Script" uid="uid://bp0tk0cerbwlu" path="res://playing_cards/playing_card.gd" id="1_hl7do"]
+[ext_resource type="Texture2D" uid="uid://ccs8pgbmp4v5h" path="res://svg-card-backs/rounded-card-rect.svg" id="2_rg5av"]
+[ext_resource type="Texture2D" uid="uid://4thv2ovqd7uj" path="res://svg-card-backs/g6706-2.png" id="2_sel2q"]
+
+[node name="PlayingCard" type="Node2D"]
+script = ExtResource("1_hl7do")
+
+[node name="CardBoarder" type="Sprite2D" parent="."]
+scale = Vector2(1.001, 1.001)
+texture = ExtResource("2_rg5av")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture = ExtResource("2_sel2q")

@@ -1,0 +1,413 @@
+[gd_scene load_steps=28 format=3 uid="uid://cr0477tbltrwb"]
+
+[ext_resource type="Script" uid="uid://c0vhxe5f80og6" path="res://scenes/root_node.gd" id="1_3twdq"]
+[ext_resource type="Texture2D" uid="uid://cvo43b68mb4qu" path="res://backgrounds/openart-image_HhP98Etm_1749088776837_raw.jpg" id="1_elm8r"]
+[ext_resource type="Script" uid="uid://cvmk4pgftvt6w" path="res://scenes/title_page_ui.gd" id="1_hfq42"]
+[ext_resource type="PackedScene" uid="uid://dd0vu47oxmnsf" path="res://rounds/round_1.tscn" id="2_hppme"]
+[ext_resource type="PackedScene" uid="uid://cm3iwahu07coy" path="res://players/player.tscn" id="2_mf67k"]
+[ext_resource type="Script" uid="uid://icp8b8n07b13" path="res://state_machine/game_state_machine.gd" id="3_7281u"]
+[ext_resource type="Script" uid="uid://tsbl76yd8dd4" path="res://scenes/silly_names_node.gd" id="4_2xesp"]
+[ext_resource type="FontFile" uid="uid://dxowqst863rtr" path="res://fonts/SpaceMono-Regular.ttf" id="4_3twdq"]
+[ext_resource type="Script" uid="uid://di42tdamjfp7n" path="res://state_machine/02-pre_game_setup_state.gd" id="4_ai5sn"]
+[ext_resource type="Script" uid="uid://rykpu2fap1mh" path="res://state_machine/01-reset_game_state.gd" id="4_fo445"]
+[ext_resource type="Script" uid="uid://bhs7ogeprbmoy" path="res://scenes/card_backs_node.gd" id="4_l6opf"]
+[ext_resource type="Script" uid="uid://fr4aowocpx3" path="res://state_machine/03-start_round_shuffle_state.gd" id="6_fo445"]
+[ext_resource type="Script" uid="uid://cx31fsx42d8o4" path="res://playing_cards/card_shuffler.gd" id="8_m73dn"]
+[ext_resource type="Script" uid="uid://c537rki07p4g5" path="res://state_machine/04-deal_new_round_state.gd" id="9_sq0sm"]
+[ext_resource type="Script" uid="uid://bn4hvk8esqfpa" path="res://state_machine/05-reveal_top_card_state.gd" id="10_6r1xf"]
+[ext_resource type="Script" uid="uid://u76qlp87t6o6" path="res://state_machine/06-new_discard_state.gd" id="10_whgdn"]
+[ext_resource type="Script" uid="uid://bvcmoiu3syykc" path="res://state_machine/07-player_drew_state.gd" id="12_ebbao"]
+[ext_resource type="Script" uid="uid://ciuwlsvnfgw7v" path="res://state_machine/09-tally-scores_state.gd" id="13_rbqau"]
+[ext_resource type="Script" uid="uid://10ne281yb7bv" path="res://state_machine/08-player_won_round_state.gd" id="13_tqg4m"]
+[ext_resource type="Texture2D" uid="uid://coxwne6i3r0lg" path="res://svgs/Info-Icon.svg" id="15_jmw2h"]
+[ext_resource type="Script" uid="uid://cecxubi7sskp2" path="res://players/players_container.gd" id="15_rbqau"]
+
+[sub_resource type="SystemFont" id="SystemFont_6r1xf"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_6r1xf"]
+font = SubResource("SystemFont_6r1xf")
+font_size = 98
+outline_size = 17
+outline_color = Color(0, 0, 0, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_elm8r"]
+content_margin_left = 0.0
+content_margin_top = 0.0
+content_margin_right = 0.0
+content_margin_bottom = 0.0
+bg_color = Color(0.88235295, 0.2627451, 0.21960783, 0.6)
+border_width_left = 5
+border_width_top = 5
+border_width_right = 5
+border_width_bottom = 5
+border_color = Color(0.85490197, 0.2627451, 0.8235295, 1)
+corner_radius_top_left = 50
+corner_radius_top_right = 50
+corner_radius_bottom_right = 50
+corner_radius_bottom_left = 50
+corner_detail = 5
+shadow_size = 25
+shadow_offset = Vector2(25, 25)
+
+[sub_resource type="ImageTexture" id="ImageTexture_dhk4a"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_hfq42"]
+content_margin_left = 0.0
+content_margin_top = 0.0
+content_margin_right = 0.0
+content_margin_bottom = 0.0
+bg_color = Color(0.101960786, 0.101960786, 0.101960786, 0)
+corner_radius_top_left = 3
+corner_radius_top_right = 3
+corner_radius_bottom_right = 3
+corner_radius_bottom_left = 3
+corner_detail = 5
+
+[sub_resource type="Theme" id="Theme_hppme"]
+default_font = ExtResource("4_3twdq")
+
+[node name="RootNode" type="Control" node_paths=PackedStringArray("players_container")]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_3twdq")
+players_container = NodePath("AllPlayersControl/PlayersContainer")
+player_scene = ExtResource("2_mf67k")
+
+[node name="GameStateMachine" type="Node" parent="."]
+script = ExtResource("3_7281u")
+
+[node name="ResetGameState" type="Node" parent="GameStateMachine"]
+script = ExtResource("4_fo445")
+
+[node name="PreGameSetupState" type="Node" parent="GameStateMachine" node_paths=PackedStringArray("players_container")]
+script = ExtResource("4_ai5sn")
+players_container = NodePath("../../AllPlayersControl/PlayersContainer")
+round1_scene = ExtResource("2_hppme")
+
+[node name="StartRoundShuffleState" type="Node" parent="GameStateMachine" node_paths=PackedStringArray("playing_cards_control")]
+script = ExtResource("6_fo445")
+playing_cards_control = NodePath("../../PlayingCardsControl")
+
+[node name="CardShuffler" type="Control" parent="GameStateMachine/StartRoundShuffleState"]
+layout_mode = 3
+anchors_preset = 0
+script = ExtResource("8_m73dn")
+
+[node name="DealNewRoundState" type="Node" parent="GameStateMachine"]
+script = ExtResource("9_sq0sm")
+
+[node name="RevealTopCardState" type="Node" parent="GameStateMachine"]
+script = ExtResource("10_6r1xf")
+
+[node name="NewDiscardState" type="Node" parent="GameStateMachine"]
+script = ExtResource("10_whgdn")
+
+[node name="PlayerDrewState" type="Node" parent="GameStateMachine"]
+script = ExtResource("12_ebbao")
+
+[node name="PlayerWonRoundState" type="Node" parent="GameStateMachine"]
+script = ExtResource("13_tqg4m")
+
+[node name="TallyScoresState" type="Node" parent="GameStateMachine"]
+script = ExtResource("13_rbqau")
+
+[node name="Background" type="TextureRect" parent="."]
+z_index = -10
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("1_elm8r")
+expand_mode = 5
+stretch_mode = 5
+
+[node name="RoundNode" type="Node" parent="."]
+
+[node name="RoundSpawner" type="MultiplayerSpawner" parent="."]
+_spawnable_scenes = PackedStringArray("uid://dd0vu47oxmnsf", "uid://cvjeg10x130y7", "uid://n7ytejdevrjs", "uid://b2lonlathwlqu", "uid://cbr0hcxvpnf7s", "uid://d4f0lutipg6lf", "uid://kyg3e8do065o")
+spawn_path = NodePath("../RoundNode")
+spawn_limit = 1
+
+[node name="AllPlayersControl" type="Control" parent="."]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 894.0
+grow_horizontal = 2
+
+[node name="PlayersContainer" type="Node2D" parent="AllPlayersControl"]
+z_index = 1
+script = ExtResource("15_rbqau")
+
+[node name="PlayerSpawner" type="MultiplayerSpawner" parent="AllPlayersControl"]
+spawn_path = NodePath("../PlayersContainer")
+spawn_limit = 10
+
+[node name="TitlePageUI" type="Control" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_hfq42")
+
+[node name="SillyNamesNode" type="Node" parent="TitlePageUI"]
+script = ExtResource("4_2xesp")
+
+[node name="StatusLabel" type="Label" parent="TitlePageUI"]
+z_index = 12
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 134.0
+grow_horizontal = 2
+theme_override_constants/outline_size = 6
+theme_override_font_sizes/font_size = 98
+label_settings = SubResource("LabelSettings_6r1xf")
+horizontal_alignment = 1
+
+[node name="PanelPositionControl" type="Control" parent="TitlePageUI"]
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -546.0
+grow_horizontal = 2
+grow_vertical = 0
+
+[node name="WelcomePanel" type="Panel" parent="TitlePageUI/PanelPositionControl"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -500.0
+offset_top = -238.0
+offset_right = 500.0
+offset_bottom = 238.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_elm8r")
+
+[node name="WelcomeLabel" type="Label" parent="TitlePageUI/PanelPositionControl/WelcomePanel"]
+layout_mode = 0
+offset_left = 3.0
+offset_top = 12.0
+offset_right = 998.0
+offset_bottom = 187.0
+theme_override_colors/font_color = Color(1, 0.9666667, 0, 1)
+theme_override_font_sizes/font_size = 128
+text = "Welcome!"
+horizontal_alignment = 1
+
+[node name="WhatIsYourNameLabel" type="Label" parent="TitlePageUI/PanelPositionControl/WelcomePanel"]
+layout_mode = 0
+offset_left = 89.0
+offset_top = 167.0
+offset_right = 850.0
+offset_bottom = 277.0
+theme_override_font_sizes/font_size = 80
+text = "What is your name?"
+horizontal_alignment = 1
+
+[node name="NameLineEdit" type="LineEdit" parent="TitlePageUI/PanelPositionControl/WelcomePanel"]
+layout_mode = 0
+offset_left = 95.0
+offset_top = 310.0
+offset_right = 850.0
+offset_bottom = 428.0
+theme_override_font_sizes/font_size = 80
+alignment = 1
+caret_blink = true
+
+[node name="RefreshNameButton" type="Button" parent="TitlePageUI/PanelPositionControl/WelcomePanel"]
+layout_mode = 0
+offset_left = 7.0
+offset_top = 311.0
+offset_right = 93.0
+offset_bottom = 412.0
+theme_override_font_sizes/font_size = 68
+text = "🔄"
+icon = SubResource("ImageTexture_dhk4a")
+flat = true
+
+[node name="AcceptNameButton" type="Button" parent="TitlePageUI/PanelPositionControl/WelcomePanel"]
+layout_mode = 0
+offset_left = 877.6328
+offset_top = 312.0625
+offset_right = 963.6328
+offset_bottom = 413.0625
+theme_override_font_sizes/font_size = 68
+text = "✅"
+icon = SubResource("ImageTexture_dhk4a")
+flat = true
+
+[node name="StartGamePanel" type="Panel" parent="TitlePageUI/PanelPositionControl"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -1124.3672
+offset_top = -143.9375
+offset_right = 1124.3672
+offset_bottom = 143.9375
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_hfq42")
+
+[node name="HostNewGameButton" type="Button" parent="TitlePageUI/PanelPositionControl/StartGamePanel"]
+layout_mode = 0
+offset_right = 8.0
+offset_bottom = 8.0
+theme_override_colors/font_color = Color(0.48333335, 1, 0, 1)
+theme_override_constants/outline_size = 20
+theme_override_font_sizes/font_size = 100
+text = "Host New
+Game"
+
+[node name="JoinGameButton" type="Button" parent="TitlePageUI/PanelPositionControl/StartGamePanel"]
+layout_mode = 0
+offset_left = 1773.875
+offset_right = 2249.875
+offset_bottom = 282.0
+theme_override_colors/font_color = Color(0.48333335, 1, 0, 1)
+theme_override_constants/outline_size = 20
+theme_override_font_sizes/font_size = 100
+text = "Join
+Game"
+
+[node name="IPLineEdit" type="LineEdit" parent="TitlePageUI/PanelPositionControl/StartGamePanel"]
+layout_mode = 0
+offset_left = 723.0
+offset_top = 217.0
+offset_right = 1478.0
+offset_bottom = 335.0
+theme_override_font_sizes/font_size = 80
+alignment = 1
+caret_blink = true
+
+[node name="NextIPAddressButton" type="Button" parent="TitlePageUI/PanelPositionControl/StartGamePanel"]
+layout_mode = 0
+offset_left = 1502.0
+offset_top = 218.0
+offset_right = 1588.0
+offset_bottom = 319.0
+theme_override_font_sizes/font_size = 68
+text = "🔄"
+icon = SubResource("ImageTexture_dhk4a")
+flat = true
+
+[node name="PlayingCardsControl" type="Control" parent="."]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="RulesButton" type="Button" parent="."]
+top_level = true
+z_index = 2
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -112.0
+offset_bottom = 145.0
+grow_horizontal = 0
+focus_mode = 0
+theme_override_constants/outline_size = 20
+theme_override_font_sizes/font_size = 200
+icon = ExtResource("15_jmw2h")
+flat = true
+
+[node name="RulesAcceptDialog" type="AcceptDialog" parent="RulesButton"]
+auto_translate_mode = 2
+oversampling_override = 1.0
+title = "Liverpool Rummy Rules"
+initial_position = 4
+size = Vector2i(2800, 1350)
+content_scale_factor = 2.0
+auto_translate = false
+theme = SubResource("Theme_hppme")
+
+[node name="ScrollContainer" type="ScrollContainer" parent="RulesButton/RulesAcceptDialog"]
+offset_left = 8.0
+offset_top = 8.0
+offset_right = 1392.0
+offset_bottom = 625.0
+
+[node name="Label" type="Label" parent="RulesButton/RulesAcceptDialog/ScrollContainer"]
+layout_mode = 2
+text = "# Liverpool Rummy: All Rounds and Their Requirements
+
+Liverpool Rummy is played over seven rounds, each with a specific
+combination of sets (books) and runs (sequences) that players must
+lay down to go out. The requirements for each round become progressively
+more challenging. Here are the round-by-round requirements:
+
+	      |                                                             | Total Cards
+Round | Requirement                                                 | Needed
+------|-------------------------------------------------------------|------------
+  1   | Two books of three (2 sets of 3 cards)                      | 6
+  2   | One book of three and one run of four                       | 7
+  3   | Two runs of four                                            | 8
+  4   | Three books of three                                        | 9
+  5   | Two books of three and one run of four                      | 10
+  6   | One book of three and two runs of four                      | 11
+  7   | Three runs of four (no remaining cards, no discard allowed) | 12
+
+## Explanation of Terms
+
+* Book (Set/Group):
+  Three or more cards of the same rank (e.g., 8♥ 8♣ 8♠).
+
+* Run (Sequence):
+  Four or more consecutive cards of the same suit (e.g., 3♥ 4♥ 5♥ 6♥).
+  Aces can be high or low, but runs cannot \"wrap around\" from King to Ace to 2.
+
+## Special Notes
+
+* In the final round (Round 7), you must use all your cards in the required
+  melds and cannot finish with a discard.
+
+* The contract for each round must be met exactly as specified before you
+  can lay down your cards.
+"
+
+[node name="NewCardBackButton" type="Button" parent="."]
+top_level = true
+z_index = 2
+layout_mode = 1
+offset_right = 86.0
+offset_bottom = 101.0
+scale = Vector2(2, 2)
+focus_mode = 0
+theme_override_font_sizes/font_size = 68
+text = "🔄"
+icon = SubResource("ImageTexture_dhk4a")
+flat = true
+
+[node name="CardBacksNode" type="Node" parent="NewCardBackButton"]
+script = ExtResource("4_l6opf")
+
+[connection signal="text_submitted" from="TitlePageUI/PanelPositionControl/WelcomePanel/NameLineEdit" to="TitlePageUI" method="_on_line_edit_text_submitted"]
+[connection signal="pressed" from="TitlePageUI/PanelPositionControl/WelcomePanel/RefreshNameButton" to="TitlePageUI" method="_on_refresh_name_button_pressed"]
+[connection signal="pressed" from="TitlePageUI/PanelPositionControl/WelcomePanel/AcceptNameButton" to="TitlePageUI" method="_on_accept_name_button_pressed"]
+[connection signal="pressed" from="TitlePageUI/PanelPositionControl/StartGamePanel/HostNewGameButton" to="TitlePageUI" method="_on_host_new_game_button_pressed"]
+[connection signal="pressed" from="TitlePageUI/PanelPositionControl/StartGamePanel/JoinGameButton" to="TitlePageUI" method="_on_join_game_button_pressed"]
+[connection signal="pressed" from="TitlePageUI/PanelPositionControl/StartGamePanel/NextIPAddressButton" to="TitlePageUI" method="_on_next_ip_address_button_pressed"]
+[connection signal="pressed" from="RulesButton" to="." method="_on_rules_button_pressed"]
+[connection signal="pressed" from="NewCardBackButton" to="NewCardBackButton/CardBacksNode" method="_on_new_card_back_button_pressed"]

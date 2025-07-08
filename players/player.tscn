@@ -1,0 +1,68 @@
+[gd_scene load_steps=5 format=3 uid="uid://cm3iwahu07coy"]
+
+[ext_resource type="Script" uid="uid://b3ccrapxnxwnn" path="res://players/player.gd" id="1_l271l"]
+[ext_resource type="Texture2D" uid="uid://bgyfw0an2ho65" path="res://svg-card-backs/g30598.svg" id="2_i6aj8"]
+[ext_resource type="Texture2D" uid="uid://2e3hqmws2cjt" path="res://players/BuyIndicator.svg" id="3_wu7mp"]
+[ext_resource type="Texture2D" uid="uid://brtuuec5ivn7v" path="res://players/MeldIndicator.svg" id="4_60y4r"]
+
+[node name="Player" type="Node2D"]
+script = ExtResource("1_l271l")
+
+[node name="CardBackSprite2D" type="Sprite2D" parent="."]
+texture = ExtResource("2_i6aj8")
+
+[node name="PlayerNameLabel" type="RichTextLabel" parent="."]
+offset_left = -119.0
+offset_top = -166.0
+offset_right = 118.0
+theme_override_constants/outline_size = 6
+theme_override_font_sizes/normal_font_size = 35
+text = "Grandmother Willow"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="CardCountLabel" type="Label" parent="."]
+offset_left = -119.0
+offset_right = 119.0
+offset_bottom = 80.0
+theme_override_constants/outline_size = 6
+theme_override_font_sizes/font_size = 58
+text = "0 cards"
+horizontal_alignment = 1
+text_overrun_behavior = 3
+
+[node name="ScoreLabel" type="Label" parent="."]
+offset_left = -119.0
+offset_top = 80.0
+offset_right = 119.0
+offset_bottom = 160.0
+theme_override_constants/outline_size = 6
+theme_override_font_sizes/font_size = 58
+text = "0 pts"
+horizontal_alignment = 1
+text_overrun_behavior = 3
+
+[node name="TurnIndicatorRect" type="ColorRect" parent="."]
+z_index = -1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -119.0
+offset_top = -166.0
+offset_right = 119.0
+offset_bottom = 166.0
+grow_horizontal = 2
+grow_vertical = 2
+pivot_offset = Vector2(119, 166)
+size_flags_horizontal = 4
+size_flags_vertical = 4
+color = Color(1, 0.45490196, 0.17254902, 1)
+metadata/_edit_use_anchors_ = true
+
+[node name="BuyIndicatorSprite2D" type="Sprite2D" parent="."]
+texture = ExtResource("3_wu7mp")
+
+[node name="MeldIndicatorSprite2D" type="Sprite2D" parent="."]
+texture = ExtResource("4_60y4r")

@@ -1,0 +1,45 @@
+name: Liverpool Rummy Tests
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+  merge_group:
+    branches: [ master ]
+
+jobs:
+  test:
+    name: Run Tests
+    runs-on: ubuntu-latest
+
+    # strategy:
+    #   matrix:
+    #     # Test against multiple versions of Godot 4.x for compatibility
+    #     godot_version: ['4.4.1-stable']
+    #   fail-fast: false
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup Godot 4.4.1
+      uses: chickensoft-games/setup-godot@v1
+      with:
+        version: '4.4.1-stable'
+        use-dotnet: false
+
+    - name: Verify Godot installation
+      run: |
+        godot --version
+        godot --help
+
+    - name: Import project
+      run: |
+        # Import the project to generate .godot directory
+        godot --headless --editor --quit
+
+    - name: Run all tests
+      run: |
+        # Run the full test suite using the test scene
+        godot --headless tests/test_scene.tscn

@@ -1,0 +1,83 @@
+name: Continuous Integration
+
+on:
+  push:
+    branches: [ '*' ]  # Run on all branches
+  pull_request:
+    branches: [ master ]
+    types: [ opened, synchronize, reopened, ready_for_review ]
+  merge_group:
+    branches: [ master ]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: Run Liverpool Rummy Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Setup Godot 4.4.1
+      uses: chickensoft-games/setup-godot@v1
+      with:
+        version: '4.4.1-stable'
+        use-dotnet: false
+
+    - name: Verify Godot version
+      run: |
+        godot --version
+        echo "Godot version verification complete"
+
+    - name: Cache Godot import files
+      uses: actions/cache@v3
+      with:
+        path: |
+          .godot/
+          .import/
+        key: ${{ runner.os }}-godot-4.4.1-${{ hashFiles('**/*.import', 'project.godot') }}
+        restore-keys: |
+          ${{ runner.os }}-godot-4.4.1-
+
+    - name: Setup virtual display
+      run: |
+        # Setup virtual display for headless testing
+        export DISPLAY=:99
+        Xvfb :99 -screen 0 1024x768x24 > /dev/null 2>&1 &
+        sleep 3
+
+    - name: Import project
+      run: |
+        echo "Importing Godot project..."
+        export DISPLAY=:99
+        godot --headless --editor --quit
+        echo "Project import complete"
+
+    - name: Run complete test suite
+      run: |
+        echo "Starting complete test suite..."
+
+        # Set up display for tests
+        export DISPLAY=:99
+
+        # Run the main test runner using scene (with autoloads)
+        echo "Running main test runner..."
+        godot --headless tests/test_scene.tscn
+
+        echo "All tests completed successfully!"
+
+    - name: Test summary
+      if: always()
+      run: |
+        echo "=== TEST SUMMARY ==="
+        echo "Repository: ${{ github.repository }}"
+        echo "Branch: ${{ github.ref_name }}"
+        echo "Commit: ${{ github.sha }}"
+        echo "Godot Version: 4.4.1-stable"
+        echo "Test Status: ${{ job.status }}"
+        echo "==================="

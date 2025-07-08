@@ -1,0 +1,115 @@
+name: Comprehensive Testing
+
+# More thorough testing for important events
+on:
+  pull_request:
+    branches: [ master ]
+    types: [ opened, synchronize, reopened, ready_for_review ]
+  release:
+    types: [ created, published ]
+  workflow_dispatch:  # Allow manual triggering
+    inputs:
+      test_type:
+        description: 'Type of test to run'
+        required: true
+        default: 'all'
+        type: choice
+        options:
+          - all
+
+jobs:
+  comprehensive-test:
+    name: Comprehensive Test Suite
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    # strategy:
+    #   matrix:
+    #     godot_version: ['4.4.1-stable']
+    #   fail-fast: false
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Setup Godot 4.4.1
+      uses: chickensoft-games/setup-godot@v1
+      with:
+        version: '4.4.1-stable'
+        use-dotnet: false
+
+    - name: Cache Godot files
+      uses: actions/cache@v3
+      with:
+        path: |
+          .godot/
+          .import/
+        key: comprehensive-${{ runner.os }}-godot-4.4.1-${{ hashFiles('**/*.import', 'project.godot') }}
+
+    - name: Import project
+      run: |
+        echo "Importing project with Godot 4.4.1-stable..."
+        godot --headless --editor --quit
+
+    - name: Run comprehensive test suite
+      run: |
+        echo "Running comprehensive tests with Godot 4.4.1-stable..."
+
+        # Run all tests with timing
+        echo "=== FULL TEST SUITE ==="
+        time godot --headless tests/test_scene.tscn
+
+  performance-test:
+    name: Performance Testing
+    if: github.event_name == 'pull_request' || github.event_name == 'release' || github.event.inputs.test_type == 'performance' || github.event.inputs.test_type == 'all'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Setup Godot 4.4.1
+      uses: chickensoft-games/setup-godot@v1
+      with:
+        version: '4.4.1-stable'
+        use-dotnet: false
+
+    - name: Import project
+      run: |
+        godot --headless --editor --quit
+
+    - name: Performance baseline
+      run: |
+        echo "Establishing performance baseline..."
+
+        # Run tests with detailed timing
+        echo "=== PERFORMANCE BASELINE ==="
+        time godot --headless tests/test_scene.tscn
+
+  test-summary:
+    name: Test Summary
+    if: always()
+    needs: [comprehensive-test, performance-test] # cross-platform-comprehensive
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Generate test summary
+      run: |
+        echo "=== COMPREHENSIVE TEST SUMMARY ==="
+        echo "Repository: ${{ github.repository }}"
+        echo "Event: ${{ github.event_name }}"
+        echo "Branch: ${{ github.ref_name }}"
+        echo "Commit: ${{ github.sha }}"
+        echo "Comprehensive Test: ${{ needs.comprehensive-test.result }}"
+        echo "Performance Test: ${{ needs.performance-test.result }}"
+        echo "=========================================="
+
+        # Check if any tests failed
+        if [[ "${{ needs.comprehensive-test.result }}" == "failure" ]] || \
+           [[ "${{ needs.performance-test.result }}" == "failure" ]]; then
+          echo "❌ Some tests failed!"
+          exit 1
+        else
+          echo "✅ All tests passed!"
+        fi

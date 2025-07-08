@@ -1,0 +1,39 @@
+[gd_scene load_steps=2 format=3 uid="uid://cbr0hcxvpnf7s"]
+
+[ext_resource type="Texture2D" uid="uid://b8yxxmslg7d0k" path="res://backgrounds/8ad502c5-356c-446a-acde-6bf0992a8395.jpeg" id="2_5vvnh"]
+
+[node name="Round5" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Background" type="TextureRect" parent="."]
+z_index = -10
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("2_5vvnh")
+expand_mode = 1
+
+[node name="RoundLabel" type="Label" parent="."]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -571.5
+offset_right = 571.5
+offset_bottom = 114.0
+grow_horizontal = 2
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
+theme_override_constants/shadow_offset_x = 7
+theme_override_constants/shadow_offset_y = 7
+theme_override_constants/shadow_outline_size = 7
+theme_override_font_sizes/font_size = 83
+text = "Round 5: Two books (3 each) and one run (4)"
+horizontal_alignment = 1
