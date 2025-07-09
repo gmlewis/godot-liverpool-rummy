@@ -356,3 +356,14 @@ func parse_server_response(response: String, ip: String):
 			Global.dbg("ERROR: 'host_name' not found in server response: %s" % response)
 	else:
 		Global.dbg("ERROR: Failed to parse server response: %s" % response)
+
+
+func _on_ip_line_edit_text_changed(new_text: String) -> void:
+	# Enable the "Join Game" button if this IP address is not in the list of local IP addresses.
+	var parts = new_text.split('.')
+	if len(parts) == 4 and parts[3] != '':
+		$PanelPositionControl/StartGamePanel/JoinGameButton.disabled = false
+		$PanelPositionControl/StartGamePanel/JoinGameButton.show()
+	elif len(parts) != 4 or parts[3] == '':
+		$PanelPositionControl/StartGamePanel/JoinGameButton.disabled = true
+		$PanelPositionControl/StartGamePanel/JoinGameButton.hide()

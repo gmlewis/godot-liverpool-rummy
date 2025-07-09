@@ -408,6 +408,7 @@ script = ExtResource("4_l6opf")
 [connection signal="pressed" from="TitlePageUI/PanelPositionControl/WelcomePanel/AcceptNameButton" to="TitlePageUI" method="_on_accept_name_button_pressed"]
 [connection signal="pressed" from="TitlePageUI/PanelPositionControl/StartGamePanel/HostNewGameButton" to="TitlePageUI" method="_on_host_new_game_button_pressed"]
 [connection signal="pressed" from="TitlePageUI/PanelPositionControl/StartGamePanel/JoinGameButton" to="TitlePageUI" method="_on_join_game_button_pressed"]
+[connection signal="text_changed" from="TitlePageUI/PanelPositionControl/StartGamePanel/IPLineEdit" to="TitlePageUI" method="_on_ip_line_edit_text_changed"]
 [connection signal="pressed" from="TitlePageUI/PanelPositionControl/StartGamePanel/NextIPAddressButton" to="TitlePageUI" method="_on_next_ip_address_button_pressed"]
 [connection signal="pressed" from="RulesButton" to="." method="_on_rules_button_pressed"]
 [connection signal="pressed" from="NewCardBackButton" to="NewCardBackButton/CardBacksNode" method="_on_new_card_back_button_pressed"]
