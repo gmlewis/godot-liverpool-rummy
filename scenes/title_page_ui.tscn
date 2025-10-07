@@ -342,6 +342,7 @@ size = Vector2i(2800, 1350)
 content_scale_factor = 2.0
 auto_translate = false
 theme = SubResource("Theme_hppme")
+ok_button_text = "    OK    "
 
 [node name="ScrollContainer" type="ScrollContainer" parent="RulesButton/RulesAcceptDialog"]
 offset_left = 8.0

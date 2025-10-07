@@ -64,7 +64,7 @@ signal card_moved_signal(playing_card, from_position, global_position)
 
 @onready var playing_cards_control: Control = $"/root/RootNode/PlayingCardsControl"
 
-const VERSION = '0.1.0'
+const VERSION = '0.2.0'
 const GAME_PORT = 7000
 const DISCOVERY_PORT = 8910
 const MAX_PLAYERS = 10
@@ -137,7 +137,7 @@ func _initialize_from_command_line_args() -> void:
 	stock_pile_position = screen_center + Vector2(-screen_size.x * 0.05, screen_size.y * 0.1)
 	discard_pile_position = screen_center + Vector2(screen_size.x * 0.05, screen_size.y * 0.1)
 	player_hand_y_position = screen_size.y * 0.9
-	player_hand_x_start = screen_size.x * 0.1 # Start at 10% of the screen width
+	player_hand_x_start = screen_size.x * 0.5 # Start at 50% of the screen width
 	player_hand_x_end = screen_size.x * 0.9 # End at 90% of the screen width
 
 func reset_game():

@@ -5,7 +5,8 @@ class_name GenerousBot
 # It never attmpts to buy a card from the discard pile.
 
 func get_bot_name() -> String:
-	return 'Generous %s' % bot_id
+	# return 'Generous %s' % bot_id
+	return '%s' % bot_id
 
 func _on_new_discard_state_entered() -> void:
 	if not is_my_turn: return

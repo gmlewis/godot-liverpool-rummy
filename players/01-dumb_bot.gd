@@ -4,7 +4,8 @@ class_name DumbBot
 # The DumpBot can actually win due to its intelligent discard.
 
 func get_bot_name() -> String:
-	return 'Dumb %s' % bot_id
+	# return 'Dumb %s' % bot_id
+	return '%s' % bot_id
 
 func _on_new_discard_state_entered() -> void:
 	if not is_my_turn: return

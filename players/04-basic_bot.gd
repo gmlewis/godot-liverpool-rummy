@@ -3,7 +3,8 @@ class_name BasicBot
 # This bot makes a best attempt at building the current round's hand.
 
 func get_bot_name() -> String:
-	return 'Basic %s' % bot_id
+	# return 'Basic %s' % bot_id
+	return '%s' % bot_id
 
 func _on_new_discard_state_entered() -> void:
 	Global.dbg("BOT('%s'): ENTER _on_new_discard_state_entered()" % get_bot_name())
