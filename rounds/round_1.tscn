@@ -44,18 +44,17 @@ theme_override_font_sizes/font_size = 83
 text = "Round 1: Two books of three (6 cards)"
 horizontal_alignment = 1
 
-[node name="MeldArea" type="Node" parent="."]
+[node name="MeldArea" type="Control" parent="."]
+anchors_preset = 0
 
 [node name="Book1" type="Node" parent="MeldArea"]
 
 [node name="Book1Label" type="Label" parent="MeldArea/Book1"]
-anchors_preset = 5
-anchor_left = 0.5
-anchor_right = 0.5
-offset_left = -1384.0
-offset_top = 857.0
-offset_right = -886.0
-offset_bottom = 915.0
+anchors_preset = -1
+anchor_left = 0.019444445
+anchor_top = 0.5951389
+anchor_right = 0.19236112
+anchor_bottom = 0.6354167
 grow_horizontal = 2
 theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
 theme_override_constants/shadow_offset_x = 7
@@ -67,21 +66,20 @@ horizontal_alignment = 1
 
 [node name="Book1Area" type="ColorRect" parent="MeldArea/Book1"]
 material = SubResource("ShaderMaterial_1ihhj")
-offset_left = 56.0
-offset_top = 915.0
-offset_right = 556.0
-offset_bottom = 1315.0
+anchors_preset = -1
+anchor_left = 0.019444445
+anchor_top = 0.6354167
+anchor_right = 0.19305556
+anchor_bottom = 0.9131944
 
 [node name="Book2" type="Node" parent="MeldArea"]
 
 [node name="Book2Label" type="Label" parent="MeldArea/Book2"]
-anchors_preset = 5
-anchor_left = 0.5
-anchor_right = 0.5
-offset_left = -859.0
-offset_top = 857.0
-offset_right = -361.0
-offset_bottom = 915.0
+anchors_preset = -1
+anchor_left = 0.20173611
+anchor_top = 0.5951389
+anchor_right = 0.37465277
+anchor_bottom = 0.6354167
 grow_horizontal = 2
 theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
 theme_override_constants/shadow_offset_x = 7
@@ -93,7 +91,8 @@ horizontal_alignment = 1
 
 [node name="Book2Area" type="ColorRect" parent="MeldArea/Book2"]
 material = SubResource("ShaderMaterial_1ihhj")
-offset_left = 581.0
-offset_top = 915.0
-offset_right = 1081.0
-offset_bottom = 1315.0
+anchors_preset = -1
+anchor_left = 0.20173611
+anchor_top = 0.6354167
+anchor_right = 0.37534723
+anchor_bottom = 0.9131944
