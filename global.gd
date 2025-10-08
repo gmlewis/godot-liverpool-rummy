@@ -883,9 +883,9 @@ func _rpc_move_player_card_to_discard_pile(player_id: String, card_key: String, 
 	top_card.is_draggable = false # player_is_me
 	if player_is_me:
 		private_player_info.card_keys_in_hand.erase(top_card.key)
-		private_player_info.meld_area_1_key.erase(top_card.key)
-		private_player_info.meld_area_2_key.erase(top_card.key)
-		private_player_info.meld_area_3_key.erase(top_card.key)
+		private_player_info.meld_area_1_keys.erase(top_card.key)
+		private_player_info.meld_area_2_keys.erase(top_card.key)
+		private_player_info.meld_area_3_keys.erase(top_card.key)
 	elif is_server():
 		if player_id in bots_private_player_info:
 			var bot = bots_private_player_info[player_id]
@@ -965,9 +965,9 @@ func _remove_card_from_player_hand(card_key: String, player_id: String) -> void:
 	var player_is_me = private_player_info.id == player_id
 	if player_is_me:
 		private_player_info.card_keys_in_hand.erase(card_key)
-		private_player_info.meld_area_1_key.erase(card_key)
-		private_player_info.meld_area_2_key.erase(card_key)
-		private_player_info.meld_area_3_key.erase(card_key)
+		private_player_info.meld_area_1_keys.erase(card_key)
+		private_player_info.meld_area_2_keys.erase(card_key)
+		private_player_info.meld_area_3_keys.erase(card_key)
 		dbg("_remove_card_from_player_hand: private_player_info.card_keys_in_hand (ME): %s" % [str(private_player_info.card_keys_in_hand)])
 	elif is_server():
 		if player_id in bots_private_player_info:
