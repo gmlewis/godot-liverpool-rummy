@@ -72,6 +72,10 @@ const CARD_SPACING_IN_STACK = 0.5 # Y-spacing for final stack in pixels
 const PLAYER_SCALE = Vector2(0.65, 0.65)
 const DEBUG_SHOW_CARD_INFO = false
 const OTHER_PLAYER_BUY_GRACE_PERIOD_SECONDS: float = 3.0 # if DEBUG_SHOW_CARD_INFO else 10.0
+const MELD_AREA_TOP_PERCENT = 0.7 # 70% down the screen
+const MELD_AREA_RIGHT_PERCENT = 0.5 # 50% across the screen
+const MELD_AREA_1_RIGHT_PERCENT = 0.333 * MELD_AREA_RIGHT_PERCENT # 16.65% across the screen
+const MELD_AREA_2_RIGHT_PERCENT = 0.666 * MELD_AREA_RIGHT_PERCENT # 33.3% across the screen
 
 # This game can be compiled in different languages (currently, only 'en' or 'de').
 const LANGUAGE = 'en' # 'en', 'fr', 'de', etc.
@@ -161,7 +165,10 @@ func reset_game():
 		'played_to_table': [], # ordered collection of Dictionaries of groups or runs with playing card keys
 		'score': 0,
 		# private fields that are not sent to clients:
-		'card_keys_in_hand': [], # unordered collection of playing card keys
+		'card_keys_in_hand': [], # unordered collection of _ALL_ playing card keys (even if they are copied into a meld area)
+		'meld_area_1_keys': [], # unordered collection of playing card keys in meld area 1
+		'meld_area_2_keys': [], # unordered collection of playing card keys in meld area 2
+		'meld_area_3_keys': [], # unordered collection of playing card keys in meld area 3
 	}
 	stock_pile.clear()
 	discard_pile.clear()
@@ -190,13 +197,14 @@ func create_game():
 func gen_public_player_info(private_info: Dictionary) -> Dictionary:
 	# Generate a new public player info dictionary for the current player.
 	# This is used when a new player connects to the game.
+	var num_cards = len(private_info['card_keys_in_hand'])
 	var public_player_info = {
 		'id': private_info['id'],
 		'name': private_info['name'],
 		'is_bot': private_info['is_bot'],
 		'turn_index': private_info['turn_index'],
 		'played_to_table': private_info['played_to_table'],
-		'num_cards': len(private_info['card_keys_in_hand']),
+		'num_cards': num_cards,
 		'score': private_info['score'],
 	}
 	return public_player_info
@@ -226,6 +234,9 @@ func add_bot_to_game():
 		'played_to_table': [],
 		'score': 0,
 		'card_keys_in_hand': [],
+		'meld_area_1_keys': [],
+		'meld_area_2_keys': [],
+		'meld_area_3_keys': [],
 	}
 	bots_private_player_info[id] = bot_private_player_info
 	var bot_public_player_info = gen_public_player_info(bot_private_player_info)
@@ -369,6 +380,9 @@ func server_advance_to_next_round() -> void:
 	for bot in bots_private_player_info.keys():
 		bots_private_player_info[bot]['played_to_table'] = []
 		bots_private_player_info[bot]['card_keys_in_hand'] = []
+		bots_private_player_info[bot]['meld_area_1_keys'] = []
+		bots_private_player_info[bot]['meld_area_2_keys'] = []
+		bots_private_player_info[bot]['meld_area_3_keys'] = []
 	for idx in range(len(game_state['public_players_info'])):
 		game_state['public_players_info'][idx]['num_cards'] = 0
 		game_state['public_players_info'][idx]['played_to_table'] = []
@@ -380,6 +394,9 @@ func _rpc_advance_to_next_round(new_round_num: int) -> void:
 	dbg("Global._rpc_advance_to_next_round(new_round_num=%d)" % new_round_num)
 	private_player_info['played_to_table'] = []
 	private_player_info['card_keys_in_hand'] = []
+	private_player_info['meld_area_1_keys'] = []
+	private_player_info['meld_area_2_keys'] = []
+	private_player_info['meld_area_3_keys'] = []
 	var next_round_scene = load("res://rounds/round_%d.tscn" % new_round_num) as PackedScene
 	request_change_round(next_round_scene, '_rpc_advance_to_next_round')
 
@@ -1660,10 +1677,16 @@ func _rpc_move_player_card_to_discard_pile(player_id: String, card_key: String, 
 	top_card.is_draggable = false # player_is_me
 	if player_is_me:
 		private_player_info.card_keys_in_hand.erase(top_card.key)
+		private_player_info.meld_area_1_key.erase(top_card.key)
+		private_player_info.meld_area_2_key.erase(top_card.key)
+		private_player_info.meld_area_3_key.erase(top_card.key)
 	elif is_server():
 		if player_id in bots_private_player_info:
 			var bot = bots_private_player_info[player_id]
 			bot.card_keys_in_hand.erase(top_card.key)
+			bot.meld_area_1_key.erase(top_card.key)
+			bot.meld_area_2_key.erase(top_card.key)
+			bot.meld_area_3_key.erase(top_card.key)
 	dbg("_rpc_move_player_card_to_discard_pile: player_id='%s' moving card from discard pile: '%s', player_won=%s" % [player_id, top_card.key, player_won])
 	animate_move_card_from_player_to_discard_pile_signal.emit(top_card, player_id, player_won, '_rpc_move_player_card_to_discard_pile')
 
@@ -1739,11 +1762,17 @@ func _remove_card_from_player_hand(card_key: String, player_id: String) -> void:
 	var player_is_me = private_player_info.id == player_id
 	if player_is_me:
 		private_player_info.card_keys_in_hand.erase(card_key)
+		private_player_info.meld_area_1_key.erase(card_key)
+		private_player_info.meld_area_2_key.erase(card_key)
+		private_player_info.meld_area_3_key.erase(card_key)
 		dbg("_remove_card_from_player_hand: private_player_info.card_keys_in_hand (ME): %s" % [str(private_player_info.card_keys_in_hand)])
 	elif is_server():
 		if player_id in bots_private_player_info:
 			var bot = bots_private_player_info[player_id]
 			bot.card_keys_in_hand.erase(card_key)
+			bot.meld_area_1_key.erase(card_key)
+			bot.meld_area_2_key.erase(card_key)
+			bot.meld_area_3_key.erase(card_key)
 			dbg("_remove_card_from_player_hand: bots_private_player_info[player_id].card_keys_in_hand (BOT): %s" % [str(bot.card_keys_in_hand)])
 
 func _personally_meld_group(meld_group: Dictionary, player_id: String) -> void:
