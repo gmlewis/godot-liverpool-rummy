@@ -15,6 +15,10 @@ func enter(_params: Dictionary):
 	Global.connect('new_card_exposed_on_discard_pile_signal', _on_new_card_exposed_on_discard_pile_signal)
 	_on_new_card_exposed_on_discard_pile_signal()
 
+func _start_grace_period_animation() -> void:
+	var countdown = preload("res://scenes/countdown_timer.tscn").instantiate()
+	add_child(countdown)
+
 func _on_new_card_exposed_on_discard_pile_signal() -> void:
 	sanitize_discard_pile()
 	if is_my_turn:
@@ -26,6 +30,7 @@ func _on_new_card_exposed_on_discard_pile_signal() -> void:
 				Global.dbg("06-new_discard_state: enter: is_my_turn=true, making stock pile untappable before awaiting grace period")
 				Global.stock_pile[0].is_tappable = false
 				Global.dbg("06-new_discard_state: enter: is_my_turn=true, calling await_grace_period before making stock pile tappable")
+				_start_grace_period_animation()
 				await Global.await_grace_period()
 				Global.stock_pile[0].is_draggable = false
 				Global.dbg("06-new_discard_state: enter: is_my_turn=true, making stock pile tappable after awaiting grace period: card_key='%s', z_index=%d, position=%s" % [Global.stock_pile[0].key, Global.stock_pile[0].z_index, str(Global.stock_pile[0].position)])

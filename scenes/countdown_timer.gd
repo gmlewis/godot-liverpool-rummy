@@ -5,11 +5,8 @@ extends CanvasLayer
 @export var number_font_size: int = 200
 @export var animation_duration: float = 0.5
 
-var center_position: Vector2
-
 func _ready() -> void:
-	center_position = get_viewport().get_visible_rect().size / 2
-	$Sprite2D.position = center_position
+	$Sprite2D.position = Global.stock_pile_position
 	# $Sprite2D.scale = Vector2(0.2, 0.2)
 	start_countdown()
 
@@ -27,7 +24,7 @@ func animate_number(number: int) -> void:
 	# label.add_theme_font_size_override("font_size", number_font_size)
 	# label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	# label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-	label.position = center_position - label.get_size() / 2
+	label.position = Global.stock_pile_position - label.get_size() / 2
 	# add_child(label)
 
 	label.scale = Vector2.ZERO # Start at zero scale
