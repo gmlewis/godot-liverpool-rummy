@@ -129,23 +129,7 @@ func _on_game_state_updated_signal():
 	Global.dbg("Player('%s'): _on_game_state_updated_signal: public_player_info=%s" % [player_id, str(public_player_info)])
 	var already_played_to_table = len(public_player_info['played_to_table']) > 0
 	_update_turn_indicator_color(current_state_name, already_played_to_table)
-	# This is all handled within 06-new_discard_state.gd
-	# if current_state_name == 'NewDiscardState':
-	# 	# Allow the player to immediately tap only on the discard pile.
-	# 	Global.make_discard_pile_tappable(true)
-	# 	Global.dbg("Player('%s'): _on_game_state_updated_signal: NewDiscardState: making stock pile untappable during grace period" % player_id)
-	# 	Global.make_stock_pile_tappable(false)
-	# 	# Allow the current player to tap on the stock pile after the grace period.
-	# 	# Note that if there are buy requests, a tap on the stock pile will allow the next buy request.
-	# 	Global.dbg("Player('%s'): _on_game_state_updated_signal: NewDiscardState: calling await_grace_period" % player_id)
-	# 	await Global.await_grace_period()
-	# 	Global.dbg("Player('%s'): _on_game_state_updated_signal: NewDiscardState: making stock pile tappable after grace period" % player_id)
-	# 	Global.make_stock_pile_tappable(true)
-	# 	return
-	# current_state_name == 'PlayerDrewState':
-	# Global.dbg("Player('%s'): _on_game_state_updated_signal: is_my_turn=%s, current_state_name='%s', changing stock pile and discard pile tappable settings" % [player_id, is_my_turn, current_state_name])
-	# Global.make_discard_pile_tappable(false)
-	# Global.make_stock_pile_tappable(false)
+
 	# Now see if the player can meld (more of) their hand.
 	# var card_keys_in_hand = ['card_keys_in_hand']
 	var current_hand_stats = gen_player_hand_stats(Global.private_player_info)

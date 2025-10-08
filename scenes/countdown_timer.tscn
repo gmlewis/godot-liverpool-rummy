@@ -1,0 +1,26 @@
+[gd_scene load_steps=3 format=3 uid="uid://dwj4ktjcftccg"]
+
+[ext_resource type="Script" uid="uid://b2tty8lw6mpqu" path="res://scenes/countdown_timer.gd" id="1_d7c0i"]
+[ext_resource type="Texture2D" uid="uid://b4akwj7pebfu5" path="res://svgs/no-draw.svg" id="2_5r2fa"]
+
+[node name="CountdownTimer" type="CanvasLayer"]
+script = ExtResource("1_d7c0i")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+scale = Vector2(0.2, 0.2)
+texture = ExtResource("2_5r2fa")
+
+[node name="Label" type="Label" parent="."]
+anchors_preset = -1
+offset_left = -57.0
+offset_top = -136.0
+offset_right = 57.0
+offset_bottom = 137.0
+pivot_offset = Vector2(57, 136)
+theme_override_colors/font_color = Color(1, 0, 0, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 14
+theme_override_font_sizes/font_size = 200
+text = "3"
+horizontal_alignment = 1
+vertical_alignment = 1

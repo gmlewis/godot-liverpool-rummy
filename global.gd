@@ -771,9 +771,6 @@ func server_draw_card_from_stock_pile(player_id: String) -> void:
 		return
 	if has_outstanding_buy_request():
 		allow_outstanding_buy_request(player_id)
-		# Now wait the grace period in case another player wishes to buy.
-		# dbg("server_draw_card_from_stock_pile: waiting for grace period after allowing outstanding buy request")
-		# await await_grace_period()
 		# NOTE that allowing an outstanding request means that the draw_card_from_stock_pile
 		# request is not valid, so return here.
 		return
