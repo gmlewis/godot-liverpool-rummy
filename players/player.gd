@@ -39,6 +39,7 @@ func _ready():
 	$PlayerNameLabel.text = player_name
 	$TurnIndicatorRect.scale = Vector2(0.1, 0.1) # Hide turn indicator at start
 	$TurnIndicatorRect.color = TURN_INDICATOR_DRAW_COLOR # Set initial color to draw color
+	$TurnIndicatorRect.show()
 	$BuyIndicatorSprite2D.hide()
 	$MeldIndicatorSprite2D.hide()
 	_set_num_cards(0)
@@ -146,11 +147,11 @@ func _on_game_state_updated_signal():
 	# Global.make_discard_pile_tappable(false)
 	# Global.make_stock_pile_tappable(false)
 	# Now see if the player can meld (more of) their hand.
-	var card_keys_in_hand = Global.private_player_info['card_keys_in_hand']
-	var current_hand_stats = Global.gen_hand_stats(card_keys_in_hand)
+	# var card_keys_in_hand = ['card_keys_in_hand']
+	var current_hand_stats = gen_player_hand_stats(Global.private_player_info)
 	if current_state_name == 'PlayerDrewState':
 		# Store the last hand evaluation for melding when user clicks on the player.
-		last_hand_evaluation = Global.evaluate_hand(current_hand_stats, player_id)
+		last_hand_evaluation = evaluate_player_hand(current_hand_stats)
 		if not already_played_to_table and len(last_hand_evaluation['can_be_personally_melded']) > 0:
 			Global.dbg("Player('%s'): already_played_to_table=false, setting is_meldable=true, can_be_personally_melded=%s" % [player_id, str(last_hand_evaluation['can_be_personally_melded'])])
 			$TurnIndicatorRect.color = TURN_INDICATOR_MELD_COLOR # Set color to meld color
@@ -361,3 +362,90 @@ func _process(_delta: float) -> void:
 	if is_meldable:
 		var rect_scale = abs(sin(Time.get_ticks_msec() * ANIMATE_SPEED)) * 0.2 + 0.8
 		$MeldIndicatorSprite2D.scale = Vector2(rect_scale, rect_scale)
+
+################################################################################
+## Player hand evaluation functions
+################################################################################
+
+func gen_player_hand_stats(stats_private_player_info: Dictionary) -> Dictionary:
+	var card_keys_in_hand = stats_private_player_info['card_keys_in_hand']
+	var meld_area_1_keys = stats_private_player_info['meld_area_1_keys']
+	var meld_area_2_keys = stats_private_player_info['meld_area_2_keys']
+	var meld_area_3_keys = stats_private_player_info['meld_area_3_keys']
+	var hand_stats = card_keys_in_hand.reduce(func(acc, card_key):
+		return Global.add_card_to_stats(acc, card_key), {
+			# by_rank: 'A':[],'2':[],...,'10':[],'J':[],'Q':[],'K':[],'JOKER':[],
+			'by_rank': {},
+			# by_suit: 'hearts':{'A':[],'2':[],...,'10':[],'J':[],'Q':[],'K':[],'JOKER':[]},
+			# by_suit: 'diamonds':{'A':[],'2':[],...,'10':[],'J':[],'Q':[],'K':[],'JOKER': []},
+			# by_suit: 'clubs':{'A':[],'2':[],...,'10':[],'J':[],'Q':[],'K':[],'JOKER':[]},
+			# by_suit: 'spades':{'A':[],'2':[],...,'10':[],'J':[],'Q':[],'K':[],'JOKER':[]},
+			'by_suit': {},
+			'num_cards': len(card_keys_in_hand),
+			'jokers': [],
+		})
+
+	hand_stats['meld_area_1_is_complete'] = false
+	hand_stats['meld_area_2_is_complete'] = false
+	hand_stats['meld_area_3_is_complete'] = false
+
+	var round_num = Global.game_state.current_round_num
+	match round_num:
+		1:
+			hand_stats['meld_area_1_is_complete'] = Global.is_valid_group(meld_area_1_keys)
+			hand_stats['meld_area_2_is_complete'] = Global.is_valid_group(meld_area_2_keys)
+			hand_stats['meld_area_3_is_complete'] = true
+		2:
+			hand_stats['meld_area_1_is_complete'] = Global.is_valid_group(meld_area_1_keys)
+			hand_stats['meld_area_2_is_complete'] = Global.is_valid_run(meld_area_2_keys)
+			hand_stats['meld_area_3_is_complete'] = true
+		3:
+			hand_stats['meld_area_1_is_complete'] = Global.is_valid_run(meld_area_1_keys)
+			hand_stats['meld_area_2_is_complete'] = Global.is_valid_run(meld_area_2_keys)
+			hand_stats['meld_area_3_is_complete'] = true
+		4:
+			hand_stats['meld_area_1_is_complete'] = Global.is_valid_group(meld_area_1_keys)
+			hand_stats['meld_area_2_is_complete'] = Global.is_valid_group(meld_area_2_keys)
+			hand_stats['meld_area_3_is_complete'] = Global.is_valid_group(meld_area_3_keys)
+		5:
+			hand_stats['meld_area_1_is_complete'] = Global.is_valid_group(meld_area_1_keys)
+			hand_stats['meld_area_2_is_complete'] = Global.is_valid_group(meld_area_2_keys)
+			hand_stats['meld_area_3_is_complete'] = Global.is_valid_run(meld_area_3_keys)
+		6:
+			hand_stats['meld_area_1_is_complete'] = Global.is_valid_group(meld_area_1_keys)
+			hand_stats['meld_area_2_is_complete'] = Global.is_valid_run(meld_area_2_keys)
+			hand_stats['meld_area_3_is_complete'] = Global.is_valid_run(meld_area_3_keys)
+		7:
+			hand_stats['meld_area_1_is_complete'] = Global.is_valid_run(meld_area_1_keys)
+			hand_stats['meld_area_2_is_complete'] = Global.is_valid_run(meld_area_2_keys)
+			hand_stats['meld_area_3_is_complete'] = Global.is_valid_run(meld_area_3_keys)
+	return hand_stats
+
+func evaluate_player_hand(hand_stats: Dictionary) -> Dictionary:
+	var pre_meld = not Global.player_has_melded(player_id)
+	var evaluation = null
+	if pre_meld:
+		evaluation = _evaluate_player_hand_pre_meld(hand_stats)
+		Global.dbg("LEAVE _evaluate_player_hand_pre_meld: round_num=%d, player_id='%s', evaluation=%s" % [Global.game_state.current_round_num, player_id, str(evaluation)])
+	else:
+		evaluation = _evaluate_player_hand_post_meld(hand_stats)
+		Global.dbg("LEAVE _evaluate_player_hand_post_meld: round_num=%d, player_id='%s', evaluation=%s" % [Global.game_state.current_round_num, player_id, str(evaluation)])
+	return evaluation
+
+func _evaluate_player_hand_pre_meld(hand_stats: Dictionary) -> Dictionary:
+	var round_num = Global.game_state.current_round_num
+	var all_public_meld_stats = Global._gen_all_public_meld_stats()
+	Global.dbg("ENTER _evaluate_player_hand_pre_meld: round_num=%d, player_id='%s', hand_stats=%s, all_public_meld_stats=%s" % [round_num, player_id, str(hand_stats), str(all_public_meld_stats)])
+
+	var acc = Global.empty_evaluation()
+	# TODO
+	return acc
+
+func _evaluate_player_hand_post_meld(hand_stats: Dictionary) -> Dictionary:
+	var round_num = Global.game_state.current_round_num
+	var all_public_meld_stats = Global._gen_all_public_meld_stats()
+	Global.dbg("ENTER _evaluate_player_handpost_meld: round_num=%d, player_id='%s', hand_stats=%s, all_public_meld_stats=%s" % [round_num, player_id, str(hand_stats), str(all_public_meld_stats)])
+
+	var acc = Global.empty_evaluation()
+	# TODO
+	return acc

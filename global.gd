@@ -36,7 +36,6 @@ var screen_center: Vector2
 var screen_size: Vector2
 var stock_pile_position: Vector2
 var discard_pile_position: Vector2
-var player_hand_x_start: float
 var player_hand_x_end: float
 var player_hand_y_position: float
 
@@ -141,8 +140,12 @@ func _initialize_from_command_line_args() -> void:
 	stock_pile_position = screen_center + Vector2(-screen_size.x * 0.05, screen_size.y * 0.1)
 	discard_pile_position = screen_center + Vector2(screen_size.x * 0.05, screen_size.y * 0.1)
 	player_hand_y_position = screen_size.y * 0.9
-	player_hand_x_start = screen_size.x * 0.55 # Start at 55% of the screen width
-	player_hand_x_end = screen_size.x * 0.9 # End at 90% of the screen width
+	player_hand_x_end = screen_size.x * 0.95
+
+func player_hand_x_start() -> float:
+	if game_state.current_round_num <= 3:
+		return screen_size.x * MELD_AREA_2_RIGHT_PERCENT + 100 # Start just to the right of meld area 2
+	return screen_size.x * 0.55 # Start at 55% of the screen width
 
 func reset_game():
 	dbg("ENTER Global.reset_game_signal")
@@ -234,9 +237,6 @@ func add_bot_to_game():
 		'played_to_table': [],
 		'score': 0,
 		'card_keys_in_hand': [],
-		'meld_area_1_keys': [],
-		'meld_area_2_keys': [],
-		'meld_area_3_keys': [],
 	}
 	bots_private_player_info[id] = bot_private_player_info
 	var bot_public_player_info = gen_public_player_info(bot_private_player_info)
@@ -380,9 +380,6 @@ func server_advance_to_next_round() -> void:
 	for bot in bots_private_player_info.keys():
 		bots_private_player_info[bot]['played_to_table'] = []
 		bots_private_player_info[bot]['card_keys_in_hand'] = []
-		bots_private_player_info[bot]['meld_area_1_keys'] = []
-		bots_private_player_info[bot]['meld_area_2_keys'] = []
-		bots_private_player_info[bot]['meld_area_3_keys'] = []
 	for idx in range(len(game_state['public_players_info'])):
 		game_state['public_players_info'][idx]['num_cards'] = 0
 		game_state['public_players_info'][idx]['played_to_table'] = []
@@ -559,76 +556,6 @@ func add_card_to_stats(acc: Dictionary, card_key: String, player_id: String = ''
 		acc['by_suit'][suit][rank].append(card_key)
 	return acc
 
-func gen_hand_stats(card_keys_in_hand: Array) -> Dictionary:
-	var hand_stats = card_keys_in_hand.reduce(func(acc, card_key):
-		return add_card_to_stats(acc, card_key), {
-			# by_rank: 'A':[],'2':[],...,'10':[],'J':[],'Q':[],'K':[],'JOKER':[],
-			'by_rank': {},
-			# by_suit: 'hearts':{'A':[],'2':[],...,'10':[],'J':[],'Q':[],'K':[],'JOKER':[]},
-			# by_suit: 'diamonds':{'A':[],'2':[],...,'10':[],'J':[],'Q':[],'K':[],'JOKER': []},
-			# by_suit: 'clubs':{'A':[],'2':[],...,'10':[],'J':[],'Q':[],'K':[],'JOKER':[]},
-			# by_suit: 'spades':{'A':[],'2':[],...,'10':[],'J':[],'Q':[],'K':[],'JOKER':[]},
-			'by_suit': {},
-			'num_cards': len(card_keys_in_hand),
-			'jokers': [],
-		})
-
-	# Generate Groups stats - ordered descending by total score
-	var groups_of_3_plus = []
-	var groups_of_2 = []
-	for rank in hand_stats['by_rank'].keys():
-		# if rank == 'JOKER': continue
-		var cards = hand_stats['by_rank'][rank]
-		if len(cards) >= 3:
-			groups_of_3_plus.append(cards)
-		elif len(cards) == 2:
-			groups_of_2.append(cards)
-	hand_stats['groups_of_3_plus'] = _sort_hands_by_score(groups_of_3_plus)
-	hand_stats['groups_of_2'] = _sort_hands_by_score(groups_of_2)
-
-	# Generate Runs stats
-	var runs_of_4_plus = []
-	var runs_of_3 = []
-	var runs_of_2 = []
-	for suit in hand_stats['by_suit'].keys():
-		var ranks_map = hand_stats['by_suit'][suit]
-		var run = []
-		var already_used = {}
-
-		var next_usable_card_in_rank = func(rank: String) -> String:
-			if rank in ranks_map:
-				for card_key in ranks_map[rank]:
-					if not card_key in already_used:
-						return card_key
-			return ""
-
-		var mark_run_as_used = func(run_cards: Array) -> void:
-			for card_key in run_cards:
-				already_used[card_key] = true
-
-		for rank in ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A', 'rank-will-not-be-found-terminator']:
-			var card_key = next_usable_card_in_rank.call(rank)
-			if card_key != "":
-				run.append(card_key)
-				continue
-			else:
-				# Found a run
-				if len(run) >= 4:
-					runs_of_4_plus.append(run)
-					mark_run_as_used.call(run)
-				elif len(run) == 3:
-					runs_of_3.append(run)
-					mark_run_as_used.call(run)
-				elif len(run) == 2:
-					runs_of_2.append(run)
-					mark_run_as_used.call(run)
-				run = []
-
-	hand_stats['runs_of_4_plus'] = _sort_hands_by_score(runs_of_4_plus)
-	hand_stats['runs_of_3'] = _sort_hands_by_score(runs_of_3)
-	hand_stats['runs_of_2'] = _sort_hands_by_score(runs_of_2)
-	return hand_stats
-
 func _gen_all_public_meld_stats() -> Dictionary:
 	var all_melds = game_state.public_players_info.reduce(func(acc, ppi):
 		for meld_idx in range(len(ppi.played_to_table)):
@@ -644,47 +571,6 @@ func _gen_all_public_meld_stats() -> Dictionary:
 	})
 	return all_melds
 
-func evaluate_hand(hand_stats: Dictionary, player_id: String) -> Dictionary:
-	var all_public_meld_stats = _gen_all_public_meld_stats()
-	var pre_meld = not player_has_melded(player_id)
-	var evaluation = null
-	if pre_meld:
-		dbg("ENTER PRE-MELD Global.evaluate_hand: round_num=%d, player_id='%s', all_public_meld_stats=%s" % [game_state.current_round_num, player_id, str(all_public_meld_stats)])
-		evaluation = _evaluate_hand_pre_meld(game_state.current_round_num, hand_stats, all_public_meld_stats)
-		dbg("LEAVE PRE-MELD Global.evaluate_hand: round_num=%d, player_id='%s', evaluation=%s" % [game_state.current_round_num, player_id, str(evaluation)])
-	else:
-		dbg("ENTER POST-MELD Global.evaluate_hand: round_num=%d, player_id='%s', hand_stats=%s, all_public_meld_stats=%s" % [game_state.current_round_num, player_id, str(hand_stats), str(all_public_meld_stats)])
-		evaluation = _evaluate_hand_post_meld(game_state.current_round_num, hand_stats, all_public_meld_stats)
-		dbg("LEAVE POST-MELD Global.evaluate_hand: round_num=%d, player_id='%s', evaluation=%s" % [game_state.current_round_num, player_id, str(evaluation)])
-	return evaluation
-
-# Helper function to sort hands by score
-func _sort_hands_by_score(hands: Array) -> Array:
-	var hands_copy = hands.duplicate()
-	var scores = []
-	for hand in hands_copy:
-		scores.append(tally_hand_cards_score(hand))
-
-	# Sort using indices to maintain correspondence
-	var indices = range(len(hands_copy))
-	indices.sort_custom(func(i, j):
-		var score_i = scores[i]
-		var score_j = scores[j]
-		if score_i == score_j:
-			# Sort by first card key if scores are equal
-			return hands_copy[i][0] < hands_copy[j][0]
-		return score_i > score_j # descending
-	)
-
-	var sorted_hands = []
-	for i in indices:
-		sorted_hands.append(hands_copy[i])
-	return sorted_hands
-
-# Round requirements
-var _groups_per_round = [2, 1, 0, 3, 2, 1, 0]
-var _runs_per_round = [0, 1, 2, 0, 1, 2, 3]
-
 func empty_evaluation() -> Dictionary:
 	return {
 		'eval_score': 0, # relative score of the hand, higher is better
@@ -696,683 +582,13 @@ func empty_evaluation() -> Dictionary:
 		'recommended_discards': [], # card keys to discard, if any, sorted by their score (higher score first)
 	}
 
-# Main evaluation functions
-func _evaluate_hand_pre_meld(round_num: int, hand_stats: Dictionary, all_public_meld_stats: Dictionary) -> Dictionary:
-	var num_groups = _groups_per_round[round_num - 1]
-	var num_runs = _runs_per_round[round_num - 1]
-
-	# Filter out irrelevant structures for this round
-	if num_runs == 0:
-		hand_stats['runs_of_4_plus'] = []
-		hand_stats['runs_of_3'] = []
-		hand_stats['runs_of_2'] = []
-	if num_groups == 0:
-		hand_stats['groups_of_3_plus'] = []
-		hand_stats['groups_of_2'] = []
-
-	dbg("ENTER Global._evaluate_hand_pre_meld: round_num=%d, num_groups=%d, num_runs=%d, hand_stats=%s" % [round_num, num_groups, num_runs, str(hand_stats)])
-
-	var acc = empty_evaluation()
-	var already_used = {}
-	var available_jokers = hand_stats['jokers'].duplicate()
-
-	var all_cards_available = func(card_keys: Array) -> bool:
-		for card_key in card_keys:
-			if card_key in already_used:
-				return false
-		return true
-
-	var mark_all_as_used = func(card_keys: Array) -> void:
-		for card_key in card_keys:
-			already_used[card_key] = true
-
-	# Meld groups first
-	var melded_groups = 0
-	for group_idx in range(num_groups):
-		if melded_groups >= len(hand_stats['groups_of_3_plus']) or group_idx >= len(hand_stats['groups_of_3_plus']):
-			break
-		var hand = hand_stats['groups_of_3_plus'][group_idx]
-		var available_cards = _filter_available_cards(hand, already_used)
-		if len(available_cards) >= 3:
-			if len(available_cards) == 3:
-				mark_all_as_used.call(available_cards)
-				melded_groups += 1
-				acc['can_be_personally_melded'].append({
-					'type': 'group',
-					'card_keys': available_cards
-				})
-				continue
-			# Optimize group if more than 3 cards
-			available_cards = _optimize_group(available_cards, already_used, available_jokers, hand_stats['by_suit'])
-			mark_all_as_used.call(available_cards)
-			melded_groups += 1
-			acc['can_be_personally_melded'].append({
-				'type': 'group',
-				'card_keys': available_cards
-			})
-
-	# Meld runs second
-	var melded_runs = 0
-	for run_idx in range(num_runs):
-		if melded_runs >= len(hand_stats['runs_of_4_plus']) or run_idx >= len(hand_stats['runs_of_4_plus']):
-			break
-		var hand = hand_stats['runs_of_4_plus'][run_idx]
-		var available_cards = _filter_available_cards(hand, already_used)
-		if len(available_cards) >= 4: # Need at least 4 cards for a run
-			# Try to use the available cards to form a run
-			if len(available_cards) == len(hand): # All cards available
-				mark_all_as_used.call(available_cards)
-				melded_runs += 1
-				acc['can_be_personally_melded'].append({
-					'type': 'run',
-					'card_keys': available_cards
-				})
-			else:
-				# Try to form a shorter run with available cards
-				var shorter_run = _try_shorter_run(available_cards)
-				if len(shorter_run) >= 4:
-					mark_all_as_used.call(shorter_run)
-					melded_runs += 1
-					acc['can_be_personally_melded'].append({
-						'type': 'run',
-						'card_keys': shorter_run
-					})
-
-	# Build additional runs with bitmap algorithm
-	while true:
-		var need_runs = num_runs - melded_runs
-		if need_runs <= 0:
-			break
-		var new_run = _build_a_run(available_jokers, already_used, hand_stats['by_suit'])
-		if new_run.has('success') and new_run['success']:
-			available_jokers = new_run['remaining_jokers']
-			mark_all_as_used.call(new_run['run'])
-			acc['can_be_personally_melded'].append({
-				'type': 'run',
-				'card_keys': new_run['run']
-			})
-			melded_runs += 1
-		else:
-			break
-
-	# Try to build runs from smaller sequences with jokers
-	while true:
-		var need_runs = num_runs - melded_runs
-		if need_runs <= 0 or len(available_jokers) == 0 or len(hand_stats['runs_of_3']) == 0:
-			break
-		var joker = available_jokers[0]
-		var new_run = _try_valid_run(joker, already_used, hand_stats['runs_of_3'][0])
-		if new_run.has('success') and new_run['success']:
-			available_jokers.pop_front()
-			hand_stats['runs_of_3'].pop_front()
-			mark_all_as_used.call(new_run['run'])
-			acc['can_be_personally_melded'].append({
-				'type': 'run',
-				'card_keys': new_run['run']
-			})
-			melded_runs += 1
-		else:
-			break
-
-	# Try to build runs from 2-card sequences with 2 jokers
-	while true:
-		var need_runs = num_runs - melded_runs
-		if need_runs <= 0 or len(available_jokers) <= 1 or len(hand_stats['runs_of_2']) == 0:
-			break
-		var joker1 = available_jokers[0]
-		var temp_run = _try_valid_run(joker1, already_used, hand_stats['runs_of_2'][0])
-		if temp_run.has('success') and temp_run['success']:
-			var joker2 = available_jokers[1]
-			var new_run = _try_valid_run(joker2, already_used, temp_run['run'])
-			if new_run.has('success') and new_run['success']:
-				available_jokers.pop_front()
-				available_jokers.pop_front()
-				hand_stats['runs_of_2'].pop_front()
-				mark_all_as_used.call(new_run['run'])
-				acc['can_be_personally_melded'].append({
-					'type': 'run',
-					'card_keys': new_run['run']
-				})
-				melded_runs += 1
-			else:
-				break
-		else:
-			break
-
-	# Try to build groups from 2-card groups with jokers
-	while true:
-		var need_groups = num_groups - melded_groups
-		if need_groups <= 0 or len(available_jokers) == 0 or len(hand_stats['groups_of_2']) == 0:
-			break
-		var joker = available_jokers[0]
-		var hand = [joker] + hand_stats['groups_of_2'][0]
-		hand_stats['groups_of_2'].pop_front()
-		if all_cards_available.call(hand):
-			available_jokers.pop_front()
-			mark_all_as_used.call(hand)
-			acc['can_be_personally_melded'].append({
-				'type': 'group',
-				'card_keys': hand
-			})
-			melded_groups += 1
-
-	# Add remaining jokers to existing melds
-	while len(available_jokers) > 0:
-		if melded_groups > 0:
-			var joker = available_jokers.pop_front()
-			_add_to_melded_group(acc, joker)
-		elif melded_runs > 0:
-			var joker = available_jokers.pop_front()
-			if not _add_to_melded_run(acc, joker):
-				break
-		else:
-			break
-
-	# Calculate final score
-	acc['eval_score'] = 100 * len(acc['can_be_personally_melded'])
-
-	if melded_groups == num_groups and melded_runs == num_runs:
-		acc['eval_score'] += 1000 # bonus for melding
-		# Clear partial hands since we can meld
-		hand_stats['groups_of_3_plus'] = []
-		hand_stats['groups_of_2'] = []
-		hand_stats['runs_of_4_plus'] = []
-		hand_stats['runs_of_3'] = []
-		hand_stats['runs_of_2'] = []
-	else:
-		acc['eval_score'] += 50 * (len(hand_stats['groups_of_3_plus']) + len(hand_stats['groups_of_2']) + len(hand_stats['runs_of_4_plus']) + len(hand_stats['runs_of_3']) + len(hand_stats['runs_of_2']))
-		acc['can_be_personally_melded'] = []
-
-	_gen_recommended_discards(acc, hand_stats, already_used, all_public_meld_stats)
-	var penalty_score = - tally_hand_cards_score(acc['recommended_discards'])
-	acc['eval_score'] += penalty_score
-
-	if melded_groups == num_groups and melded_runs == num_runs:
-		acc['is_winning_hand'] = (round_num < 7 and len(acc['recommended_discards']) == 1) or (round_num == 7 and len(acc['recommended_discards']) == 0)
-		if acc['is_winning_hand']:
-			acc['eval_score'] += 1000 # bonus for winning
-
-	return acc
-
-func _evaluate_hand_post_meld(round_num: int, hand_stats: Dictionary, all_public_meld_stats: Dictionary) -> Dictionary:
-	var acc = empty_evaluation()
-	var already_used = {}
-	var available_jokers = hand_stats['jokers'].duplicate()
-	var penalty_cards = []
-
-	# First, attempt to find publicly meldable groups
-	var possibilities = _find_groups_can_be_publicly_melded(hand_stats, all_public_meld_stats)
-	var can_be_publicly_melded = []
-
-	for rank in hand_stats['by_rank']:
-		var card_keys = hand_stats['by_rank'][rank]
-		if not rank in possibilities:
-			penalty_cards.append_array(card_keys)
-			continue
-
-		for possibility in possibilities[rank]:
-			for card_key in card_keys:
-				if card_key in already_used: continue
-				already_used[card_key] = true
-				can_be_publicly_melded.append({
-					'card_key': card_key,
-					'target_player_id': possibility['player_id'],
-					'meld_group_index': possibility['meld_group_index'],
-				})
-				# Add available jokers to this meld
-				while len(available_jokers) > 0:
-					var joker = available_jokers.pop_front()
-					can_be_publicly_melded.append({
-						'card_key': joker,
-						'target_player_id': possibility['player_id'],
-						'meld_group_index': possibility['meld_group_index'],
-					})
-
-	if len(available_jokers) > 0:
-		dbg("ERROR! available_jokers=%s but should be 0" % [str(available_jokers)])
-
-	# Now attempt to find publicly meldable runs
-	possibilities = _find_runs_can_be_publicly_melded(hand_stats, already_used, all_public_meld_stats)
-	for suit in hand_stats['by_suit']:
-		if not suit in possibilities:
-			# Add unused cards to penalty cards
-			for rank in hand_stats['by_suit'][suit]:
-				var card_keys = hand_stats['by_suit'][suit][rank]
-				for card_key in card_keys:
-					if not card_key in already_used:
-						penalty_cards.append(card_key)
-			continue
-
-		# Process each possible run meld for this suit
-		for possibility in possibilities[suit]:
-			var card_key = possibility['card_key']
-			if card_key in already_used:
-				continue
-			already_used[card_key] = true
-			can_be_publicly_melded.append({
-				'card_key': card_key,
-				'target_player_id': possibility['player_id'],
-				'meld_group_index': possibility['meld_group_index'],
-			})
-
-			# If this card can extend a run, add available jokers to this meld
-			if possibility['can_extend']:
-				while len(available_jokers) > 0:
-					var joker = available_jokers.pop_front()
-					can_be_publicly_melded.append({
-						'card_key': joker,
-						'target_player_id': possibility['player_id'],
-						'meld_group_index': possibility['meld_group_index'],
-					})
-					break # Only add one joker per extension
-
-		# Add any remaining unused cards in this suit to penalty cards
-		for rank in hand_stats['by_suit'][suit]:
-			var card_keys = hand_stats['by_suit'][suit][rank]
-			for card_key in card_keys:
-				if not card_key in already_used:
-					penalty_cards.append(card_key)
-
-	_gen_recommended_discards(acc, hand_stats, already_used, all_public_meld_stats)
-
-	acc['can_be_publicly_melded'] = can_be_publicly_melded
-	var can_be_publicly_melded_score = 100 * len(can_be_publicly_melded)
-	var penalty_cards_score = - tally_hand_cards_score(penalty_cards)
-	acc['eval_score'] = can_be_publicly_melded_score + penalty_cards_score
-	acc['is_winning_hand'] = (round_num < 7 and len(acc['recommended_discards']) == 1) or (round_num == 7 and len(acc['recommended_discards']) == 0)
-	if acc['is_winning_hand']:
-		acc['eval_score'] += 1000
-
-	return acc
-
-# Helper functions for hand evaluation
-
-func _filter_available_cards(card_keys: Array, already_used: Dictionary) -> Array:
-	var available_cards = []
-	for card_key in card_keys:
-		if not card_key in already_used:
-			available_cards.append(card_key)
-	return available_cards
-
-func _try_shorter_run(card_keys: Array) -> Array:
-	# Try to form the longest possible run from available cards
-	# This is a simplified approach - just return the cards if they form a valid sequence
-	if len(card_keys) < 4:
-		return []
-
-	# Sort cards by rank to find sequences
-	var cards_by_rank = {}
-	var suit = ""
-	for card_key in card_keys:
-		var parts = card_key.split('-')
-		if suit == "":
-			suit = parts[1]
-		elif suit != parts[1]:
-			# Mixed suits, can't form a run
-			return []
-		var rank = parts[0]
-		cards_by_rank[rank] = card_key
-
-	# Try to find a sequence of 4 or more cards
-	var rank_order = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K']
-	var sequence = []
-	for rank in rank_order:
-		if rank in cards_by_rank:
-			sequence.append(cards_by_rank[rank])
-		else:
-			# Break in sequence
-			if len(sequence) >= 4:
-				return sequence
-			sequence = []
-
-	# Check final sequence
-	if len(sequence) >= 4:
-		return sequence
-
-	return card_keys # Return original if no better sequence found
-
-func _optimize_group(available_cards: Array, already_used: Dictionary, available_jokers: Array, by_suit: Dictionary) -> Array:
-	for new_group in _permutations_of_3_at_a_time(available_cards):
-		var new_already_used = already_used.duplicate()
-		for card_key in new_group:
-			new_already_used[card_key] = true
-		var run_result = _build_a_run(available_jokers, new_already_used, by_suit)
-		if run_result.has('success') and run_result['success']:
-			return new_group
-	return available_cards
-
-func _permutations_of_3_at_a_time(card_keys: Array) -> Array:
-	var permutations = []
-	if len(card_keys) <= 3:
-		return [card_keys]
-	for i in range(len(card_keys)):
-		for j in range(i + 1, len(card_keys)):
-			for k in range(j + 1, len(card_keys)):
-				var permutation = [card_keys[i], card_keys[j], card_keys[k]]
-				permutations.append(permutation)
-	return permutations
-
-func _add_to_melded_group(acc: Dictionary, card_key: String) -> void:
-	for meld in acc['can_be_personally_melded']:
-		if meld['type'] == 'group':
-			meld['card_keys'].insert(0, card_key)
-			return
-
-func _add_to_melded_run(acc: Dictionary, card_key: String) -> bool:
-	for meld in acc['can_be_personally_melded']:
-		if meld['type'] == 'run':
-			var new_run = _try_valid_run(card_key, {}, meld['card_keys'])
-			if new_run.has('success') and new_run['success']:
-				meld['card_keys'] = new_run['run']
-				return true
-	return false
-
-func _gen_recommended_discards(acc: Dictionary, hand_stats: Dictionary, already_used: Dictionary, all_public_meld_stats: Dictionary) -> void:
-	var save_for_last = []
-	var save_cards = func(groups: Array) -> void:
-		for card_keys in groups:
-			for card_key in card_keys:
-				if card_key in already_used:
-					continue
-				already_used[card_key] = true
-				save_for_last.append(card_key)
-
-	save_cards.call(hand_stats['groups_of_3_plus'])
-	save_cards.call(hand_stats['groups_of_2'])
-	save_cards.call(hand_stats['runs_of_4_plus'])
-	save_cards.call(hand_stats['runs_of_3'])
-	save_cards.call(hand_stats['runs_of_2'])
-	save_for_last = sort_card_keys_by_score(save_for_last)
-
-	for rank in hand_stats['by_rank']:
-		var card_keys = hand_stats['by_rank'][rank]
-		for card_key in card_keys:
-			if card_key in already_used:
-				continue
-			if _is_publicly_meldable(rank, card_key, all_public_meld_stats):
-				save_for_last.append(card_key)
-				continue
-			acc['recommended_discards'].append(card_key)
-
-	acc['recommended_discards'] = sort_card_keys_by_score(acc['recommended_discards'])
-	acc['recommended_discards'].append_array(save_for_last)
-
-func _is_publicly_meldable(rank: String, card_key: String, all_public_meld_stats: Dictionary) -> bool:
-	# Check if card can be melded to public groups or runs
-	if all_public_meld_stats == null:
-		return false
-
-	# Check for groups - same rank can be added to existing groups
-	if rank in all_public_meld_stats['by_rank']:
-		var melds_by_rank = all_public_meld_stats['by_rank'][rank]
-		for single_meld in melds_by_rank:
-			if single_meld['meld_group_type'] == 'group':
-				return true
-
-	# Check for runs - card can extend or replace jokers in runs of same suit
-	var parts = card_key.split('-')
-	if len(parts) >= 2: # Not a joker
-		var suit = parts[1]
-		if suit in all_public_meld_stats['by_suit']:
-			for pub_rank in all_public_meld_stats['by_suit'][suit]:
-				for pub_meld in all_public_meld_stats['by_suit'][suit][pub_rank]:
-					if pub_meld['meld_group_type'] == 'run':
-						# Check if this card can extend or replace in this run
-						if _can_card_extend_run(card_key, pub_meld) or _can_card_replace_joker_in_run(card_key, pub_meld):
-							return true
-
-	return false
-
-func _find_groups_can_be_publicly_melded(hand_stats: Dictionary, all_public_meld_stats: Dictionary) -> Dictionary:
-	var possible_group_melds = {}
-	for rank in hand_stats['by_rank']:
-		if not rank in all_public_meld_stats['by_rank']:
-			continue
-		var pub_melds = all_public_meld_stats['by_rank'][rank]
-		possible_group_melds[rank] = pub_melds
-	return possible_group_melds
-
-func _can_card_extend_run(card_key: String, pub_meld: Dictionary) -> bool:
-	# Get all cards in the public run to determine if this card can extend it
-	var run_cards = []
-	var player_id = pub_meld['player_id']
-	var meld_group_index = pub_meld['meld_group_index']
-
-	# Find the actual run by looking at the player's played_to_table
-	for ppi in game_state.public_players_info:
-		if ppi.id == player_id:
-			if meld_group_index < len(ppi.played_to_table):
-				var meld_group = ppi.played_to_table[meld_group_index]
-				if meld_group['type'] == 'run':
-					run_cards = meld_group['card_keys']
-					break
-			break
-
-	if len(run_cards) == 0:
-		return false
-
-	# Try adding the card to the front or back of the run
-	var test_run_front = [card_key] + run_cards
-	var test_run_back = run_cards + [card_key]
-
-	return _is_valid_run(test_run_front) or _is_valid_run(test_run_back)
-
-func _can_card_replace_joker_in_run(card_key: String, pub_meld: Dictionary) -> bool:
-	# Get all cards in the public run to determine if this card can replace a joker
-	var run_cards = []
-	var player_id = pub_meld['player_id']
-	var meld_group_index = pub_meld['meld_group_index']
-
-	# Find the actual run by looking at the player's played_to_table
-	for ppi in game_state.public_players_info:
-		if ppi.id == player_id:
-			if meld_group_index < len(ppi.played_to_table):
-				var meld_group = ppi.played_to_table[meld_group_index]
-				if meld_group['type'] == 'run':
-					run_cards = meld_group['card_keys']
-					break
-			break
-
-	if len(run_cards) == 0:
-		return false
-
-	# Check if any position in the run has a joker and this card can replace it
-	for i in range(len(run_cards)):
-		var run_card = run_cards[i]
-		var parts = run_card.split('-')
-		if parts[0] == 'JOKER':
-			# Try replacing this joker with our card
-			var test_run = run_cards.duplicate()
-			test_run[i] = card_key
-			if _is_valid_run(test_run):
-				return true
-
-	return false
-
-func _find_runs_can_be_publicly_melded(hand_stats: Dictionary, already_used: Dictionary, all_public_meld_stats: Dictionary) -> Dictionary:
-	var possible_run_melds = {}
-	# Find runs that can be extended or have jokers replaced
-	for suit in hand_stats['by_suit']:
-		if not suit in all_public_meld_stats['by_suit']:
-			continue
-		possible_run_melds[suit] = []
-
-		# Check each rank in this suit to see if it can extend or replace in public runs
-		for rank in hand_stats['by_suit'][suit]:
-			var card_keys = hand_stats['by_suit'][suit][rank]
-			for card_key in card_keys:
-				if card_key in already_used:
-					continue
-
-				# Check if this card can extend or replace in any public run of this suit
-				for pub_rank in all_public_meld_stats['by_suit'][suit]:
-					for pub_meld in all_public_meld_stats['by_suit'][suit][pub_rank]:
-						if pub_meld['meld_group_type'] == 'run':
-							# Check if this card can extend this run
-							if _can_card_extend_run(card_key, pub_meld):
-								possible_run_melds[suit].append({
-									'card_key': card_key,
-									'player_id': pub_meld['player_id'],
-									'meld_group_index': pub_meld['meld_group_index'],
-									'can_extend': true,
-									'can_replace_joker': false
-								})
-							# Check if this card can replace a joker in this run
-							if _can_card_replace_joker_in_run(card_key, pub_meld):
-								possible_run_melds[suit].append({
-									'card_key': card_key,
-									'player_id': pub_meld['player_id'],
-									'meld_group_index': pub_meld['meld_group_index'],
-									'can_extend': false,
-									'can_replace_joker': true
-								})
-
-		# Remove suits with no possible melds
-		if len(possible_run_melds[suit]) == 0:
-			possible_run_melds.erase(suit)
-
-	return possible_run_melds
-
-# Run building functions
-func _build_a_run(available_jokers: Array, already_used: Dictionary, by_suit: Dictionary) -> Dictionary:
-	var suits = ['clubs', 'spades', 'hearts', 'diamonds']
-	for use_num_jokers in range(len(available_jokers) + 1):
-		for suit in suits:
-			if not suit in by_suit:
-				continue
-			var by_rank = by_suit[suit]
-			var result = _build_a_run_with_suit(available_jokers, already_used, by_rank, use_num_jokers)
-			if result.has('success') and result['success']:
-				return result
-	return {'success': false}
-
-func _build_a_run_with_suit(available_jokers: Array, already_used: Dictionary, by_rank: Dictionary, use_num_jokers: int) -> Dictionary:
-	var involved_cards = {}
-	var bitmap = 0
-	for rank in by_rank:
-		for card_key in by_rank[rank]:
-			if not card_key in already_used:
-				bitmap |= _rank_to_bitmap(rank)
-				involved_cards[rank] = card_key
-				break
-
-	if len(involved_cards) == 0 or bitmap == 0:
-		return {'success': false}
-
-	var new_jokers = available_jokers.duplicate()
-	var new_run = _longest_sequence_with_jokers(involved_cards, bitmap, use_num_jokers)
-	if new_run.has('success') and new_run['success']:
-		new_run['run'] = _replace_jokers(new_run['run'], new_jokers.slice(0, use_num_jokers))
-		new_run['remaining_jokers'] = new_jokers.slice(use_num_jokers)
-		return new_run
-
-	return {'success': false}
-
-func _rank_to_bitmap(rank: String) -> int:
-	var rank_to_bitmap = {
-		'A': 0x0001 | 0x2000, # low ace | high ace
-		'2': 0x0002, '3': 0x0004, '4': 0x0008, '5': 0x0010,
-		'6': 0x0020, '7': 0x0040, '8': 0x0080, '9': 0x0100,
-		'10': 0x0200, 'J': 0x0400, 'Q': 0x0800, 'K': 0x1000
-	}
-	return rank_to_bitmap.get(rank, 0)
-
-func _pos_to_rank(pos: int) -> String:
-	var pos_to_rank = {
-		0x0001: 'A', 0x0002: '2', 0x0004: '3', 0x0008: '4', 0x0010: '5',
-		0x0020: '6', 0x0040: '7', 0x0080: '8', 0x0100: '9', 0x0200: '10',
-		0x0400: 'J', 0x0800: 'Q', 0x1000: 'K', 0x2000: 'A'
-	}
-	return pos_to_rank.get(pos, '')
-
-func _longest_sequence_with_jokers(involved_cards: Dictionary, bitmap: int, use_num_jokers: int) -> Dictionary:
-	if bitmap == 0:
-		return {'success': false}
-
-	var best_run = []
-	var best_length = 0
-
-	# Try all possible starting positions
-	for start in range(14):
-		for end in range(start + 3, 14): # Minimum run length is 4
-			if _is_valid_run_with_jokers(bitmap, start, end, use_num_jokers):
-				var length = end - start + 1
-				if length > best_length:
-					var run = _build_run_from_range(involved_cards, start, end, bitmap, use_num_jokers)
-					if run.has('success') and run['success']:
-						best_run = run['run']
-						best_length = length
-
-	# Check special case for ace sequences
-	if (bitmap & 0x0001) != 0 and (bitmap & 0x2000) != 0:
-		var high_ace_start = 9 # Position of 10
-		var high_ace_end = 13 # Position of high ace
-		if _is_valid_run_with_jokers(bitmap, high_ace_start, high_ace_end, use_num_jokers):
-			var length = high_ace_end - high_ace_start + 1
-			if length > best_length:
-				var run = _build_run_from_range(involved_cards, high_ace_start, high_ace_end, bitmap, use_num_jokers)
-				if run.has('success') and run['success']:
-					best_run = run['run']
-					best_length = length
-
-	if best_length >= 4:
-		return {'success': true, 'run': best_run}
-
-	return {'success': false}
-
-func _is_valid_run_with_jokers(bitmap: int, start: int, end: int, use_num_jokers: int) -> bool:
-	if start < 0 or end >= 14 or start >= end:
-		return false
-
-	var total_positions = end - start + 1
-	if total_positions < 4:
-		return false
-
-	var set_bits = 0
-	for i in range(start, end + 1):
-		if (bitmap & (1 << i)) != 0:
-			set_bits += 1
-
-	var required_jokers = total_positions - set_bits
-	return required_jokers == use_num_jokers
-
-func _build_run_from_range(involved_cards: Dictionary, start: int, end: int, bitmap: int, use_num_jokers: int) -> Dictionary:
-	if not _is_valid_run_with_jokers(bitmap, start, end, use_num_jokers):
-		return {'success': false}
-
-	var result = []
-	for i in range(start, end + 1):
-		var bit_pos = 1 << i
-		if (bitmap & bit_pos) != 0:
-			var rank = _pos_to_rank(bit_pos)
-			if rank in involved_cards:
-				result.append(involved_cards[rank])
-			else:
-				return {'success': false}
-		else:
-			result.append('JOKER')
-
-	return {'success': true, 'run': result}
-
-func _replace_jokers(run: Array, new_jokers: Array) -> Array:
-	if len(new_jokers) == 0:
-		return run
-
-	var result = run.duplicate()
-	var joker_idx = 0
-	for i in range(len(result)):
-		if result[i] == 'JOKER' and joker_idx < len(new_jokers):
-			result[i] = new_jokers[joker_idx]
-			joker_idx += 1
-	return result
-
 # Value lookup for run validation
 var _value_lookup = {
 	'JOKER': 15, 'A': 14, 'J': 11, 'Q': 12, 'K': 13,
 	'2': 2, '3': 3, '4': 4, '5': 5, '6': 6, '7': 7, '8': 8, '9': 9, '10': 10
 }
 
-func _is_valid_run(card_keys: Array) -> bool:
+func is_valid_run(card_keys: Array) -> bool:
 	var values = []
 	var lowest_value = 15
 	var lowest_value_idx = len(card_keys)
@@ -1414,26 +630,19 @@ func _is_valid_run(card_keys: Array) -> bool:
 
 	return true
 
-func _try_valid_run(card_key: String, already_used: Dictionary, card_keys: Array) -> Dictionary:
-	# Check if all cards are available
-	if already_used != null:
-		if card_key in already_used:
-			return {'success': false}
-		for ck in card_keys:
-			if ck in already_used:
-				return {'success': false}
+func is_valid_group(card_keys: Array) -> bool:
+	if len(card_keys) < 3:
+		return false
 
-	# Try adding to front
-	var new_run = [card_key] + card_keys
-	if _is_valid_run(new_run):
-		return {'success': true, 'run': new_run}
+	var ranks = {}
+	for card_key in card_keys:
+		var parts = card_key.split('-')
+		var rank = parts[0]
+		if rank == 'JOKER':
+			continue
+		ranks[rank] = true
 
-	# Try adding to back
-	new_run = card_keys + [card_key]
-	if _is_valid_run(new_run):
-		return {'success': true, 'run': new_run}
-
-	return {'success': false}
+	return len(ranks) == 1
 
 # A perfect winning hand, performed after drawing a card, is a hand that can be melded to win the round.
 # (Rounds 1-6 required a discard, and round 7 requires no discard.)
@@ -1684,9 +893,6 @@ func _rpc_move_player_card_to_discard_pile(player_id: String, card_key: String, 
 		if player_id in bots_private_player_info:
 			var bot = bots_private_player_info[player_id]
 			bot.card_keys_in_hand.erase(top_card.key)
-			bot.meld_area_1_key.erase(top_card.key)
-			bot.meld_area_2_key.erase(top_card.key)
-			bot.meld_area_3_key.erase(top_card.key)
 	dbg("_rpc_move_player_card_to_discard_pile: player_id='%s' moving card from discard pile: '%s', player_won=%s" % [player_id, top_card.key, player_won])
 	animate_move_card_from_player_to_discard_pile_signal.emit(top_card, player_id, player_won, '_rpc_move_player_card_to_discard_pile')
 
@@ -1770,9 +976,6 @@ func _remove_card_from_player_hand(card_key: String, player_id: String) -> void:
 		if player_id in bots_private_player_info:
 			var bot = bots_private_player_info[player_id]
 			bot.card_keys_in_hand.erase(card_key)
-			bot.meld_area_1_key.erase(card_key)
-			bot.meld_area_2_key.erase(card_key)
-			bot.meld_area_3_key.erase(card_key)
 			dbg("_remove_card_from_player_hand: bots_private_player_info[player_id].card_keys_in_hand (BOT): %s" % [str(bot.card_keys_in_hand)])
 
 func _personally_meld_group(meld_group: Dictionary, player_id: String) -> void:

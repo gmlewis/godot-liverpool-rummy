@@ -137,13 +137,13 @@ func _get_next_card_position_in_players_hand() -> Vector2:
 	card_rects.sort_custom(func(a, b): return a.position.x < b.position.x)
 
 	if len(card_rects) == 0:
-		return Vector2((Global.player_hand_x_start + Global.player_hand_x_end) / 2.0, Global.player_hand_y_position)
+		return Vector2((Global.player_hand_x_start() + Global.player_hand_x_end) / 2.0, Global.player_hand_y_position)
 
 	var card_size = card_rects[0].size # All cards are the same size.
 	var bounds_min_y = (Global.discard_pile_position.y + Global.player_hand_y_position) / 2.0
 	var bounds_max_y = Global.player_hand_y_position
-	var bounds_size = Vector2(Global.player_hand_x_end - Global.player_hand_x_start + 2.0 * card_size.x, bounds_max_y - bounds_min_y + 0.5 * card_size.y)
-	var bounds_top_left = Vector2(Global.player_hand_x_start - card_size.x, bounds_min_y)
+	var bounds_size = Vector2(Global.player_hand_x_end - Global.player_hand_x_start() + 2.0 * card_size.x, bounds_max_y - bounds_min_y + 0.5 * card_size.y)
+	var bounds_top_left = Vector2(Global.player_hand_x_start() - card_size.x, bounds_min_y)
 	var players_hand_bounds = Rect2(bounds_top_left, bounds_size)
 
 	# players_container.set_debug_drawing(true)

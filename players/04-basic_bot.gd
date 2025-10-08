@@ -9,7 +9,7 @@ func get_bot_name() -> String:
 func _on_new_discard_state_entered() -> void:
 	Global.dbg("BOT('%s'): ENTER _on_new_discard_state_entered()" % get_bot_name())
 	var current_hand_stats = gen_current_hand_stats()
-	var current_hand_evaluation = Global.evaluate_hand(current_hand_stats, bot_id)
+	var current_hand_evaluation = evaluate_bot_hand(current_hand_stats, bot_id)
 	Global.dbg("BOT('%s'): _on_new_discard_state_entered: current_hand_evaluation=%s" % [get_bot_name(), str(current_hand_evaluation)])
 	var current_eval_score = current_hand_evaluation['eval_score']
 	var want_discard_card = do_i_want_discard_card(current_hand_stats, current_eval_score)

@@ -84,7 +84,7 @@ func deal_cards_to_players(round_num: int, cards_per_player: int) -> void:
 			# For the local player, move the card to the player's hand position based on the number of cards they already have.
 			var card_hand_idx = len(Global.private_player_info.card_keys_in_hand)
 			Global.private_player_info.card_keys_in_hand.append(playing_card.key) # Update the local player's hand
-			var card_x = Global.player_hand_x_start + (card_hand_idx * (Global.player_hand_x_end - Global.player_hand_x_start) / (cards_per_player - 1))
+			var card_x = gen_card_deal_position_x(card_hand_idx, cards_per_player)
 			var player_card_position = Vector2(card_x, Global.player_hand_y_position)
 			card_tween.tween_property(playing_card, "position", player_card_position, card_duration)
 			card_tween.tween_property(playing_card, "rotation", 0, card_duration)
@@ -115,3 +115,7 @@ func deal_cards_to_players(round_num: int, cards_per_player: int) -> void:
 		var card = Global.playing_cards.get(card_key) as PlayingCard
 		card.force_face_up()
 	Global.dbg("Dealt %d cards to %d players for round %d." % [total_cards, num_players, round_num])
+
+func gen_card_deal_position_x(card_hand_idx: int, cards_per_player: int) -> float:
+	var card_x = Global.player_hand_x_start() + (card_hand_idx * (Global.player_hand_x_end - Global.player_hand_x_start()) / (cards_per_player - 1))
+	return card_x
