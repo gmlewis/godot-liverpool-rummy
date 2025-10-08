@@ -20,8 +20,8 @@ func generate_recreation_script():
 	script_lines.append("")
 	script_lines.append("func recreate_hierarchy():")
 
-	# Generate code for this node and all children
-	generate_node_code(self, script_lines, 1, "self")
+	# Generate code starting with self
+	generate_node_code_with_self(self, script_lines, 1)
 
 	script_lines.append("\tprint('Hierarchy recreation complete!')")
 
@@ -33,6 +33,51 @@ func generate_recreation_script():
 	print(full_script)
 	print(separator)
 	print("Script generation complete! Copy the output above.")
+
+func generate_node_code_with_self(node: Node, script_lines: Array, indent: int):
+	var tab = "\t".repeat(indent)
+	var node_type = node.get_class()
+	var var_name = "root_node"
+
+	# Create the root node
+	script_lines.append(tab + "var " + var_name + " = " + node_type + ".new()")
+	script_lines.append(tab + var_name + ".name = \"" + node.name + "\"")
+	script_lines.append(tab + "self.add_child(" + var_name + ")")
+	script_lines.append(tab + var_name + ".owner = get_tree().edited_scene_root")
+
+	# Set Control properties for self
+	if node is Control:
+		script_lines.append(tab + var_name + ".position = Vector2(" + str(node.position.x) + ", " + str(node.position.y) + ")")
+		script_lines.append(tab + var_name + ".size = Vector2(" + str(node.size.x) + ", " + str(node.size.y) + ")")
+		script_lines.append(tab + var_name + ".anchor_left = " + str(node.anchor_left))
+		script_lines.append(tab + var_name + ".anchor_top = " + str(node.anchor_top))
+		script_lines.append(tab + var_name + ".anchor_right = " + str(node.anchor_right))
+		script_lines.append(tab + var_name + ".anchor_bottom = " + str(node.anchor_bottom))
+		script_lines.append(tab + var_name + ".offset_left = " + str(node.offset_left))
+		script_lines.append(tab + var_name + ".offset_top = " + str(node.offset_top))
+		script_lines.append(tab + var_name + ".offset_right = " + str(node.offset_right))
+		script_lines.append(tab + var_name + ".offset_bottom = " + str(node.offset_bottom))
+
+	# Set Label-specific properties
+	if node is Label:
+		script_lines.append(tab + var_name + ".text = \"" + node.text.replace("\"", "\\\"") + "\"")
+		script_lines.append(tab + var_name + ".horizontal_alignment = " + str(node.horizontal_alignment))
+		script_lines.append(tab + var_name + ".vertical_alignment = " + str(node.vertical_alignment))
+
+	# Set ColorRect-specific properties
+	if node is ColorRect:
+		var color = node.color
+		script_lines.append(tab + var_name + ".color = Color(" + str(color.r) + ", " + str(color.g) + ", " + str(color.b) + ", " + str(color.a) + ")")
+
+	# Handle material (for shaders)
+	if node.material != null:
+		script_lines.append(tab + "# Note: Material/Shader must be set manually for " + var_name)
+
+	script_lines.append("")
+
+	# Now process all children recursively
+	if node.get_child_count() > 0:
+		generate_node_code(node, script_lines, indent, var_name)
 
 func generate_node_code(node: Node, script_lines: Array, indent: int, parent_var: String):
 	var tab = "\t".repeat(indent)
@@ -75,7 +120,7 @@ func generate_node_code(node: Node, script_lines: Array, indent: int, parent_var
 		# Set ColorRect-specific properties
 		if child is ColorRect:
 			var color = child.color
-			script_lines.append(tab + var_name + ".color = Color(" + str(color.r) + ", " + str(color.g) + ", " + str(color.b) + ", " + str(color.a) + ")")
+			script_lines.append(tab + var_name + ".color = Color(" + str(color.r) + ", " + str(color.g) + ", " + str(color.g) + ", " + str(color.a) + ")")
 
 		# Handle material (for shaders)
 		if child.material != null:

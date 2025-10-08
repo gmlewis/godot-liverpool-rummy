@@ -3,7 +3,7 @@
 [ext_resource type="Texture2D" uid="uid://b7o6im2i7l4x" path="res://backgrounds/61a0cdc6-6489-4f92-99fe-0890b4e1722f.jpeg" id="2_8op2o"]
 [ext_resource type="Shader" uid="uid://dj1sits4mc06j" path="res://shaders/fuzzyrect.gdshader" id="2_kytrq"]
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_l4um6"]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_8op2o"]
 shader = ExtResource("2_kytrq")
 shader_parameter/border_width = 10.0
 shader_parameter/border_color = Color(0.5, 0.5, 0.5, 0.5)
@@ -44,82 +44,89 @@ theme_override_font_sizes/font_size = 83
 text = "Round 7: Three runs of four (no discard)"
 horizontal_alignment = 1
 
-[node name="MeldArea" type="Node" parent="."]
+[node name="MeldArea" type="Control" parent="."]
+layout_mode = 1
+anchor_top = 0.7
+anchor_right = 0.5
+anchor_bottom = 1.0
+grow_vertical = 0
 
-[node name="Run1" type="Node" parent="MeldArea"]
+[node name="Run1" type="Control" parent="MeldArea"]
+layout_mode = 1
+anchor_right = 0.333
+anchor_bottom = 1.0
 
 [node name="Run1Label" type="Label" parent="MeldArea/Run1"]
-anchors_preset = 5
-anchor_left = 0.5
-anchor_right = 0.5
-offset_left = -1384.0
-offset_top = 937.0
-offset_right = -886.0
-offset_bottom = 995.0
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 1.0
+anchor_bottom = 0.1
 grow_horizontal = 2
 theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
-theme_override_constants/shadow_offset_x = 7
-theme_override_constants/shadow_offset_y = 7
 theme_override_constants/shadow_outline_size = 7
 theme_override_font_sizes/font_size = 40
 text = "Run 1"
 horizontal_alignment = 1
 
 [node name="Run1Area" type="ColorRect" parent="MeldArea/Run1"]
-material = SubResource("ShaderMaterial_l4um6")
-offset_left = 56.0
-offset_top = 995.0
-offset_right = 556.0
-offset_bottom = 1395.0
+material = SubResource("ShaderMaterial_8op2o")
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.025
+anchor_top = 0.125
+anchor_right = 0.975
+anchor_bottom = 0.975
 
-[node name="Run2" type="Node" parent="MeldArea"]
+[node name="Run2" type="Control" parent="MeldArea"]
+layout_mode = 1
+anchor_left = 0.333
+anchor_right = 0.666
+anchor_bottom = 1.0
 
 [node name="Run2Label" type="Label" parent="MeldArea/Run2"]
-anchors_preset = 5
-anchor_left = 0.5
-anchor_right = 0.5
-offset_left = -859.0
-offset_top = 937.0
-offset_right = -361.0
-offset_bottom = 995.0
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 1.0
+anchor_bottom = 0.1
 grow_horizontal = 2
 theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
-theme_override_constants/shadow_offset_x = 7
-theme_override_constants/shadow_offset_y = 7
 theme_override_constants/shadow_outline_size = 7
 theme_override_font_sizes/font_size = 40
 text = "Run 2"
 horizontal_alignment = 1
 
 [node name="Run2Area" type="ColorRect" parent="MeldArea/Run2"]
-material = SubResource("ShaderMaterial_l4um6")
-offset_left = 581.0
-offset_top = 995.0
-offset_right = 1081.0
-offset_bottom = 1395.0
+material = SubResource("ShaderMaterial_8op2o")
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.025
+anchor_top = 0.125
+anchor_right = 0.975
+anchor_bottom = 0.975
 
-[node name="Run3" type="Node" parent="MeldArea"]
+[node name="Run3" type="Control" parent="MeldArea"]
+layout_mode = 1
+anchor_left = 0.666
+anchor_right = 1.0
+anchor_bottom = 1.0
 
 [node name="Run3Label" type="Label" parent="MeldArea/Run3"]
-anchors_preset = 5
-anchor_left = 0.5
-anchor_right = 0.5
-offset_left = -333.0
-offset_top = 937.0
-offset_right = 165.0
-offset_bottom = 995.0
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 1.0
+anchor_bottom = 0.1
 grow_horizontal = 2
 theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
-theme_override_constants/shadow_offset_x = 7
-theme_override_constants/shadow_offset_y = 7
 theme_override_constants/shadow_outline_size = 7
 theme_override_font_sizes/font_size = 40
 text = "Run 3"
 horizontal_alignment = 1
 
 [node name="Run3Area" type="ColorRect" parent="MeldArea/Run3"]
-material = SubResource("ShaderMaterial_l4um6")
-offset_left = 1106.0
-offset_top = 995.0
-offset_right = 1606.0
-offset_bottom = 1395.0
+material = SubResource("ShaderMaterial_8op2o")
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.025
+anchor_top = 0.125
+anchor_right = 0.975
+anchor_bottom = 0.975

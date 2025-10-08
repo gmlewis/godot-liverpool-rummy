@@ -3,7 +3,7 @@
 [ext_resource type="Texture2D" uid="uid://bhukr10h5ft24" path="res://backgrounds/e0cc8d27-9473-44d5-a169-b0302c68afb9.jpeg" id="2_kwbd2"]
 [ext_resource type="Shader" uid="uid://dj1sits4mc06j" path="res://shaders/fuzzyrect.gdshader" id="2_wa6hx"]
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_qi4oo"]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_kwbd2"]
 shader = ExtResource("2_wa6hx")
 shader_parameter/border_width = 10.0
 shader_parameter/border_color = Color(0.5, 0.5, 0.5, 0.5)
@@ -44,56 +44,62 @@ theme_override_font_sizes/font_size = 83
 text = "Round 2: One book (3) and one run (4)"
 horizontal_alignment = 1
 
-[node name="MeldArea" type="Node" parent="."]
+[node name="MeldArea" type="Control" parent="."]
+layout_mode = 1
+anchor_top = 0.7
+anchor_right = 0.5
+anchor_bottom = 1.0
+grow_vertical = 0
 
-[node name="Book1" type="Node" parent="MeldArea"]
+[node name="Book1" type="Control" parent="MeldArea"]
+layout_mode = 1
+anchor_right = 0.333
+anchor_bottom = 1.0
 
 [node name="Book1Label" type="Label" parent="MeldArea/Book1"]
-anchors_preset = 5
-anchor_left = 0.5
-anchor_right = 0.5
-offset_left = -1384.0
-offset_top = 937.0
-offset_right = -886.0
-offset_bottom = 995.0
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 1.0
+anchor_bottom = 0.1
 grow_horizontal = 2
 theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
-theme_override_constants/shadow_offset_x = 7
-theme_override_constants/shadow_offset_y = 7
 theme_override_constants/shadow_outline_size = 7
 theme_override_font_sizes/font_size = 40
 text = "Book 1"
 horizontal_alignment = 1
 
 [node name="Book1Area" type="ColorRect" parent="MeldArea/Book1"]
-material = SubResource("ShaderMaterial_qi4oo")
-offset_left = 56.0
-offset_top = 995.0
-offset_right = 556.0
-offset_bottom = 1395.0
+material = SubResource("ShaderMaterial_kwbd2")
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.025
+anchor_top = 0.125
+anchor_right = 0.975
+anchor_bottom = 0.975
 
-[node name="Run1" type="Node" parent="MeldArea"]
+[node name="Run1" type="Control" parent="MeldArea"]
+layout_mode = 1
+anchor_left = 0.333
+anchor_right = 0.666
+anchor_bottom = 1.0
 
 [node name="Run1Label" type="Label" parent="MeldArea/Run1"]
-anchors_preset = 5
-anchor_left = 0.5
-anchor_right = 0.5
-offset_left = -859.0
-offset_top = 937.0
-offset_right = -361.0
-offset_bottom = 995.0
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 1.0
+anchor_bottom = 0.1
 grow_horizontal = 2
 theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
-theme_override_constants/shadow_offset_x = 7
-theme_override_constants/shadow_offset_y = 7
 theme_override_constants/shadow_outline_size = 7
 theme_override_font_sizes/font_size = 40
 text = "Run 1"
 horizontal_alignment = 1
 
 [node name="Run1Area" type="ColorRect" parent="MeldArea/Run1"]
-material = SubResource("ShaderMaterial_qi4oo")
-offset_left = 581.0
-offset_top = 995.0
-offset_right = 1081.0
-offset_bottom = 1395.0
+material = SubResource("ShaderMaterial_kwbd2")
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.025
+anchor_top = 0.125
+anchor_right = 0.975
+anchor_bottom = 0.975

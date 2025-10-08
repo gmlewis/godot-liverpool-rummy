@@ -137,7 +137,7 @@ func _initialize_from_command_line_args() -> void:
 	stock_pile_position = screen_center + Vector2(-screen_size.x * 0.05, screen_size.y * 0.1)
 	discard_pile_position = screen_center + Vector2(screen_size.x * 0.05, screen_size.y * 0.1)
 	player_hand_y_position = screen_size.y * 0.9
-	player_hand_x_start = screen_size.x * 0.5 # Start at 50% of the screen width
+	player_hand_x_start = screen_size.x * 0.55 # Start at 55% of the screen width
 	player_hand_x_end = screen_size.x * 0.9 # End at 90% of the screen width
 
 func reset_game():
