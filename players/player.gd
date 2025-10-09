@@ -236,6 +236,11 @@ func _on_card_clicked_signal(playing_card, _global_position):
 		# Global.dbg("Player('%s'): _on_card_clicked_signal: Drawing card '%s' from stock pile for player %s" % [player_id, playing_card.key, player_id])
 		Global.draw_card_from_stock_pile(Global.private_player_info.id)
 		return
+	# To prevent accidental discards, disallow discarding any cards from any of the meld areas directly.
+	# The player must first move the card back to their hand before discarding it.
+	if _get_playing_card_meld_area_idx(playing_card) >= 0:
+		Global.dbg("Player('%s'): _on_card_clicked_signal: Ignoring click on meld area card '%s' for player %s" % [player_id, playing_card.key, player_id])
+		return
 	if game_state_machine.get_current_state_name() == 'PlayerDrewState':
 		# If the player can meld their hand, interpret this click as an accident and ignore it.
 		if is_meldable:
@@ -253,6 +258,23 @@ func _on_card_drag_started_signal(_playing_card, _from_position):
 func _on_card_moved_signal(playing_card, _from_position, _global_position):
 	var player_is_me = Global.private_player_info.id == player_id
 	if not player_is_me: return # bots do not click or drag cards.
+
+	var meld_area_idx = _get_playing_card_meld_area_idx(playing_card)
+	if meld_area_idx >= 0:
+		Global.dbg("Player('%s'): _on_card_moved_signal: Moving card '%s' to meld area %d for player %s" % [player_id, playing_card.key, meld_area_idx + 1, player_id])
+		Global.private_player_info.meld_area_1_keys.erase(playing_card.key)
+		Global.private_player_info.meld_area_2_keys.erase(playing_card.key)
+		Global.private_player_info.meld_area_3_keys.erase(playing_card.key)
+		match meld_area_idx:
+			0:
+				Global.private_player_info.meld_area_1_keys.append(playing_card.key)
+			1:
+				Global.private_player_info.meld_area_2_keys.append(playing_card.key)
+			2:
+				Global.private_player_info.meld_area_3_keys.append(playing_card.key)
+		_update_meld_area_counts()
+		return
+
 	# Global.dbg("Player('%s'): _on_card_moved_signal: playing_card=%s, is_my_turn=%s" % [player_id, playing_card.key, str(is_my_turn)])
 	if not is_my_turn:
 		# Should not be able to drag card.
@@ -346,6 +368,54 @@ func _process(_delta: float) -> void:
 	if is_meldable:
 		var rect_scale = abs(sin(Time.get_ticks_msec() * ANIMATE_SPEED)) * 0.2 + 0.8
 		$MeldIndicatorSprite2D.scale = Vector2(rect_scale, rect_scale)
+
+################################################################################
+## Utility functions
+################################################################################
+
+# _get_playing_card_meld_area_idx returns the meld area index (0, 1, or 2) if the playing_card
+# is physically within one of the player's meld areas, or -1 if the playing_card is not in any meld area.
+func _get_playing_card_meld_area_idx(playing_card: PlayingCard) -> int:
+	# Trivial reject:
+	if playing_card.position.y <= Global.screen_size.y * Global.MELD_AREA_TOP_PERCENT:
+		return -1
+	var round_num = Global.game_state.current_round_num
+	if round_num <= 3:
+		if playing_card.position.x >= Global.screen_size.x * Global.MELD_AREA_2_RIGHT_PERCENT:
+			return -1
+		if playing_card.position.x >= Global.screen_size.x * Global.MELD_AREA_1_RIGHT_PERCENT:
+			return 1
+		return 0
+	if playing_card.position.x >= Global.screen_size.x * Global.MELD_AREA_RIGHT_PERCENT:
+		return -1
+	if playing_card.position.x >= Global.screen_size.x * Global.MELD_AREA_2_RIGHT_PERCENT:
+		return 2
+	if playing_card.position.x >= Global.screen_size.x * Global.MELD_AREA_1_RIGHT_PERCENT:
+		return 1
+	return 0
+
+func _update_meld_area_counts() -> void:
+	var meld_area_counts = [
+		len(Global.private_player_info.meld_area_1_keys),
+		len(Global.private_player_info.meld_area_2_keys),
+		len(Global.private_player_info.meld_area_3_keys),
+	]
+	# Meld area counts are in a fixed location in all the scene trees.
+	var meld_area = $"/root/RootNode/RoundNode".get_child(0).get_child(2)
+	# Global.dbg("Player('%s'): _update_meld_area_counts: meld_area: %s" % [player_id, str(meld_area)])
+	var round_children = meld_area.get_children()
+	for idx in range(len(round_children)):
+		var child = round_children[idx]
+		var meld_area_label: Label = child.get_child(0)
+		# Global.dbg("Player('%s'): _update_meld_area_counts: found label: %s" % [player_id, meld_area_label.text])
+		_update_meld_area_label(meld_area_label, meld_area_counts[idx])
+
+func _update_meld_area_label(meld_area_label: Label, count: int) -> void:
+	if meld_area_label.text.begins_with('Book '):
+		meld_area_label.text = meld_area_label.text.substr(0, 6) + ' (%d)' % count
+		return
+	# It must be a run
+	meld_area_label.text = meld_area_label.text.substr(0, 5) + ' (%d)' % count
 
 ################################################################################
 ## Player hand evaluation functions

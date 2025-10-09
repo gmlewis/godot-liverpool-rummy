@@ -6,25 +6,29 @@ extends CanvasLayer
 @export var animation_duration: float = 0.5
 
 func _ready() -> void:
-	$Sprite2D.position = Global.stock_pile_position
+	if len(Global.stock_pile) == 0: # This should not happen - no stock pile
+		queue_free()
+		return
+	var top_card = Global.stock_pile[0]
+	$Sprite2D.position = top_card.position
 	# $Sprite2D.scale = Vector2(0.2, 0.2)
-	start_countdown()
+	start_countdown(top_card.position)
 
-func start_countdown() -> void:
+func start_countdown(top_card_position: Vector2) -> void:
 	for i in range(count_from, 0, -1):
-		await animate_number(i)
+		await animate_number(i, top_card_position)
 		# await get_tree().create_timer(0.1).timeout # Small gap between numbers
 
 	# Animation complete, remove this scene
 	queue_free()
 
-func animate_number(number: int) -> void:
+func animate_number(number: int, top_card_position: Vector2) -> void:
 	var label = $Label
 	label.text = str(number)
 	# label.add_theme_font_size_override("font_size", number_font_size)
 	# label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	# label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-	label.position = Global.stock_pile_position - label.get_size() / 2
+	label.position = top_card_position - label.get_size() / 2
 	# add_child(label)
 
 	label.scale = Vector2.ZERO # Start at zero scale

@@ -140,11 +140,11 @@ func _initialize_from_command_line_args() -> void:
 	stock_pile_position = screen_center + Vector2(-screen_size.x * 0.05, screen_size.y * 0.1)
 	discard_pile_position = screen_center + Vector2(screen_size.x * 0.05, screen_size.y * 0.1)
 	player_hand_y_position = screen_size.y * 0.9
-	player_hand_x_end = screen_size.x * 0.95
+	player_hand_x_end = screen_size.x * 0.925
 
 func player_hand_x_start() -> float:
 	if game_state.current_round_num <= 3:
-		return screen_size.x * MELD_AREA_2_RIGHT_PERCENT + 100 # Start just to the right of meld area 2
+		return screen_size.x * MELD_AREA_2_RIGHT_PERCENT + 200 # Start just to the right of meld area 2
 	return screen_size.x * 0.55 # Start at 55% of the screen width
 
 func reset_game():
@@ -1168,6 +1168,7 @@ func send_animate_winning_confetti_explosion_signal(num_millis: int) -> void:
 
 func await_grace_period() -> void:
 	if len(discard_pile) == 0: return # no need to wait
+	if len(game_state.public_players_info) <= 2: return # no need to wait
 	dbg("await_grace_period: waiting for %d seconds for other players to buy from discard pile" % [OTHER_PLAYER_BUY_GRACE_PERIOD_SECONDS])
 	await get_tree().create_timer(OTHER_PLAYER_BUY_GRACE_PERIOD_SECONDS).timeout
 
