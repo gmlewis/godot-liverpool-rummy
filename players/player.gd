@@ -127,27 +127,27 @@ func _on_game_state_updated_signal():
 		return
 	# This section runs only for live players when it is their turn.
 	Global.dbg("Player('%s'): _on_game_state_updated_signal: public_player_info=%s" % [player_id, str(public_player_info)])
-	var already_played_to_table = len(public_player_info['played_to_table']) > 0
-	_update_turn_indicator_color(current_state_name, already_played_to_table)
+	var already_melded = len(public_player_info['played_to_table']) > 0
+	_update_turn_indicator_color(current_state_name, already_melded)
 	_update_hand_meldability()
 
 func _update_hand_meldability() -> void:
 	var current_state_name = game_state_machine.get_current_state_name()
 	var players_by_id = Global.get_players_by_id()
 	var public_player_info = players_by_id[player_id]
-	var already_played_to_table = len(public_player_info['played_to_table']) > 0
+	var already_melded = len(public_player_info['played_to_table']) > 0
 	# Now see if the player can meld (more of) their hand.
 	# var card_keys_in_hand = ['card_keys_in_hand']
 	var current_hand_stats = gen_player_hand_stats(Global.private_player_info)
 	if current_state_name == 'PlayerDrewState':
 		# Store the last hand evaluation for melding when user clicks on the player.
 		last_hand_evaluation = evaluate_player_hand(current_hand_stats)
-		if not already_played_to_table and len(last_hand_evaluation['can_be_personally_melded']) > 0:
-			Global.dbg("Player('%s'): already_played_to_table=false, setting is_meldable=true, can_be_personally_melded=%s" % [player_id, str(last_hand_evaluation['can_be_personally_melded'])])
+		if not already_melded and len(last_hand_evaluation['can_be_personally_melded']) > 0:
+			Global.dbg("Player('%s'): already_melded=false, setting is_meldable=true, can_be_personally_melded=%s" % [player_id, str(last_hand_evaluation['can_be_personally_melded'])])
 			$TurnIndicatorRect.color = TURN_INDICATOR_MELD_COLOR # Set color to meld color
 			is_meldable = true
 			$MeldIndicatorSprite2D.show() # Show meld indicator
-		elif already_played_to_table and len(last_hand_evaluation['can_be_publicly_melded']) > 0:
+		elif already_melded and len(last_hand_evaluation['can_be_publicly_melded']) > 0:
 			$TurnIndicatorRect.color = TURN_INDICATOR_MELD_COLOR # Set color to meld color
 			Global.dbg("Player('%s'): found %d possibilities to meld publicly" % [player_id, len(last_hand_evaluation['can_be_publicly_melded'])])
 			for possibility in last_hand_evaluation['can_be_publicly_melded']:
@@ -174,11 +174,11 @@ func _on_local_player_is_meldable_signal(target_player_id: String, player_is_mel
 		is_meldable_meld_group_index = -1
 		$MeldIndicatorSprite2D.hide() # Hide meld indicator
 
-func _update_turn_indicator_color(current_state_name: String, already_played_to_table: bool) -> void:
+func _update_turn_indicator_color(current_state_name: String, already_melded: bool) -> void:
 	if current_state_name == 'PlayerDrewState':
 		Global.dbg("current_state_name='%s': Setting player '%s' turn indicator to DISCARD color: %s" % [current_state_name, player_name, str(TURN_INDICATOR_DISCARD_COLOR)])
 		$TurnIndicatorRect.color = TURN_INDICATOR_DISCARD_COLOR # Set color to discard color
-	elif already_played_to_table:
+	elif already_melded:
 		Global.dbg("current_state_name='%s': Setting player '%s' turn indicator to MELD color: %s" % [current_state_name, player_name, str(TURN_INDICATOR_MELD_COLOR)])
 		$TurnIndicatorRect.color = TURN_INDICATOR_MELD_COLOR # Set color to meld color
 	else:

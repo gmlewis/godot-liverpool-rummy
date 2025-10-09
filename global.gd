@@ -936,7 +936,7 @@ func server_personally_meld_hand(player_id: String, hand_evaluation: Dictionary)
 	if not player_info:
 		dbg("ERROR: server_personally_meld_hand: player_id='%s' is not the current player" % [player_id])
 		return
-	dbg("server_personally_meld_hand: player_id='%s' discarding hand_evaluation=%s" % [player_id, hand_evaluation])
+	dbg("server_personally_meld_hand: player_id='%s' hand_evaluation=%s" % [player_id, hand_evaluation])
 	var turn_index = player_info['turn_index']
 	game_state.public_players_info[turn_index]['played_to_table'].append_array(hand_evaluation['can_be_personally_melded'])
 	register_ack_sync_state('_rpc_personally_meld_cards_only') # stay within same state, {'next_state': 'NewDiscardState'})
@@ -947,7 +947,7 @@ func _rpc_personally_meld_cards_only(player_id: String, hand_evaluation: Diction
 	dbg("received RPC _rpc_personally_meld_cards_only: player_id='%s'" % [player_id])
 	# Move the playable cards from the player's hand to the table and then perform the animations.
 	for meld_group in hand_evaluation['can_be_personally_melded']:
-		_personally_meld_group(meld_group, player_id)
+		_personally_meld_group_update_private_player_info(meld_group, player_id)
 	# TODO: Make these separately-synced animations
 	# for card_key in hand_evaluation['can_be_publicly_melded']:
 	# 	_remove_card_from_player_hand(card_key, player_id)
@@ -976,17 +976,17 @@ func _remove_card_from_player_hand(card_key: String, player_id: String) -> void:
 			bot.card_keys_in_hand.erase(card_key)
 			dbg("_remove_card_from_player_hand: bots_private_player_info[player_id].card_keys_in_hand (BOT): %s" % [str(bot.card_keys_in_hand)])
 
-func _personally_meld_group(meld_group: Dictionary, player_id: String) -> void:
-	dbg("_personally_meld_group: meld_group=%s, player_id='%s'" % [str(meld_group), player_id])
+func _personally_meld_group_update_private_player_info(meld_group: Dictionary, player_id: String) -> void:
+	dbg("_personally_meld_group_update_private_player_info: meld_group=%s, player_id='%s'" % [str(meld_group), player_id])
 	var player_is_me = private_player_info.id == player_id
 	if player_is_me:
 		private_player_info.played_to_table.append(meld_group)
-		dbg("_personally_meld_group: private_player_info.played_to_table (ME): %s" % [str(private_player_info.played_to_table)])
+		dbg("_personally_meld_group_update_private_player_info: private_player_info.played_to_table (ME): %s" % [str(private_player_info.played_to_table)])
 	elif is_server():
 		if player_id in bots_private_player_info:
 			var bot = bots_private_player_info[player_id]
 			bot.played_to_table.append(meld_group)
-			dbg("_personally_meld_group: bots_private_player_info[player_id].played_to_table (BOT): %s" % [str(bot.played_to_table)])
+			dbg("_personally_meld_group_update_private_player_info: bots_private_player_info[player_id].played_to_table (BOT): %s" % [str(bot.played_to_table)])
 	for card_key in meld_group['card_keys']:
 		_remove_card_from_player_hand(card_key, player_id)
 
