@@ -430,9 +430,6 @@ func _update_meld_area_label(meld_area_label: Label, count: int) -> void:
 
 func gen_player_hand_stats(stats_private_player_info: Dictionary) -> Dictionary:
 	var card_keys_in_hand = stats_private_player_info['card_keys_in_hand']
-	var meld_area_1_keys = stats_private_player_info['meld_area_1_keys']
-	var meld_area_2_keys = stats_private_player_info['meld_area_2_keys']
-	var meld_area_3_keys = stats_private_player_info['meld_area_3_keys']
 	var hand_stats = card_keys_in_hand.reduce(func(acc, card_key):
 		return Global.add_card_to_stats(acc, card_key), {
 			# by_rank: 'A':[],'2':[],...,'10':[],'J':[],'Q':[],'K':[],'JOKER':[],
@@ -445,41 +442,6 @@ func gen_player_hand_stats(stats_private_player_info: Dictionary) -> Dictionary:
 			'num_cards': len(card_keys_in_hand),
 			'jokers': [],
 		})
-
-	hand_stats['meld_area_1_is_complete'] = false
-	hand_stats['meld_area_2_is_complete'] = false
-	hand_stats['meld_area_3_is_complete'] = false
-
-	var round_num = Global.game_state.current_round_num
-	match round_num:
-		1:
-			hand_stats['meld_area_1_is_complete'] = Global.is_valid_group(meld_area_1_keys)
-			hand_stats['meld_area_2_is_complete'] = Global.is_valid_group(meld_area_2_keys)
-			hand_stats['meld_area_3_is_complete'] = true
-		2:
-			hand_stats['meld_area_1_is_complete'] = Global.is_valid_group(meld_area_1_keys)
-			hand_stats['meld_area_2_is_complete'] = Global.is_valid_run(meld_area_2_keys)
-			hand_stats['meld_area_3_is_complete'] = true
-		3:
-			hand_stats['meld_area_1_is_complete'] = Global.is_valid_run(meld_area_1_keys)
-			hand_stats['meld_area_2_is_complete'] = Global.is_valid_run(meld_area_2_keys)
-			hand_stats['meld_area_3_is_complete'] = true
-		4:
-			hand_stats['meld_area_1_is_complete'] = Global.is_valid_group(meld_area_1_keys)
-			hand_stats['meld_area_2_is_complete'] = Global.is_valid_group(meld_area_2_keys)
-			hand_stats['meld_area_3_is_complete'] = Global.is_valid_group(meld_area_3_keys)
-		5:
-			hand_stats['meld_area_1_is_complete'] = Global.is_valid_group(meld_area_1_keys)
-			hand_stats['meld_area_2_is_complete'] = Global.is_valid_group(meld_area_2_keys)
-			hand_stats['meld_area_3_is_complete'] = Global.is_valid_run(meld_area_3_keys)
-		6:
-			hand_stats['meld_area_1_is_complete'] = Global.is_valid_group(meld_area_1_keys)
-			hand_stats['meld_area_2_is_complete'] = Global.is_valid_run(meld_area_2_keys)
-			hand_stats['meld_area_3_is_complete'] = Global.is_valid_run(meld_area_3_keys)
-		7:
-			hand_stats['meld_area_1_is_complete'] = Global.is_valid_run(meld_area_1_keys)
-			hand_stats['meld_area_2_is_complete'] = Global.is_valid_run(meld_area_2_keys)
-			hand_stats['meld_area_3_is_complete'] = Global.is_valid_run(meld_area_3_keys)
 	return hand_stats
 
 func evaluate_player_hand(hand_stats: Dictionary) -> Dictionary:
@@ -499,7 +461,95 @@ func _evaluate_player_hand_pre_meld(hand_stats: Dictionary) -> Dictionary:
 	Global.dbg("ENTER _evaluate_player_hand_pre_meld: round_num=%d, player_id='%s', hand_stats=%s, all_public_meld_stats=%s" % [round_num, player_id, str(hand_stats), str(all_public_meld_stats)])
 
 	var acc = Global.empty_evaluation()
-	# TODO
+
+	var card_keys_in_hand = Global.private_player_info['card_keys_in_hand']
+	var meld_area_1_keys = Global.private_player_info['meld_area_1_keys']
+	var meld_area_2_keys = Global.private_player_info['meld_area_2_keys']
+	var meld_area_3_keys = Global.private_player_info['meld_area_3_keys']
+	var meld_area_1_is_complete = false
+	var meld_area_2_is_complete = false
+	var meld_area_3_is_complete = false
+	var can_be_personally_melded = []
+	var recommended_discards = []
+	var already_seen = {}
+	for card_key in meld_area_1_keys:
+		already_seen[card_key] = true
+	for card_key in meld_area_2_keys:
+		already_seen[card_key] = true
+	for card_key in meld_area_3_keys:
+		already_seen[card_key] = true
+	for card_key in card_keys_in_hand:
+		if not already_seen.has(card_key):
+			recommended_discards.append(card_key)
+	var have_sufficient_discards = false
+	var is_winning_hand = false
+
+	match round_num:
+		1:
+			meld_area_1_is_complete = Global.is_valid_group(meld_area_1_keys)
+			can_be_personally_melded.append({'type': 'group', 'card_keys': meld_area_1_keys})
+			meld_area_2_is_complete = Global.is_valid_group(meld_area_2_keys)
+			can_be_personally_melded.append({'type': 'group', 'card_keys': meld_area_2_keys})
+			meld_area_3_is_complete = true
+			have_sufficient_discards = len(recommended_discards) >= 1
+			is_winning_hand = len(recommended_discards) == 1
+		2:
+			meld_area_1_is_complete = Global.is_valid_group(meld_area_1_keys)
+			can_be_personally_melded.append({'type': 'group', 'card_keys': meld_area_1_keys})
+			meld_area_2_is_complete = Global.is_valid_run(meld_area_2_keys)
+			can_be_personally_melded.append({'type': 'run', 'card_keys': meld_area_2_keys})
+			meld_area_3_is_complete = true
+			have_sufficient_discards = len(recommended_discards) >= 1
+			is_winning_hand = len(recommended_discards) == 1
+		3:
+			meld_area_1_is_complete = Global.is_valid_run(meld_area_1_keys)
+			can_be_personally_melded.append({'type': 'run', 'card_keys': meld_area_1_keys})
+			meld_area_2_is_complete = Global.is_valid_run(meld_area_2_keys)
+			can_be_personally_melded.append({'type': 'run', 'card_keys': meld_area_2_keys})
+			meld_area_3_is_complete = true
+			have_sufficient_discards = len(recommended_discards) >= 1
+			is_winning_hand = len(recommended_discards) == 1
+		4:
+			meld_area_1_is_complete = Global.is_valid_group(meld_area_1_keys)
+			can_be_personally_melded.append({'type': 'group', 'card_keys': meld_area_1_keys})
+			meld_area_2_is_complete = Global.is_valid_group(meld_area_2_keys)
+			can_be_personally_melded.append({'type': 'group', 'card_keys': meld_area_2_keys})
+			meld_area_3_is_complete = Global.is_valid_group(meld_area_3_keys)
+			can_be_personally_melded.append({'type': 'group', 'card_keys': meld_area_3_keys})
+			have_sufficient_discards = len(recommended_discards) >= 1
+			is_winning_hand = len(recommended_discards) == 1
+		5:
+			meld_area_1_is_complete = Global.is_valid_group(meld_area_1_keys)
+			can_be_personally_melded.append({'type': 'group', 'card_keys': meld_area_1_keys})
+			meld_area_2_is_complete = Global.is_valid_group(meld_area_2_keys)
+			can_be_personally_melded.append({'type': 'group', 'card_keys': meld_area_2_keys})
+			meld_area_3_is_complete = Global.is_valid_run(meld_area_3_keys)
+			can_be_personally_melded.append({'type': 'run', 'card_keys': meld_area_3_keys})
+			have_sufficient_discards = len(recommended_discards) >= 1
+			is_winning_hand = len(recommended_discards) == 1
+		6:
+			meld_area_1_is_complete = Global.is_valid_group(meld_area_1_keys)
+			can_be_personally_melded.append({'type': 'group', 'card_keys': meld_area_1_keys})
+			meld_area_2_is_complete = Global.is_valid_run(meld_area_2_keys)
+			can_be_personally_melded.append({'type': 'run', 'card_keys': meld_area_2_keys})
+			meld_area_3_is_complete = Global.is_valid_run(meld_area_3_keys)
+			can_be_personally_melded.append({'type': 'run', 'card_keys': meld_area_3_keys})
+			have_sufficient_discards = len(recommended_discards) >= 1
+			is_winning_hand = len(recommended_discards) == 1
+		7:
+			meld_area_1_is_complete = Global.is_valid_run(meld_area_1_keys)
+			can_be_personally_melded.append({'type': 'run', 'card_keys': meld_area_1_keys})
+			meld_area_2_is_complete = Global.is_valid_run(meld_area_2_keys)
+			can_be_personally_melded.append({'type': 'run', 'card_keys': meld_area_2_keys})
+			meld_area_3_is_complete = Global.is_valid_run(meld_area_3_keys)
+			can_be_personally_melded.append({'type': 'run', 'card_keys': meld_area_3_keys})
+			have_sufficient_discards = len(recommended_discards) == 0
+			is_winning_hand = len(recommended_discards) == 0
+
+	acc['recommended_discards'] = recommended_discards
+	if meld_area_1_is_complete and meld_area_2_is_complete and meld_area_3_is_complete && have_sufficient_discards:
+		acc['can_be_personally_melded'] = can_be_personally_melded
+		acc['is_winning_hand'] = is_winning_hand
 	return acc
 
 func _evaluate_player_hand_post_meld(hand_stats: Dictionary) -> Dictionary:
