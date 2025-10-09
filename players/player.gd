@@ -129,7 +129,13 @@ func _on_game_state_updated_signal():
 	Global.dbg("Player('%s'): _on_game_state_updated_signal: public_player_info=%s" % [player_id, str(public_player_info)])
 	var already_played_to_table = len(public_player_info['played_to_table']) > 0
 	_update_turn_indicator_color(current_state_name, already_played_to_table)
+	_update_hand_meldability()
 
+func _update_hand_meldability() -> void:
+	var current_state_name = game_state_machine.get_current_state_name()
+	var players_by_id = Global.get_players_by_id()
+	var public_player_info = players_by_id[player_id]
+	var already_played_to_table = len(public_player_info['played_to_table']) > 0
 	# Now see if the player can meld (more of) their hand.
 	# var card_keys_in_hand = ['card_keys_in_hand']
 	var current_hand_stats = gen_player_hand_stats(Global.private_player_info)
@@ -273,6 +279,7 @@ func _on_card_moved_signal(playing_card, _from_position, _global_position):
 			2:
 				Global.private_player_info.meld_area_3_keys.append(playing_card.key)
 		_update_meld_area_counts()
+		_update_hand_meldability()
 		return
 
 	# Global.dbg("Player('%s'): _on_card_moved_signal: playing_card=%s, is_my_turn=%s" % [player_id, playing_card.key, str(is_my_turn)])

@@ -638,11 +638,12 @@ func is_valid_group(card_keys: Array) -> bool:
 	for card_key in card_keys:
 		var parts = card_key.split('-')
 		var rank = parts[0]
+		dbg("is_valid_group: card_key=%s, rank=%s" % [card_key, rank])
 		if rank == 'JOKER':
 			continue
 		ranks[rank] = true
 
-	return len(ranks) == 1
+	return len(ranks) <= 1 # all-jokers is a valid group
 
 # A perfect winning hand, performed after drawing a card, is a hand that can be melded to win the round.
 # (Rounds 1-6 required a discard, and round 7 requires no discard.)
