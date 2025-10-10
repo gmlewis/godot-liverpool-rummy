@@ -312,3 +312,18 @@ func test_build_run_with_jokers() -> bool:
 	var result = test_bot._build_a_run_with_suit(available_jokers, already_used, by_rank, 1)
 	test_framework.assert_dict_has_key(result, 'success', "Should have success key")
 	return true
+
+func cleanup_test_resources() -> void:
+	# Clean up test bot and any other resources
+	if test_bot and is_instance_valid(test_bot):
+		if test_bot.is_inside_tree():
+			remove_child(test_bot)
+		test_bot.queue_free()
+	test_bot = null
+
+	# Clean up test framework
+	if test_framework and is_instance_valid(test_framework):
+		if test_framework.is_inside_tree():
+			remove_child(test_framework)
+		test_framework.queue_free()
+	test_framework = null

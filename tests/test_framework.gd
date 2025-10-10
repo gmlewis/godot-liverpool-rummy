@@ -2,7 +2,6 @@
 # Simple, lightweight test framework for GDScript
 
 class_name TestFramework
-# extends Node
 extends Node
 
 # Test results tracking
@@ -12,11 +11,11 @@ var tests_failed: int = 0
 var current_test_name: String = ""
 var failed_tests: Array[String] = []
 
-# Color codes for console output
-const COLOR_RED = "\u001b[31m"
-const COLOR_GREEN = "\u001b[32m"
-const COLOR_YELLOW = "\u001b[33m"
-const COLOR_BLUE = "\u001b[34m"
+# Color codes for console output - using 256-color ANSI for better terminal compatibility
+const COLOR_RED = "\u001b[38;5;196m" # 256-color bright red
+const COLOR_GREEN = "\u001b[38;5;46m" # 256-color bright green
+const COLOR_YELLOW = "\u001b[38;5;226m" # 256-color bright yellow
+const COLOR_BLUE = "\u001b[38;5;75m" # 256-color medium-light blue (readable on black backgrounds)
 const COLOR_RESET = "\u001b[0m"
 
 # Test assertion methods
@@ -115,7 +114,10 @@ func print_results() -> void:
 	print(COLOR_YELLOW + "\n=== Test Results ===" + COLOR_RESET)
 	print("Total tests run: %d" % tests_run)
 	print(COLOR_GREEN + "Passed: %d" % tests_passed + COLOR_RESET)
-	print(COLOR_RED + "Failed: %d" % tests_failed + COLOR_RESET)
+	if tests_failed == 0:
+		print(COLOR_GREEN + "Failed: %d" % tests_failed + COLOR_RESET)
+	else:
+		print(COLOR_RED + "Failed: %d" % tests_failed + COLOR_RESET)
 
 	if tests_failed > 0:
 		print(COLOR_RED + "\nFailed tests:" + COLOR_RESET)

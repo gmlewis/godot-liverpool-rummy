@@ -183,3 +183,11 @@ func test_multiplayer_state_tracking() -> bool:
 	Global.ack_sync_state.clear()
 	test_framework.assert_equal(0, len(Global.ack_sync_state), "Should clear sync state")
 	return true
+
+func cleanup_test_resources() -> void:
+	# Clean up test framework
+	if test_framework and is_instance_valid(test_framework):
+		if test_framework.is_inside_tree():
+			remove_child(test_framework)
+		test_framework.queue_free()
+	test_framework = null

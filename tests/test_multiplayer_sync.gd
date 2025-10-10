@@ -150,3 +150,11 @@ func test_player_disconnection_handling() -> bool:
 	test_framework.assert_equal(2, len(host_filtered), "Should filter out host")
 	# In real game, host disconnection would trigger reset_game()
 	return true
+
+func cleanup_test_resources() -> void:
+	# Clean up test framework
+	if test_framework and is_instance_valid(test_framework):
+		if test_framework.is_inside_tree():
+			remove_child(test_framework)
+		test_framework.queue_free()
+	test_framework = null

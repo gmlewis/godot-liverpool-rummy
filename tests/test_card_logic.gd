@@ -112,3 +112,11 @@ func test_card_generation_logic() -> bool:
 	var multi_deck_key = Global.gen_playing_card_key('A', 'hearts', 1)
 	test_framework.assert_equal('A-hearts-1', multi_deck_key, "Should generate correct multi-deck key")
 	return true
+
+func cleanup_test_resources() -> void:
+	# Clean up test framework
+	if test_framework and is_instance_valid(test_framework):
+		if test_framework.is_inside_tree():
+			remove_child(test_framework)
+		test_framework.queue_free()
+	test_framework = null

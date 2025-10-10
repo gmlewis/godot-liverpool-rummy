@@ -86,6 +86,8 @@ func run_hand_evaluation_tests() -> bool:
 	add_child(test_suite)
 	var result = test_suite.run_all_tests()
 	update_totals(test_suite.test_framework)
+	# Ensure proper cleanup of all child nodes
+	test_suite.cleanup_test_resources()
 	remove_child(test_suite)
 	test_suite.queue_free()
 	return result
@@ -95,6 +97,8 @@ func run_card_logic_tests() -> bool:
 	add_child(test_suite)
 	var result = test_suite.run_all_tests()
 	update_totals(test_suite.test_framework)
+	# Ensure proper cleanup of all child nodes
+	test_suite.cleanup_test_resources()
 	remove_child(test_suite)
 	test_suite.queue_free()
 	return result
@@ -104,6 +108,8 @@ func run_game_state_tests() -> bool:
 	add_child(test_suite)
 	var result = test_suite.run_all_tests()
 	update_totals(test_suite.test_framework)
+	# Ensure proper cleanup of all child nodes
+	test_suite.cleanup_test_resources()
 	remove_child(test_suite)
 	test_suite.queue_free()
 	return result
@@ -113,6 +119,8 @@ func run_multiplayer_sync_tests() -> bool:
 	add_child(test_suite)
 	var result = test_suite.run_all_tests()
 	update_totals(test_suite.test_framework)
+	# Ensure proper cleanup of all child nodes
+	test_suite.cleanup_test_resources()
 	remove_child(test_suite)
 	test_suite.queue_free()
 	return result
