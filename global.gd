@@ -145,7 +145,7 @@ func _initialize_from_command_line_args() -> void:
 func player_hand_x_start() -> float:
 	if game_state.current_round_num <= 3:
 		return screen_size.x * MELD_AREA_2_RIGHT_PERCENT + 200 # Start just to the right of meld area 2
-	return screen_size.x * 0.55 # Start at 55% of the screen width
+	return screen_size.x * MELD_AREA_RIGHT_PERCENT + 200 # Start just to the right of meld area 3
 
 func reset_game():
 	dbg("ENTER Global.reset_game_signal")
