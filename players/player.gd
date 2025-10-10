@@ -282,6 +282,21 @@ func _on_card_moved_signal(playing_card, _from_position, _global_position):
 		_update_hand_meldability()
 		return
 
+	# Card is not in a meld area now - check if it was previously in one and remove it
+	var was_in_meld_area = (
+		Global.private_player_info.meld_area_1_keys.has(playing_card.key) or
+		Global.private_player_info.meld_area_2_keys.has(playing_card.key) or
+		Global.private_player_info.meld_area_3_keys.has(playing_card.key)
+	)
+	if was_in_meld_area:
+		Global.dbg("Player('%s'): _on_card_moved_signal: Moving card '%s' out of meld area for player %s" % [player_id, playing_card.key, player_id])
+		Global.private_player_info.meld_area_1_keys.erase(playing_card.key)
+		Global.private_player_info.meld_area_2_keys.erase(playing_card.key)
+		Global.private_player_info.meld_area_3_keys.erase(playing_card.key)
+		_update_meld_area_counts()
+		_update_hand_meldability()
+		return
+
 	# Global.dbg("Player('%s'): _on_card_moved_signal: playing_card=%s, is_my_turn=%s" % [player_id, playing_card.key, str(is_my_turn)])
 	if not is_my_turn:
 		# Should not be able to drag card.
