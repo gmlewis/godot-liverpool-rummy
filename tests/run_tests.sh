@@ -42,19 +42,19 @@ run_tests() {
             ;;
         "hand")
             print_colored $BLUE "Running hand evaluation tests..."
-            godot $godot_args --script tests/test_hand_evaluation.gd
+            godot $godot_args tests/test_scene.tscn -- test_type=hand
             ;;
         "card")
             print_colored $BLUE "Running card logic tests..."
-            godot $godot_args --script tests/test_card_logic.gd
+            godot $godot_args tests/test_scene.tscn -- test_type=card
             ;;
         "state")
             print_colored $BLUE "Running game state tests..."
-            godot $godot_args --script tests/test_game_state.gd
+            godot $godot_args tests/test_scene.tscn -- test_type=state
             ;;
         "sync")
             print_colored $BLUE "Running multiplayer sync tests..."
-            godot $godot_args --script tests/test_multiplayer_sync.gd
+            godot $godot_args tests/test_scene.tscn -- test_type=sync
             ;;
         *)
             print_colored $RED "Unknown test type: $test_type"
