@@ -81,9 +81,7 @@ func fail_test(reason: String) -> void:
 		current_test_failed = true
 	failed_tests.append(current_test_name + ": " + reason)
 	print(COLOR_RED + "  ✗ FAILED: " + current_test_name + " - " + reason + COLOR_RESET)
-	# Now that the test framework node is in the scene tree, this works:
-	print(COLOR_RED + "EXITING DUE TO TEST FAILURE" + COLOR_RESET)
-	get_tree().quit(1) # Set godot exit code to 1 on failure
+	# Don't quit here - let the test runner handle exit codes
 
 # Test suite management
 func run_test_suite(test_suite_name: String, test_functions: Array) -> bool:
@@ -94,7 +92,6 @@ func run_test_suite(test_suite_name: String, test_functions: Array) -> bool:
 		print(COLOR_RED + "ERROR: Global autoload is not available - likely due to syntax error in global.gd" + COLOR_RESET)
 		print(COLOR_RED + "This indicates a compilation failure that should cause tests to fail!" + COLOR_RESET)
 		print(COLOR_RED + "EXITING DUE TO GLOBAL AUTOLOAD FAILURE" + COLOR_RESET)
-		get_tree().quit(1) # Set godot exit code to 1 on failure
 		return false
 
 	for test_func in test_functions:
@@ -105,11 +102,9 @@ func run_test_suite(test_suite_name: String, test_functions: Array) -> bool:
 
 		var result = test_func.call()
 		# print("GML: test '%s' result: %s" % [test_name, str(result)])
-		if result == null or result == false:
-			print("GML: test '%s' result: %s - calling QUIT(1)" % [test_name, str(result)])
-			# Now that the test framework node is in the scene tree, this works:
-			print(COLOR_RED + "EXITING DUE TO TEST FAILURE" + COLOR_RESET)
-			get_tree().quit(1) # Set godot exit code to 1 on failure
+		if result == null or result == false or current_test_failed:
+			print("GML: test '%s' result: %s - test failed" % [test_name, str(result)])
+			# Don't quit here - let the test runner handle exit codes
 			return false
 		pass_test()
 

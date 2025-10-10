@@ -30,14 +30,18 @@ func run_all_tests() -> bool:
 	var start_time = Time.get_unix_time_from_system()
 
 	# Run all test suites
-	if not run_hand_evaluation_tests():
-		get_tree().quit(1)
-	if not run_card_logic_tests():
-		get_tree().quit(1)
-	if not run_game_state_tests():
-		get_tree().quit(1)
-	if not run_multiplayer_sync_tests():
-		get_tree().quit(1)
+	var hand_result = run_hand_evaluation_tests()
+	if not hand_result:
+		return false
+	var card_result = run_card_logic_tests()
+	if not card_result:
+		return false
+	var game_result = run_game_state_tests()
+	if not game_result:
+		return false
+	var sync_result = run_multiplayer_sync_tests()
+	if not sync_result:
+		return false
 
 	var end_time = Time.get_unix_time_from_system()
 	var duration = end_time - start_time
@@ -80,38 +84,38 @@ func run_all_tests() -> bool:
 func run_hand_evaluation_tests() -> bool:
 	var test_suite = TestHandEvaluation.new()
 	add_child(test_suite)
-	test_suite.run_all_tests()
+	var result = test_suite.run_all_tests()
 	update_totals(test_suite.test_framework)
 	remove_child(test_suite)
 	test_suite.queue_free()
-	return true
+	return result
 
 func run_card_logic_tests() -> bool:
 	var test_suite = TestCardLogic.new()
 	add_child(test_suite)
-	test_suite.run_all_tests()
+	var result = test_suite.run_all_tests()
 	update_totals(test_suite.test_framework)
 	remove_child(test_suite)
 	test_suite.queue_free()
-	return true
+	return result
 
 func run_game_state_tests() -> bool:
 	var test_suite = TestGameState.new()
 	add_child(test_suite)
-	test_suite.run_all_tests()
+	var result = test_suite.run_all_tests()
 	update_totals(test_suite.test_framework)
 	remove_child(test_suite)
 	test_suite.queue_free()
-	return true
+	return result
 
 func run_multiplayer_sync_tests() -> bool:
 	var test_suite = TestMultiplayerSync.new()
 	add_child(test_suite)
-	test_suite.run_all_tests()
+	var result = test_suite.run_all_tests()
 	update_totals(test_suite.test_framework)
 	remove_child(test_suite)
 	test_suite.queue_free()
-	return true
+	return result
 
 func update_totals(framework: TestFramework) -> void:
 	total_tests += framework.tests_run
