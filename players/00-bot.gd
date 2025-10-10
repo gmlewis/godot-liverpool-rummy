@@ -2,7 +2,7 @@ extends Node
 class_name Bot
 # This is the base class for all bots.
 
-@onready var game_state_machine: Node = $"/root/RootNode/GameStateMachine"
+@onready var game_state_machine: Node = $"/root/RootNode/GameStateMachine" if has_node("/root/RootNode/GameStateMachine") else null
 
 # bot_id is in the form of "bot#" and is used as a key into the
 # Global.bots_private_player_info dictionary where the rest of the
@@ -22,13 +22,15 @@ func get_bot_name() -> String:
 	return '' # Override this method in subclasses to return the bot's name.
 
 func _ready() -> void:
-	game_state_machine.connect('gsm_changed_state_signal', _on_gsm_changed_state_signal)
+	if game_state_machine != null:
+		game_state_machine.connect('gsm_changed_state_signal', _on_gsm_changed_state_signal)
 	Global.connect('new_card_exposed_on_discard_pile_signal', _on_new_card_exposed_on_discard_pile_signal)
 	Global.connect('server_ack_sync_completed_signal', _on_server_ack_sync_completed_signal)
 	Global.dbg("BOT('%s') is ready." % get_bot_name())
 
 func _exit_tree() -> void:
-	game_state_machine.disconnect('gsm_changed_state_signal', _on_gsm_changed_state_signal)
+	if game_state_machine != null:
+		game_state_machine.disconnect('gsm_changed_state_signal', _on_gsm_changed_state_signal)
 	Global.disconnect('new_card_exposed_on_discard_pile_signal', _on_new_card_exposed_on_discard_pile_signal)
 	Global.disconnect('server_ack_sync_completed_signal', _on_server_ack_sync_completed_signal)
 	Global.dbg("BOT('%s') is exiting." % get_bot_name())

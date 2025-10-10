@@ -61,7 +61,7 @@ signal card_clicked_signal(playing_card, global_position)
 signal card_drag_started_signal(playing_card, from_position)
 signal card_moved_signal(playing_card, from_position, global_position)
 
-@onready var playing_cards_control: Control = $"/root/RootNode/PlayingCardsControl"
+@onready var playing_cards_control: Control = $"/root/RootNode/PlayingCardsControl" if has_node("/root/RootNode/PlayingCardsControl") else null
 
 const VERSION = '0.2.0'
 const GAME_PORT = 7000
