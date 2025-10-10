@@ -137,17 +137,18 @@ func test_is_my_turn() -> bool:
 
 func test_round_requirements() -> bool:
 	# Test the round requirements arrays
-	test_framework.assert_equal(2, Global._groups_per_round[0], "Round 1 should require 2 groups")
-	test_framework.assert_equal(0, Global._runs_per_round[0], "Round 1 should require 0 runs")
+	var test_bot = Bot.new('test_bot')
+	test_framework.assert_equal(2, test_bot._groups_per_round[0], "Round 1 should require 2 groups")
+	test_framework.assert_equal(0, test_bot._runs_per_round[0], "Round 1 should require 0 runs")
 
-	test_framework.assert_equal(1, Global._groups_per_round[1], "Round 2 should require 1 group")
-	test_framework.assert_equal(1, Global._runs_per_round[1], "Round 2 should require 1 run")
+	test_framework.assert_equal(1, test_bot._groups_per_round[1], "Round 2 should require 1 group")
+	test_framework.assert_equal(1, test_bot._runs_per_round[1], "Round 2 should require 1 run")
 
-	test_framework.assert_equal(0, Global._groups_per_round[2], "Round 3 should require 0 groups")
-	test_framework.assert_equal(2, Global._runs_per_round[2], "Round 3 should require 2 runs")
+	test_framework.assert_equal(0, test_bot._groups_per_round[2], "Round 3 should require 0 groups")
+	test_framework.assert_equal(2, test_bot._runs_per_round[2], "Round 3 should require 2 runs")
 
-	test_framework.assert_equal(0, Global._groups_per_round[6], "Round 7 should require 0 groups")
-	test_framework.assert_equal(3, Global._runs_per_round[6], "Round 7 should require 3 runs")
+	test_framework.assert_equal(0, test_bot._groups_per_round[6], "Round 7 should require 0 groups")
+	test_framework.assert_equal(3, test_bot._runs_per_round[6], "Round 7 should require 3 runs")
 	return true
 
 func test_server_advance_to_next_round() -> bool:

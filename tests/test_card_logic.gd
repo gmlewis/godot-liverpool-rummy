@@ -84,7 +84,8 @@ func test_joker_handling() -> bool:
 
 	# Test joker in hand stats
 	var cards_with_jokers = ['A-hearts-0', 'JOKER-1-0', 'JOKER-2-0']
-	var stats = Global.gen_hand_stats(cards_with_jokers)
+	var test_bot = Bot.new('test_bot')
+	var stats = test_bot.gen_bot_hand_stats(cards_with_jokers)
 	test_framework.assert_equal(2, len(stats['jokers']), "Should identify 2 jokers")
 	test_framework.assert_equal(1, len(stats['by_rank']['A']), "Should have 1 ace in by_rank")
 	test_framework.assert_dict_not_has_key(stats['by_rank'], 'JOKER', "Jokers should not be in by_rank")

@@ -4,7 +4,9 @@
 class_name TestHandEvaluation
 extends Node
 
-const TestFramework = preload("res://tests/test_framework.gd")
+const Bot = preload("res://players/00-bot.gd")
+
+var test_bot: Bot
 
 var test_framework: TestFramework
 
@@ -15,6 +17,8 @@ var mock_private_player_info: Dictionary
 func _ready():
 	test_framework = TestFramework.new()
 	add_child(test_framework)
+	test_bot = Bot.new("test_bot")
+	add_child(test_bot)
 	# Global is an autoload, access it directly
 	setup_mock_data()
 
@@ -105,7 +109,7 @@ func test_tally_hand_cards_score() -> bool:
 
 func test_gen_hand_stats_basic() -> bool:
 	var cards = ["A-hearts-0", "A-spades-0", "K-hearts-0", "2-hearts-0"]
-	var stats = Global.gen_hand_stats(cards)
+	var stats = test_bot.gen_bot_hand_stats(cards)
 
 	test_framework.assert_equal(4, stats['num_cards'], "Should have 4 cards")
 	test_framework.assert_dict_has_key(stats, 'by_rank', "Should have by_rank")
@@ -116,7 +120,7 @@ func test_gen_hand_stats_basic() -> bool:
 
 func test_gen_hand_stats_with_jokers() -> bool:
 	var cards = ["JOKER-1-0", "JOKER-2-0", "A-hearts-0"]
-	var stats = Global.gen_hand_stats(cards)
+	var stats = test_bot.gen_bot_hand_stats(cards)
 
 	test_framework.assert_equal(2, len(stats['jokers']), "Should have 2 jokers")
 	test_framework.assert_equal(1, len(stats['by_rank']['A']), "Should have 1 Ace")
@@ -124,7 +128,7 @@ func test_gen_hand_stats_with_jokers() -> bool:
 
 func test_gen_hand_stats_groups() -> bool:
 	var cards = ["A-hearts-0", "A-spades-0", "A-diamonds-0", "K-hearts-0", "K-spades-0"]
-	var stats = Global.gen_hand_stats(cards)
+	var stats = test_bot.gen_bot_hand_stats(cards)
 
 	test_framework.assert_equal(1, len(stats['groups_of_3_plus']), "Should have 1 group of 3+")
 	test_framework.assert_equal(1, len(stats['groups_of_2']), "Should have 1 group of 2")
@@ -133,7 +137,7 @@ func test_gen_hand_stats_groups() -> bool:
 
 func test_gen_hand_stats_runs() -> bool:
 	var cards = ["A-hearts-0", "2-hearts-0", "3-hearts-0", "4-hearts-0", "5-hearts-0"]
-	var stats = Global.gen_hand_stats(cards)
+	var stats = test_bot.gen_bot_hand_stats(cards)
 
 	test_framework.assert_equal(1, len(stats['runs_of_4_plus']), "Should have 1 run of 4+")
 	test_framework.assert_equal(5, len(stats['runs_of_4_plus'][0]), "Run should have 5 cards")
@@ -142,9 +146,9 @@ func test_gen_hand_stats_runs() -> bool:
 func test_evaluate_hand_pre_meld_round1() -> bool:
 	# Round 1 requires 2 groups
 	var cards = ["A-hearts-0", "A-spades-0", "A-diamonds-0", "K-hearts-0", "K-spades-0", "K-diamonds-0", "2-hearts-0"]
-	var hand_stats = Global.gen_hand_stats(cards)
+	var hand_stats = test_bot.gen_bot_hand_stats(cards)
 	var all_public_meld_stats = Global._gen_all_public_meld_stats()
-	var evaluation = Global._evaluate_hand_pre_meld(1, hand_stats, all_public_meld_stats)
+	var evaluation = test_bot._evaluate_hand_pre_meld(1, hand_stats, all_public_meld_stats)
 
 	test_framework.assert_equal(2, len(evaluation['can_be_personally_melded']), "Should be able to meld 2 groups")
 	test_framework.assert_true(evaluation['eval_score'] > 0, "Should have positive evaluation score")
@@ -153,9 +157,9 @@ func test_evaluate_hand_pre_meld_round1() -> bool:
 func test_evaluate_hand_pre_meld_round2() -> bool:
 	# Round 2 requires 1 group + 1 run
 	var cards = ["A-hearts-0", "A-spades-0", "A-diamonds-0", "2-hearts-0", "3-hearts-0", "4-hearts-0", "5-hearts-0", "6-hearts-0"]
-	var hand_stats = Global.gen_hand_stats(cards)
+	var hand_stats = test_bot.gen_bot_hand_stats(cards)
 	var all_public_meld_stats = Global._gen_all_public_meld_stats()
-	var evaluation = Global._evaluate_hand_pre_meld(2, hand_stats, all_public_meld_stats)
+	var evaluation = test_bot._evaluate_hand_pre_meld(2, hand_stats, all_public_meld_stats)
 
 	test_framework.assert_equal(2, len(evaluation['can_be_personally_melded']), "Should be able to meld 1 group + 1 run")
 	# Check that we have one group and one run
@@ -173,9 +177,9 @@ func test_evaluate_hand_pre_meld_round2() -> bool:
 func test_evaluate_hand_post_meld() -> bool:
 	# Test post-meld evaluation with some cards that can be publicly melded
 	var cards = ["A-spades-0", "2-hearts-0", "3-hearts-0"]
-	var hand_stats = Global.gen_hand_stats(cards)
+	var hand_stats = test_bot.gen_bot_hand_stats(cards)
 	var all_public_meld_stats = Global._gen_all_public_meld_stats()
-	var evaluation = Global._evaluate_hand_post_meld(1, hand_stats, all_public_meld_stats)
+	var evaluation = test_bot._evaluate_hand_post_meld(1, hand_stats, all_public_meld_stats)
 
 	test_framework.assert_dict_has_key(evaluation, 'can_be_publicly_melded', "Should have can_be_publicly_melded")
 	test_framework.assert_dict_has_key(evaluation, 'recommended_discards', "Should have recommended_discards")
@@ -197,7 +201,7 @@ func test_find_groups_can_be_publicly_melded() -> bool:
 		}
 	}
 
-	var result = Global._find_groups_can_be_publicly_melded(hand_stats, all_public_meld_stats)
+	var result = test_bot._find_groups_can_be_publicly_melded(hand_stats, all_public_meld_stats)
 	test_framework.assert_dict_has_key(result, 'A', "Should find Ace can be publicly melded")
 	return true
 
@@ -221,7 +225,7 @@ func test_find_runs_can_be_publicly_melded() -> bool:
 		}
 	}
 
-	var result = Global._find_runs_can_be_publicly_melded(hand_stats, {}, all_public_meld_stats)
+	var result = test_bot._find_runs_can_be_publicly_melded(hand_stats, {}, all_public_meld_stats)
 	test_framework.assert_not_null(result, "Should return a result")
 	return true
 
@@ -235,7 +239,7 @@ func test_is_publicly_meldable_groups() -> bool:
 		'by_suit': {}
 	}
 
-	var result = Global._is_publicly_meldable('A', 'A-hearts-0', all_public_meld_stats)
+	var result = test_bot._is_publicly_meldable('A', 'A-hearts-0', all_public_meld_stats)
 	test_framework.assert_true(result, "Ace should be publicly meldable to group")
 	return true
 
@@ -254,7 +258,7 @@ func test_is_publicly_meldable_runs() -> bool:
 		}
 	}
 
-	var result = Global._is_publicly_meldable('6', '6-hearts-0', all_public_meld_stats)
+	var result = test_bot._is_publicly_meldable('6', '6-hearts-0', all_public_meld_stats)
 	# This may be false because the helper functions need proper game state
 	test_framework.assert_not_null(result, "Should return a boolean result")
 	return true
@@ -266,7 +270,7 @@ func test_can_card_extend_run() -> bool:
 		'meld_group_index': 0
 	}
 
-	var result = Global._can_card_extend_run('6-hearts-0', pub_meld)
+	var result = test_bot._can_card_extend_run('6-hearts-0', pub_meld)
 	test_framework.assert_not_null(result, "Should return a boolean result")
 	return true
 
@@ -277,7 +281,7 @@ func test_can_card_replace_joker_in_run() -> bool:
 		'meld_group_index': 0
 	}
 
-	var result = Global._can_card_replace_joker_in_run('6-hearts-0', pub_meld)
+	var result = test_bot._can_card_replace_joker_in_run('6-hearts-0', pub_meld)
 	test_framework.assert_not_null(result, "Should return a boolean result")
 	return true
 
@@ -285,14 +289,14 @@ func test_is_valid_run() -> bool:
 	var valid_run = ['A-hearts-0', '2-hearts-0', '3-hearts-0', '4-hearts-0']
 	var invalid_run = ['A-hearts-0', '3-hearts-0', '5-hearts-0', '7-hearts-0']
 
-	test_framework.assert_true(Global._is_valid_run(valid_run), "A-2-3-4 of hearts should be valid")
-	test_framework.assert_false(Global._is_valid_run(invalid_run), "A-3-5-7 of hearts should be invalid")
+	test_framework.assert_true(Global.is_valid_run(valid_run), "A-2-3-4 of hearts should be valid")
+	test_framework.assert_false(Global.is_valid_run(invalid_run), "A-3-5-7 of hearts should be invalid")
 	return true
 
 func test_rank_to_bitmap() -> bool:
-	test_framework.assert_equal(0x0001 | 0x2000, Global._rank_to_bitmap('A'), "Ace should have both low and high bits")
-	test_framework.assert_equal(0x0002, Global._rank_to_bitmap('2'), "Two should have bit 1")
-	test_framework.assert_equal(0x1000, Global._rank_to_bitmap('K'), "King should have bit 12")
+	test_framework.assert_equal(0x0001 | 0x2000, test_bot._rank_to_bitmap('A'), "Ace should have both low and high bits")
+	test_framework.assert_equal(0x0002, test_bot._rank_to_bitmap('2'), "Two should have bit 1")
+	test_framework.assert_equal(0x1000, test_bot._rank_to_bitmap('K'), "King should have bit 12")
 	return true
 
 func test_build_run_with_jokers() -> bool:
@@ -305,6 +309,6 @@ func test_build_run_with_jokers() -> bool:
 		'4': ['4-hearts-0']
 	}
 
-	var result = Global._build_a_run_with_suit(available_jokers, already_used, by_rank, 1)
+	var result = test_bot._build_a_run_with_suit(available_jokers, already_used, by_rank, 1)
 	test_framework.assert_dict_has_key(result, 'success', "Should have success key")
 	return true
