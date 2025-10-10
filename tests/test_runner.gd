@@ -130,6 +130,14 @@ func update_totals(framework: TestFramework) -> void:
 	total_passed += framework.tests_passed
 	total_failed += framework.tests_failed
 
+func cleanup_test_resources() -> void:
+	# Clean up test framework
+	if test_framework and is_instance_valid(test_framework):
+		if test_framework.is_inside_tree():
+			remove_child(test_framework)
+		test_framework.queue_free()
+	test_framework = null
+
 func run_quick_smoke_tests() -> bool:
 	"""Run a subset of critical tests for quick validation"""
 	print("\n" + "=".repeat(40))
