@@ -289,8 +289,19 @@ func test_is_valid_run() -> bool:
 	var valid_run = ['A-hearts-0', '2-hearts-0', '3-hearts-0', '4-hearts-0']
 	var invalid_run = ['A-hearts-0', '3-hearts-0', '5-hearts-0', '7-hearts-0']
 
+	# Test basic valid and invalid runs
 	test_framework.assert_true(Global.is_valid_run(valid_run), "A-2-3-4 of hearts should be valid")
 	test_framework.assert_false(Global.is_valid_run(invalid_run), "A-3-5-7 of hearts should be invalid")
+
+	# Test runs with jokers
+	var valid_run_with_joker = ['2-hearts-0', '3-hearts-0', 'JOKER-1-0', '5-hearts-0', '6-hearts-0']
+	var invalid_run_with_joker = ['2-hearts-0', '3-hearts-0', 'JOKER-1-0', '6-hearts-0', '7-hearts-0']
+	var invalid_run_too_short = ['2-hearts-0', '3-hearts-0', 'JOKER-1-0']
+
+	test_framework.assert_true(Global.is_valid_run(valid_run_with_joker), "2-3-JOKER-5-6 should be valid (joker fills the 4)")
+	test_framework.assert_false(Global.is_valid_run(invalid_run_with_joker), "2-3-JOKER-6-7 should be invalid (joker can only fill 1 gap, but 2 gaps exist)")
+	test_framework.assert_false(Global.is_valid_run(invalid_run_too_short), "2-3-JOKER should be invalid (runs must be at least 4 cards)")
+
 	return true
 
 func test_rank_to_bitmap() -> bool:

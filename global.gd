@@ -589,46 +589,67 @@ var _value_lookup = {
 }
 
 func is_valid_run(card_keys: Array) -> bool:
-	var values = []
-	var lowest_value = 15
-	var lowest_value_idx = len(card_keys)
-
-	for i in range(len(card_keys)):
-		var card_key = card_keys[i]
-		var parts = card_key.split('-')
-		var rank = parts[0]
-		var value = _value_lookup[rank]
-		values.append(value)
-		if value < lowest_value:
-			lowest_value = value
-			lowest_value_idx = i
-
-	if lowest_value >= 14:
+	# Runs must have at least 4 cards
+	if len(card_keys) < 4:
 		return false
 
-	# Check the front end
-	for i in range(lowest_value_idx - 1, -1, -1):
-		if values[i] == 15: # joker
-			if values[i + 1] <= 1:
-				return false
-			values[i] = values[i + 1] - 1
-		elif values[i] == 14: # ace
-			if values[i + 1] != 2:
-				return false
-			values[i] = 1
+	# Separate jokers from regular cards
+	var regular_cards = []
+	var num_jokers = 0
+	var has_ace = false
 
-	# Check the whole run as a sequence
-	for i in range(1, len(card_keys)):
-		if values[i] == 15: # joker
-			if values[i - 1] >= 14:
-				return false
-			values[i] = values[i - 1] + 1
-		elif values[i] == 14: # ace
-			if values[i - 1] != 13:
-				return false
-			values[i] = values[i - 1] + 1
+	for card_key in card_keys:
+		var parts = card_key.split('-')
+		var rank = parts[0]
+		if rank == 'JOKER':
+			num_jokers += 1
+		else:
+			var value = _value_lookup[rank]
+			if value == 14: # Ace
+				has_ace = true
+			regular_cards.append(value)
 
-	return true
+	# Calculate gaps
+	var min_gaps = 999
+	if has_ace:
+		# Try ace as low (1)
+		var cards_low = regular_cards.duplicate()
+		for i in range(len(cards_low)):
+			if cards_low[i] == 14:
+				cards_low[i] = 1
+		cards_low.sort()
+		var gaps_low = 0
+		for i in range(1, len(cards_low)):
+			var diff = cards_low[i] - cards_low[i - 1] - 1
+			if diff > 0:
+				gaps_low += diff
+		min_gaps = gaps_low
+
+		# Try ace as high (14)
+		var cards_high = regular_cards.duplicate()
+		for i in range(len(cards_high)):
+			if cards_high[i] == 14:
+				cards_high[i] = 14
+		cards_high.sort()
+		var gaps_high = 0
+		for i in range(1, len(cards_high)):
+			var diff = cards_high[i] - cards_high[i - 1] - 1
+			if diff > 0:
+				gaps_high += diff
+		if gaps_high < min_gaps:
+			min_gaps = gaps_high
+	else:
+		# No ace, just calculate gaps
+		regular_cards.sort()
+		var gaps = 0
+		for i in range(1, len(regular_cards)):
+			var diff = regular_cards[i] - regular_cards[i - 1] - 1
+			if diff > 0:
+				gaps += diff
+		min_gaps = gaps
+
+	# Check if we have enough jokers to fill the gaps
+	return num_jokers >= min_gaps
 
 func is_valid_group(card_keys: Array) -> bool:
 	if len(card_keys) < 3:
