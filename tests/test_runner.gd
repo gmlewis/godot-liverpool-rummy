@@ -10,6 +10,7 @@ const TestHandEvaluation = preload("res://tests/test_hand_evaluation.gd")
 const TestCardLogic = preload("res://tests/test_card_logic.gd")
 const TestGameState = preload("res://tests/test_game_state.gd")
 const TestMultiplayerSync = preload("res://tests/test_multiplayer_sync.gd")
+const TestPlayer = preload("res://tests/test_player.gd")
 
 var test_framework: TestFramework
 var total_tests: int = 0
@@ -42,6 +43,9 @@ func run_all_tests() -> bool:
 	var sync_result = run_multiplayer_sync_tests()
 	if not sync_result:
 		return false
+	var player_result = run_player_tests()
+	if not player_result:
+		return false
 
 	var end_time = Time.get_unix_time_from_system()
 	var duration = end_time - start_time
@@ -50,7 +54,7 @@ func run_all_tests() -> bool:
 	print("\n" + "=".repeat(60))
 	print("   FINAL TEST RESULTS")
 	print("=".repeat(60))
-	print("Total test suites run: 4")
+	print("Total test suites run: 5")
 	print("Total tests executed: %d" % total_tests)
 	print("Total tests passed: %d" % total_passed)
 	print("Total tests failed: %d" % total_failed)
@@ -116,6 +120,17 @@ func run_game_state_tests() -> bool:
 
 func run_multiplayer_sync_tests() -> bool:
 	var test_suite = TestMultiplayerSync.new()
+	add_child(test_suite)
+	var result = test_suite.run_all_tests()
+	update_totals(test_suite.test_framework)
+	# Ensure proper cleanup of all child nodes
+	test_suite.cleanup_test_resources()
+	remove_child(test_suite)
+	test_suite.queue_free()
+	return result
+
+func run_player_tests() -> bool:
+	var test_suite = TestPlayer.new()
 	add_child(test_suite)
 	var result = test_suite.run_all_tests()
 	update_totals(test_suite.test_framework)

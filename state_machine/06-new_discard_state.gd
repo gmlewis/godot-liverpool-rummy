@@ -155,100 +155,9 @@ func _get_next_card_position_in_players_hand() -> Vector2:
 
 	# players_container.set_debug_drawing(true)
 
-	return find_minimum_overlap_position_enhanced(card_rects, players_hand_bounds) + Vector2(card_size.x / 2.0, card_size.y / 2.0)
+	return find_leftmost_available_position(card_rects, players_hand_bounds) + Vector2(card_size.x / 2.0, card_size.y / 2.0)
 
-func find_minimum_overlap_position(existing_rects: Array[Rect2], bounds: Rect2) -> Vector2:
-	if existing_rects.is_empty():
-		# If no existing rects, place at top-left of bounds
-		return bounds.position
-
-	# Get the size from the first rect (all are guaranteed to be identical)
-	var rect_size = existing_rects[0].size
-
-	# Ensure the new rect can fit within bounds
-	if rect_size.x > bounds.size.x or rect_size.y > bounds.size.y:
-		push_warning("Rectangle size is larger than bounds")
-		return bounds.position
-
-	var best_position = bounds.position
-	var min_overlap_area = INF
-
-	# Store debug data instead of drawing immediately
-	if players_container.debug_enabled:
-		players_container.clear_debug_data()
-		players_container.debug_data.bounds = bounds
-		players_container.debug_data.existing_rects = existing_rects.duplicate()
-
-	# Define search granularity (smaller values = more precision but slower)
-	var step_size = min(rect_size.x, rect_size.y) * 0.25
-
-	var tested_positions = []
-
-	# Search through the bounds area
-	var y = bounds.position.y
-	while y <= bounds.position.y + bounds.size.y - rect_size.y:
-		var x = bounds.position.x
-		while x <= bounds.position.x + bounds.size.x - rect_size.x:
-			var test_position = Vector2(x, y)
-			var test_rect = Rect2(test_position, rect_size)
-
-			var total_overlap = calculate_total_overlap(test_rect, existing_rects)
-
-			# Store for debug visualization
-			if players_container.debug_enabled:
-				tested_positions.append({"pos": test_position, "overlap": total_overlap, "rect": test_rect})
-
-			# Prefer positions with less overlap, but if overlap is equal or very close,
-			# prefer positions with greater y values
-			if total_overlap < min_overlap_area or \
-			   (abs(total_overlap - min_overlap_area) < 0.01 and test_position.y > best_position.y):
-				min_overlap_area = total_overlap
-				best_position = test_position
-
-				# Early exit if we found a position with no overlap
-				if total_overlap == 0:
-					break
-
-			x += step_size
-		# Early exit if we found a position with no overlap
-		if min_overlap_area == 0:
-			break
-		y += step_size
-
-	# Store debug data
-	if players_container.debug_enabled:
-		players_container.debug_data.tested_positions = tested_positions
-		players_container.debug_data.best_position = best_position
-		players_container.debug_data.best_rect = Rect2(best_position, rect_size)
-		players_container.debug_data.min_overlap = min_overlap_area
-
-		# Trigger redraw
-		players_container.queue_redraw()
-
-	return best_position
-
-func calculate_total_overlap(test_rect: Rect2, existing_rects: Array[Rect2]) -> float:
-	var total_overlap = 0.0
-
-	# Since rects are sorted by x position, we can optimize by breaking early
-	for rect in existing_rects:
-		# If this rect is too far to the right, all subsequent rects will be too
-		if rect.position.x >= test_rect.position.x + test_rect.size.x:
-			break
-
-		# If this rect is too far to the left, skip it
-		if rect.position.x + rect.size.x <= test_rect.position.x:
-			continue
-
-		# Calculate intersection
-		var intersection = test_rect.intersection(rect)
-		if intersection.has_area():
-			total_overlap += intersection.get_area()
-
-	return total_overlap
-
-# Enhanced version that also considers edge positions and corners
-func find_minimum_overlap_position_enhanced(existing_rects: Array[Rect2], bounds: Rect2) -> Vector2:
+func find_leftmost_available_position(existing_rects: Array[Rect2], bounds: Rect2) -> Vector2:
 	if existing_rects.is_empty():
 		return bounds.position
 
@@ -258,116 +167,32 @@ func find_minimum_overlap_position_enhanced(existing_rects: Array[Rect2], bounds
 		push_warning("Rectangle size is larger than bounds")
 		return bounds.position
 
-	# Store debug data instead of drawing immediately
-	if players_container.debug_enabled:
-		players_container.clear_debug_data()
-		players_container.debug_data.bounds = bounds
-		players_container.debug_data.existing_rects = existing_rects.duplicate()
+	# Sort existing rects by x position (they should already be sorted, but ensure it)
+	existing_rects.sort_custom(func(a, b): return a.position.x < b.position.x)
 
-	var best_position = bounds.position
-	var min_overlap_area = INF
+	# Try to place the card in the leftmost available position
+	var current_x = bounds.position.x
 
-	# Collect candidate positions from existing rect edges and corners
-	var candidate_positions = []
+	# Check each gap between existing cards and at the end
+	for i in range(existing_rects.size()):
+		var existing_rect = existing_rects[i]
+		var gap_start = current_x
+		var gap_end = existing_rect.position.x
 
-	# Add bounds corners and edges
-	candidate_positions.append(bounds.position)
-	candidate_positions.append(Vector2(bounds.position.x + bounds.size.x - rect_size.x, bounds.position.y))
-	candidate_positions.append(Vector2(bounds.position.x, bounds.position.y + bounds.size.y - rect_size.y))
-	candidate_positions.append(Vector2(bounds.position.x + bounds.size.x - rect_size.x, bounds.position.y + bounds.size.y - rect_size.y))
+		# Check if there's enough space in this gap
+		if gap_end - gap_start >= rect_size.x:
+			# Found a gap! Place the card at the left edge of this gap
+			return Vector2(gap_start, bounds.position.y)
 
-	# Add positions adjacent to existing rectangles
-	for rect in existing_rects:
-		# Right edge of existing rect
-		var right_pos = Vector2(rect.position.x + rect.size.x, rect.position.y)
-		if is_position_within_bounds(right_pos, rect_size, bounds):
-			candidate_positions.append(right_pos)
+		# Move current_x to the right edge of this card
+		current_x = max(current_x, existing_rect.position.x + existing_rect.size.x)
 
-		# Left edge of existing rect (new rect to the left)
-		var left_pos = Vector2(rect.position.x - rect_size.x, rect.position.y)
-		if is_position_within_bounds(left_pos, rect_size, bounds):
-			candidate_positions.append(left_pos)
+	# Check the space after the last card
+	var final_gap_start = current_x
+	var final_gap_end = bounds.position.x + bounds.size.x
 
-		# Bottom edge of existing rect
-		var bottom_pos = Vector2(rect.position.x, rect.position.y + rect.size.y)
-		if is_position_within_bounds(bottom_pos, rect_size, bounds):
-			candidate_positions.append(bottom_pos)
+	if final_gap_end - final_gap_start >= rect_size.x:
+		return Vector2(final_gap_start, bounds.position.y)
 
-		# Top edge of existing rect (new rect above)
-		var top_pos = Vector2(rect.position.x, rect.position.y - rect_size.y)
-		if is_position_within_bounds(top_pos, rect_size, bounds):
-			candidate_positions.append(top_pos)
-
-	# Remove duplicates and test all candidate positions
-	var unique_candidates = []
-	for pos in candidate_positions:
-		var is_duplicate = false
-		for existing_pos in unique_candidates:
-			if pos.distance_to(existing_pos) < 1.0: # Close enough to be considered duplicate
-				is_duplicate = true
-				break
-		if not is_duplicate:
-			unique_candidates.append(pos)
-
-	# Test all candidate positions
-	var candidate_debug_data = []
-	for i in range(unique_candidates.size()):
-		var pos = unique_candidates[i]
-		var test_rect = Rect2(pos, rect_size)
-		var total_overlap = calculate_total_overlap(test_rect, existing_rects)
-
-		# Store candidate data for debug visualization
-		if players_container.debug_enabled:
-			candidate_debug_data.append({
-				"rect": test_rect,
-				"overlap": total_overlap,
-				"index": i
-			})
-
-		# Prefer positions with less overlap, but if overlap is equal or very close,
-		# prefer positions with greater y values
-		if total_overlap < min_overlap_area or \
-		   (abs(total_overlap - min_overlap_area) < 0.01 and pos.y > best_position.y):
-			min_overlap_area = total_overlap
-			best_position = pos
-
-			if total_overlap == 0:
-				break
-
-	# Store debug data
-	if players_container.debug_enabled:
-		players_container.debug_data.candidate_positions = candidate_debug_data
-		players_container.debug_data.best_position = best_position
-		players_container.debug_data.best_rect = Rect2(best_position, rect_size)
-		players_container.debug_data.min_overlap = min_overlap_area
-
-	# If no perfect position found through candidates, fall back to grid search
-	if min_overlap_area > 0:
-		# Note: Grid search will have its own debug drawing
-		var grid_result = find_minimum_overlap_position(existing_rects, bounds)
-		var grid_rect = Rect2(grid_result, rect_size)
-		var grid_overlap = calculate_total_overlap(grid_rect, existing_rects)
-
-		# Prefer grid result if it has less overlap, or if overlap is similar but y is greater
-		if grid_overlap < min_overlap_area or \
-		   (abs(grid_overlap - min_overlap_area) < 0.01 and grid_result.y > best_position.y):
-			best_position = grid_result
-			min_overlap_area = grid_overlap
-
-			# Update debug data for the new best position
-			if players_container.debug_enabled:
-				players_container.debug_data.best_position = best_position
-				players_container.debug_data.best_rect = Rect2(best_position, rect_size)
-				players_container.debug_data.min_overlap = min_overlap_area
-
-	# Trigger redraw for debug visualization
-	if players_container.debug_enabled: # and players_container:
-		players_container.queue_redraw()
-
-	return best_position
-
-func is_position_within_bounds(pos: Vector2, rect_size: Vector2, bounds: Rect2) -> bool:
-	return pos.x >= bounds.position.x and \
-		   pos.y >= bounds.position.y and \
-		   pos.x + rect_size.x <= bounds.position.x + bounds.size.x and \
-		   pos.y + rect_size.y <= bounds.position.y + bounds.size.y
+	# No space found, place at the rightmost position as fallback
+	return Vector2(bounds.position.x + bounds.size.x - rect_size.x, bounds.position.y)
