@@ -364,7 +364,7 @@ func _input(event):
 	# Only handle click events on the player node.
 	if not (event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT): return
 	var current_state_name = game_state_machine.get_current_state_name()
-	var mouse_pos = get_global_mouse_position()
+	var mouse_pos = event.position
 	Global.dbg("Player: _input: Mouse click at %s, current_state=%s, is_my_turn=%s, is_playing_state=%s" % [str(mouse_pos), current_state_name, Global.is_my_turn(), game_state_machine.is_playing_state()])
 	
 	# Check if the mouse is over a card that can handle input - if so, let the card handle it
