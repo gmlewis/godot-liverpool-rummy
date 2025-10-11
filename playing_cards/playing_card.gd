@@ -237,7 +237,8 @@ func _input(event):
 			dragging = false
 			got_mouse_down = true
 			initial_touch_pos = mouse_pos # Store the initial touch position
-			drag_offset = mouse_pos - global_position
+			var canvas_mouse_pos = get_viewport().get_canvas_transform().affine_inverse() * mouse_pos
+			drag_offset = canvas_mouse_pos - global_position
 			Global.dbg("PlayingCard: _input: Mouse PRESSED on card '%s' at z_index=%d, position: %s - SET_INPUT_AS_HANDLED" % [key, z_index, str(mouse_pos)])
 			get_viewport().set_input_as_handled()
 
@@ -259,12 +260,12 @@ func _input(event):
 
 	elif event is InputEventMouseMotion:
 		if dragging:
-			var mouse_pos = get_global_mouse_position()
-			global_position = mouse_pos - drag_offset
+			var canvas_mouse_pos = get_viewport().get_canvas_transform().affine_inverse() * event.position
+			global_position = canvas_mouse_pos - drag_offset
 			get_viewport().set_input_as_handled()
 		elif got_mouse_down:
 			# Check if we should start dragging
-			var mouse_pos = get_global_mouse_position()
+			var mouse_pos = event.position
 			if mouse_pos.distance_to(initial_touch_pos) > DRAG_START_THRESHOLD:
 				if is_draggable:
 					dragging = true
