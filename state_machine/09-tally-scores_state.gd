@@ -102,25 +102,34 @@ func _animate_and_send_local_player_score() -> void:
 		card_score.scale = card.scale
 		var card_tween = card_score.create_tween()
 		card_tween.set_parallel(true)
-		card_tween.tween_property(card, "position", Global.screen_center, 0.5)
-		card_tween.tween_property(card_score, "position", Global.screen_center, 0.5)
-		card_tween.tween_property(card, "scale", Vector2(3, 3), 0.5)
-		card_tween.tween_property(card_score, "scale", Vector2(4, 4), 0.5)
+
+		# Calculate duration based on distance and deal speed (same as dealing animation)
+		var distance_to_center = card.position.distance_to(Global.screen_center)
+		var duration_to_center = distance_to_center / Global.deal_speed_pixels_per_second
+
+		card_tween.tween_property(card, "position", Global.screen_center, duration_to_center)
+		card_tween.tween_property(card_score, "position", Global.screen_center, duration_to_center)
+		card_tween.tween_property(card, "scale", Vector2(3, 3), duration_to_center)
+		card_tween.tween_property(card_score, "scale", Vector2(4, 4), duration_to_center)
 		await card_tween.finished
 		if not _state_is_active: return
 
 		# Now let the card sit in the center for a moment before moving it to the player's score position.
-		await get_tree().create_timer(1.0).timeout
+		await get_tree().create_timer(0.3).timeout # Reduced from 1.0 to 0.3 seconds
 		if not _state_is_active: return
+
+		# Calculate duration for movement from center to player position
+		var distance_to_player = Global.screen_center.distance_to(target_position)
+		var duration_to_player = distance_to_player / Global.deal_speed_pixels_per_second
 
 		card_tween = card_score.create_tween()
 		card_tween.set_parallel(true)
-		card_tween.tween_property(card, "position", target_position, 0.5)
-		card_tween.tween_property(card_score, "position", target_position, 0.5)
-		card_tween.tween_property(card, "rotation", target_rotation, 0.5)
-		card_tween.tween_property(card_score, "rotation", target_rotation, 0.5)
-		card_tween.tween_property(card, "scale", target_scale, 0.5)
-		card_tween.tween_property(card_score, "scale", Vector2(1, 1), 0.5)
+		card_tween.tween_property(card, "position", target_position, duration_to_player)
+		card_tween.tween_property(card_score, "position", target_position, duration_to_player)
+		card_tween.tween_property(card, "rotation", target_rotation, duration_to_player)
+		card_tween.tween_property(card_score, "rotation", target_rotation, duration_to_player)
+		card_tween.tween_property(card, "scale", target_scale, duration_to_player)
+		card_tween.tween_property(card_score, "scale", Vector2(1, 1), duration_to_player)
 		await card_tween.finished
 		if not _state_is_active: return
 
