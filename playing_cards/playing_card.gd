@@ -178,7 +178,6 @@ func _input(event):
 
 	# Handle both mouse and touch input
 	if event is InputEventMouseButton:
-		var mouse_pos = get_global_mouse_position()
 
 		# For release events, only handle if we're currently dragging or got_mouse_down
 		# For press events, check if mouse is over this card AND we're the topmost card

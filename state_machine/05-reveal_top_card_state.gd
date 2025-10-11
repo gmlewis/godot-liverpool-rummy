@@ -40,3 +40,9 @@ func flip_over_top_card() -> void:
 		new_stock_pile_top_card.is_draggable = false
 		new_stock_pile_top_card.is_tappable = true
 		new_discard_pile_top_card.is_draggable = false
+	# Mark the current player's hand cards as draggable
+	for card_key in Global.private_player_info.card_keys_in_hand:
+		var card = Global.get_card_by_key(card_key)
+		Global.dbg("RevealTopCardState: Setting card '%s' as draggable for local player hand organization" % card_key)
+		card.is_draggable = true
+		card.is_tappable = true
