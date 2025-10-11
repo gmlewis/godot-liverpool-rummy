@@ -86,6 +86,15 @@ func _on_game_state_updated_signal():
 	_set_num_cards(public_player_info.num_cards)
 	_set_score(public_player_info.score)
 
+	# Set all cards in the player's hand as draggable so they can organize their hand at any time
+	if Global.private_player_info.id == player_id:  # Only for the local player
+		for card_key in Global.private_player_info.get('card_keys_in_hand', []):
+			var card = Global.playing_cards.get(card_key) as PlayingCard
+			if card:
+				Global.dbg("Player: Setting card '%s' as draggable for local player hand organization" % card_key)
+				card.is_draggable = true
+				# Keep is_tappable as false unless it's specifically set by game state
+
 	is_buying_card = Global.game_state.current_buy_request_player_ids.has(player_id)
 	if is_buying_card:
 		$BuyIndicatorSprite2D.show() # Show buy indicator
