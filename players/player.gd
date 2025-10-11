@@ -379,10 +379,11 @@ func _input(event):
 	# Check if the mouse is over a card that can handle input - if so, let the card handle it
 	if _is_mouse_over_interactive_card(mouse_pos): return
 	
+	# Check if the mouse is actually over this player node - if not, don't handle
+	if not is_mouse_over_player(mouse_pos): return # false alarm.
+	
 	if not is_meldable and not is_buying_card: return
 	
-	# Finally, after all the trivial rejects, now calculate if the mouse is actually over this player node.
-	if not is_mouse_over_player(mouse_pos): return # false alarm.
 	if is_meldable and is_my_turn and len(Global.private_player_info['played_to_table']) == 0:
 		Global.dbg("Player('%s'): _input: is_meldable=%s, PERSONALLY MELD!" % [player_id, is_meldable])
 		Global.personally_meld_hand(player_id, last_hand_evaluation)
@@ -408,7 +409,7 @@ func _is_mouse_over_interactive_card(mouse_pos: Vector2) -> bool:
 	# Check if the mouse is over any card in the player's hand that can handle input
 	for card_key in Global.private_player_info.get('card_keys_in_hand', []):
 		var card = Global.playing_cards.get(card_key) as PlayingCard
-		if card and card.is_draggable or card.is_tappable:
+		if card and (card.is_draggable or card.is_tappable):
 			if card.is_mouse_over_card(mouse_pos):
 				return true
 	return false
