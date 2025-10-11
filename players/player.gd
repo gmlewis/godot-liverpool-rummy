@@ -209,6 +209,15 @@ func is_mouse_over_player(mouse_pos: Vector2) -> bool:
 ## Signals
 ################################################################################
 
+func _get_next_z_index_for_player_cards() -> int:
+	# Find the maximum z_index among all cards that belong to this player (hand + meld areas)
+	var max_z_index = 1
+	for card_key in Global.private_player_info['card_keys_in_hand']:
+		var playing_card = Global.playing_cards.get(card_key) as PlayingCard
+		if playing_card and playing_card.z_index > max_z_index:
+			max_z_index = playing_card.z_index
+	return max_z_index + 1
+
 func _playing_card_is_from_discard_pile(playing_card: PlayingCard) -> bool:
 	return len(Global.discard_pile) > 0 and playing_card.key == Global.discard_pile[0].key
 
@@ -246,8 +255,11 @@ func _on_card_clicked_signal(playing_card, _global_position):
 		return
 	# To prevent accidental discards, disallow discarding any cards from any of the meld areas directly.
 	# The player must first move the card back to their hand before discarding it.
-	if _get_playing_card_meld_area_idx(playing_card) >= 0:
-		Global.dbg("Player('%s'): _on_card_clicked_signal: Ignoring click on meld area card '%s' for player %s" % [player_id, playing_card.key, player_id])
+	var meld_area_idx = _get_playing_card_meld_area_idx(playing_card)
+	if meld_area_idx >= 0:
+		# Instead of ignoring, raise the card to the top z-index so it shows above other cards
+		Global.dbg("Player('%s'): _on_card_clicked_signal: Raising meld area card '%s' to top z-index" % [player_id, playing_card.key])
+		playing_card.z_index = _get_next_z_index_for_player_cards()
 		return
 	if game_state_machine.get_current_state_name() == 'PlayerDrewState':
 		# If the player can meld their hand, interpret this click as an accident and ignore it.
