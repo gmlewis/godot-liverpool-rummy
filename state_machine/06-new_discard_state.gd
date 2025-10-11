@@ -14,6 +14,22 @@ func enter(_params: Dictionary):
 	Global.connect('animate_move_card_to_player_signal', _on_animate_move_card_to_player_signal)
 	Global.connect('new_card_exposed_on_discard_pile_signal', _on_new_card_exposed_on_discard_pile_signal)
 	_on_new_card_exposed_on_discard_pile_signal()
+	
+	# Set existing player hand cards as draggable/tappable when it's their turn
+	if is_my_turn:
+		for card_key in Global.private_player_info['card_keys_in_hand']:
+			var playing_card = Global.playing_cards.get(card_key) as PlayingCard
+			if playing_card:
+				Global.dbg("NewDiscardState: Setting existing card '%s' as draggable/tappable for local player" % playing_card.key)
+				playing_card.is_draggable = true
+				playing_card.is_tappable = true
+	else:
+		for card_key in Global.private_player_info['card_keys_in_hand']:
+			var playing_card = Global.playing_cards.get(card_key) as PlayingCard
+			if playing_card:
+				Global.dbg("NewDiscardState: Setting existing card '%s' as not draggable/tappable for local player (not their turn)" % playing_card.key)
+				playing_card.is_draggable = false
+				playing_card.is_tappable = false
 
 func _start_grace_period_animation() -> void:
 	var countdown = preload("res://scenes/countdown_timer.tscn").instantiate()
@@ -118,9 +134,11 @@ func _on_animate_move_card_to_player_signal(playing_card: PlayingCard, player_id
 		if player_is_me:
 			if not playing_card.is_face_up:
 				playing_card.flip_card() # Flip the card for the local player
+			Global.dbg("NewDiscardState: Setting card '%s' as draggable/tappable for local player" % playing_card.key)
 			playing_card.is_draggable = true
 			playing_card.is_tappable = true
 		else:
+			Global.dbg("NewDiscardState: Hiding card '%s' for remote player" % playing_card.key)
 			playing_card.hide() # Hide the card for remote players
 			playing_card.is_draggable = false
 			playing_card.is_tappable = false

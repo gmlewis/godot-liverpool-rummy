@@ -351,10 +351,12 @@ func _on_card_moved_signal(playing_card, _from_position, _global_position):
 
 # Handle clicks on this player node.
 func _input(event):
+	Global.dbg("Player: _input: Player '%s' received event: %s" % [player_id, str(event)])
 	# Only handle click events on the player node.
 	if not (event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT): return
 	var current_state_name = game_state_machine.get_current_state_name()
 	var mouse_pos = get_global_mouse_position()
+	Global.dbg("Player: _input: Mouse click at %s, current_state=%s, is_my_turn=%s, is_playing_state=%s" % [str(mouse_pos), current_state_name, Global.is_my_turn(), game_state_machine.is_playing_state()])
 	if Global.is_server() and (current_state_name == 'PlayerWonRoundState' or current_state_name == 'TallyScoresState'):
 		if not is_mouse_over_player(mouse_pos): return # false alarm.
 		if is_winning_player and current_state_name == 'PlayerWonRoundState':
@@ -377,10 +379,16 @@ func _input(event):
 	if not Global.is_my_turn() or not game_state_machine.is_playing_state(): return
 	
 	# Check if the mouse is over a card that can handle input - if so, let the card handle it
-	if _is_mouse_over_interactive_card(mouse_pos): return
+	Global.dbg("Player: _input: About to check for interactive cards")
+	if _is_mouse_over_interactive_card(mouse_pos):
+		Global.dbg("Player: _input: Mouse over interactive card, letting card handle input")
+		return
 	
 	# Check if the mouse is actually over this player node - if not, don't handle
-	if not is_mouse_over_player(mouse_pos): return # false alarm.
+	if not is_mouse_over_player(mouse_pos):
+		Global.dbg("Player: _input: Mouse not over player, ignoring")
+		return # false alarm.
+	Global.dbg("Player: _input: Mouse over player, checking meld conditions")
 	
 	if not is_meldable and not is_buying_card: return
 	
@@ -407,11 +415,15 @@ const ANIMATE_SPEED = 0.005
 
 func _is_mouse_over_interactive_card(mouse_pos: Vector2) -> bool:
 	# Check if the mouse is over any card in the player's hand that can handle input
+	Global.dbg("Player: _is_mouse_over_interactive_card: Checking cards at mouse_pos %s" % str(mouse_pos))
 	for card_key in Global.private_player_info.get('card_keys_in_hand', []):
 		var card = Global.playing_cards.get(card_key) as PlayingCard
+		Global.dbg("Player: _is_mouse_over_interactive_card: Checking card '%s', card=%s, is_draggable=%s, is_tappable=%s" % [card_key, "null" if not card else "valid", card.is_draggable if card else "N/A", card.is_tappable if card else "N/A"])
 		if card and (card.is_draggable or card.is_tappable):
 			if card.is_mouse_over_card(mouse_pos):
+				Global.dbg("Player: _is_mouse_over_interactive_card: Mouse is over interactive card '%s'" % card_key)
 				return true
+	Global.dbg("Player: _is_mouse_over_interactive_card: No interactive cards found under mouse")
 	return false
 
 func _process(_delta: float) -> void:

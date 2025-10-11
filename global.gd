@@ -188,8 +188,9 @@ func reset_game():
 
 # Global.is_my_turn() is _NEVER_ true for a bot!
 func is_my_turn() -> bool:
-	# dbg("Global.is_my_turn: private_player_info=%s, game_state=%s" % [str(private_player_info), str(game_state)])
-	return private_player_info.turn_index == game_state.current_player_turn_index
+	var result = private_player_info.turn_index == game_state.current_player_turn_index
+	dbg("Global.is_my_turn: private_player_info.turn_index=%s, game_state.current_player_turn_index=%s, result=%s" % [private_player_info.turn_index, game_state.current_player_turn_index, result])
+	return result
 
 func create_game():
 	var peer = ENetMultiplayerPeer.new()

@@ -77,7 +77,9 @@ func get_current_state_name() -> String:
 
 func is_playing_state() -> bool:
 	var current_state_name = get_current_state_name()
-	return current_state_name == 'NewDiscardState' or current_state_name == 'PlayerDrewState'
+	var result = current_state_name == 'NewDiscardState' or current_state_name == 'PlayerDrewState'
+	Global.dbg("GSM.is_playing_state: current_state_name='%s', result=%s" % [current_state_name, result])
+	return result
 
 func _on_transition_all_clients_state_to_signal(new_state: String) -> void:
 	if Global.is_not_server(): return

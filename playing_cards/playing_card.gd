@@ -171,7 +171,9 @@ var drag_offset: Vector2 = Vector2.ZERO
 var initial_touch_pos: Vector2 = Vector2.ZERO # Store initial touch position
 
 func _input(event):
+	Global.dbg("PlayingCard: _input: Card '%s' received event: %s, is_draggable=%s, is_tappable=%s" % [key, str(event), is_draggable, is_tappable])
 	if not is_draggable and not is_tappable:
+		Global.dbg("PlayingCard: _input: Card '%s' ignoring event - not draggable/tappable" % key)
 		return
 
 	# Handle both mouse and touch input
@@ -185,7 +187,9 @@ func _input(event):
 			# and one class of cards that can be tapped or dragged (the player's hand).
 			if len(Global.stock_pile) > 0 and Global.stock_pile[0].key == key:
 				# CASE 1: This card is the top of the stock pile
+				Global.dbg("PlayingCard: _input: Checking stock pile card, mouse_pos=%s, is_mouse_over=%s" % [str(mouse_pos), is_mouse_over_card(mouse_pos)])
 				if not is_mouse_over_card(mouse_pos):
+					Global.dbg("PlayingCard: _input: Mouse not over stock pile card '%s'" % key)
 					return
 				if not Global.is_my_turn():
 					# Global.dbg("PlayingCard: _input: Mouse PRESSED on stock pile card '%s' by non-current player at z_index=%d, position: %s - IGNORING" % [key, z_index, str(mouse_pos)])
@@ -193,14 +197,19 @@ func _input(event):
 				Global.dbg("PlayingCard: _input: Mouse PRESSED on stock pile card '%s' by current player at z_index=%d, position: %s" % [key, z_index, str(mouse_pos)])
 			elif len(Global.discard_pile) > 0 and Global.discard_pile[0].key == key:
 				# CASE 2: This card is the top of the discard pile
+				Global.dbg("PlayingCard: _input: Checking discard pile card, mouse_pos=%s, is_mouse_over=%s" % [str(mouse_pos), is_mouse_over_card(mouse_pos)])
 				if not is_mouse_over_card(mouse_pos):
+					Global.dbg("PlayingCard: _input: Mouse not over discard pile card '%s'" % key)
 					return
 				Global.dbg("PlayingCard: _input: Mouse PRESSED on discard pile card '%s' at z_index=%d, position: %s" % [key, z_index, str(mouse_pos)])
 			elif key in Global.private_player_info['card_keys_in_hand']:
 				# CASE 3: Player's hand
+				Global.dbg("PlayingCard: _input: Checking player's hand card '%s', mouse_pos=%s, is_mouse_over=%s, is_topmost=%s" % [key, str(mouse_pos), is_mouse_over_card(mouse_pos), is_topmost_card_under_mouse(mouse_pos)])
 				if not is_mouse_over_card(mouse_pos):
+					Global.dbg("PlayingCard: _input: Mouse not over player's card '%s'" % key)
 					return
 				if not is_topmost_card_under_mouse(mouse_pos):
+					Global.dbg("PlayingCard: _input: Card '%s' is not topmost under mouse" % key)
 					return
 				Global.dbg("PlayingCard: _input: Mouse PRESSED on player's card '%s' at z_index=%d, position: %s" % [key, z_index, str(mouse_pos)])
 			else:
@@ -267,9 +276,12 @@ func _input(event):
 
 func is_mouse_over_card(mouse_pos: Vector2) -> bool:
 	if not sprite or not sprite.texture:
+		Global.dbg("PlayingCard: is_mouse_over_card: Card '%s' has no sprite or texture" % key)
 		return false
 	var card_rect = get_rect(5.0)
-	return card_rect.has_point(mouse_pos)
+	var result = card_rect.has_point(mouse_pos)
+	Global.dbg("PlayingCard: is_mouse_over_card: Card '%s' rect=%s, mouse_pos=%s, result=%s" % [key, str(card_rect), str(mouse_pos), result])
+	return result
 
 func get_rect(padding: float = 0.0) -> Rect2:
 	if not sprite or not sprite.texture:
