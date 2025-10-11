@@ -280,7 +280,7 @@ func is_mouse_over_card(mouse_pos: Vector2) -> bool:
 		return false
 	var card_rect = get_rect(5.0)
 	var result = card_rect.has_point(mouse_pos)
-	Global.dbg("PlayingCard: is_mouse_over_card: Card '%s' rect=%s, mouse_pos=%s, result=%s" % [key, str(card_rect), str(mouse_pos), result])
+	Global.dbg("PlayingCard: is_mouse_over_card: Card '%s' global_pos=%s, scale=%s, rect=%s, mouse_pos=%s, result=%s" % [key, str(global_position), str(scale), str(card_rect), str(mouse_pos), result])
 	return result
 
 func get_rect(padding: float = 0.0) -> Rect2:

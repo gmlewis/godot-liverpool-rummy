@@ -106,6 +106,7 @@ func deal_cards_to_players(round_num: int, cards_per_player: int) -> void:
 				playing_card.flip_card() # Flip the card for the local player
 				playing_card.is_draggable = true
 				playing_card.is_tappable = true
+				Global.dbg("DealNewRoundState: Setting dealt card '%s' as draggable for local player" % playing_card.key)
 			else:
 				playing_card.hide() # Hide the card for remote players
 				playing_card.is_draggable = false

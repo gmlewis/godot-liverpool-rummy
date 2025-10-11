@@ -427,6 +427,7 @@ const ANIMATE_SPEED = 0.005
 func _is_mouse_over_interactive_card(mouse_pos: Vector2) -> bool:
 	# Check if the mouse is over any card in the player's hand that can handle input
 	Global.dbg("Player: _is_mouse_over_interactive_card: Checking cards at mouse_pos %s" % str(mouse_pos))
+	Global.dbg("Player: _is_mouse_over_interactive_card: card_keys_in_hand = %s" % str(Global.private_player_info.get('card_keys_in_hand', [])))
 	for card_key in Global.private_player_info.get('card_keys_in_hand', []):
 		var card = Global.playing_cards.get(card_key) as PlayingCard
 		Global.dbg("Player: _is_mouse_over_interactive_card: Checking card '%s', card=%s, is_draggable=%s, is_tappable=%s" % [card_key, "null" if not card else "valid", card.is_draggable if card else "N/A", card.is_tappable if card else "N/A"])
