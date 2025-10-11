@@ -142,6 +142,8 @@ func _update_hand_meldability() -> void:
 	if current_state_name == 'PlayerDrewState':
 		# Store the last hand evaluation for melding when user clicks on the player.
 		last_hand_evaluation = evaluate_player_hand(current_hand_stats)
+		is_meldable = false
+		$MeldIndicatorSprite2D.hide()
 		if not already_melded and len(last_hand_evaluation['can_be_personally_melded']) > 0:
 			Global.dbg("Player('%s'): already_melded=false, setting is_meldable=true, can_be_personally_melded=%s" % [player_id, str(last_hand_evaluation['can_be_personally_melded'])])
 			$TurnIndicatorRect.color = TURN_INDICATOR_MELD_COLOR # Set color to meld color
