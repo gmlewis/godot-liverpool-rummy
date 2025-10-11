@@ -343,8 +343,12 @@ func _input(event):
 			# Don't allow any other nodes to also handle this event.
 			get_viewport().set_input_as_handled()
 		if current_state_name == 'TallyScoresState':
-			# Allow host to click on any player to advance to next round.
-			Global.server_advance_to_next_round()
+			# Allow host to click on any player to advance to next round (or reset game if round 7 is complete).
+			if Global.game_state.current_round_num >= 7:
+				Global.dbg("Player('%s'): _input: Round 7 complete, resetting game" % player_id)
+				Global.reset_game_signal.emit()
+			else:
+				Global.server_advance_to_next_round()
 			# Don't allow any other nodes to also handle this event.
 			get_viewport().set_input_as_handled()
 		return
