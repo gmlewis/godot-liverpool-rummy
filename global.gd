@@ -482,30 +482,6 @@ func player_has_melded(player_id: String) -> bool:
 	var played_to_table = public_player_info[0].played_to_table
 	return len(played_to_table) > 0
 
-func update_player_num_cards(player_id: String) -> void:
-	# Update the num_cards field in game_state.public_players_info for the given player.
-	# This should only be called on the server after card operations that change hand size.
-	if is_not_server():
-		dbg("ERROR: update_player_num_cards: called on non-server peer")
-		return
-
-	var player_infos = game_state.public_players_info.filter(func(pi): return pi.id == player_id)
-	if len(player_infos) != 1:
-		dbg("ERROR: update_player_num_cards: could not find player_id='%s' in game_state" % [player_id])
-		return
-
-	var player_info = player_infos[0]
-	if player_id == private_player_info.id:
-		player_info.num_cards = len(private_player_info.card_keys_in_hand)
-	elif player_id in bots_private_player_info:
-		var bot = bots_private_player_info[player_id]
-		player_info.num_cards = len(bot.card_keys_in_hand)
-	else:
-		dbg("ERROR: update_player_num_cards: player_id='%s' not found in private_player_info or bots_private_player_info" % [player_id])
-		return
-
-	dbg("update_player_num_cards: updated num_cards for player_id='%s' to %d" % [player_id, player_info.num_cards])
-
 # func get_public_meld_card_keys_dict(player_id: String) -> Dictionary:
 # 	var card_keys = {}
 # 	var public_player_info = game_state.public_players_info.filter(func(pi): return pi.id == player_id)
@@ -881,11 +857,6 @@ func _rpc_give_top_discard_pile_card_to_player(player_id: String) -> void:
 		if player_id in bots_private_player_info:
 			var bot = bots_private_player_info[player_id]
 			bot.card_keys_in_hand.append(top_card.key)
-
-	# Update num_cards in game_state.public_players_info for the server
-	if is_server():
-		update_player_num_cards(player_id)
-
 	dbg("_rpc_give_top_discard_pile_card_to_player: player_id='%s' receiving top card from discard pile: %s" % [player_id, top_card.key])
 	dbg("_rpc_give_top_discard_pile_card_to_player: private_player_info.card_keys_in_hand (ME): %s" % [str(private_player_info.card_keys_in_hand)])
 	dbg("_rpc_give_top_discard_pile_card_to_player: game_state.public_players_info (AFTER RPC): %s" % [str(game_state.public_players_info.filter(func(pi): return pi.id == player_id)[0])])
@@ -915,11 +886,6 @@ func _rpc_give_top_stock_pile_card_to_player(player_id: String) -> void:
 		if player_id in bots_private_player_info:
 			var bot = bots_private_player_info[player_id]
 			bot.card_keys_in_hand.append(top_card.key)
-
-	# Update num_cards in game_state.public_players_info for the server
-	if is_server():
-		update_player_num_cards(player_id)
-
 	dbg("_rpc_give_top_stock_pile_card_to_player: player_id='%s' receiving top card from stock pile: %s" %
 		[player_id, top_card.key])
 	dbg("_rpc_give_top_stock_pile_card_to_player: private_player_info.card_keys_in_hand (ME): %s" % [str(private_player_info.card_keys_in_hand)])
@@ -946,11 +912,6 @@ func _rpc_move_player_card_to_discard_pile(player_id: String, card_key: String, 
 		if player_id in bots_private_player_info:
 			var bot = bots_private_player_info[player_id]
 			bot.card_keys_in_hand.erase(top_card.key)
-
-	# Update num_cards in game_state.public_players_info for the server
-	if is_server():
-		update_player_num_cards(player_id)
-
 	dbg("_rpc_move_player_card_to_discard_pile: player_id='%s' moving card from discard pile: '%s', player_won=%s" % [player_id, top_card.key, player_won])
 	animate_move_card_from_player_to_discard_pile_signal.emit(top_card, player_id, player_won, '_rpc_move_player_card_to_discard_pile')
 
@@ -999,7 +960,7 @@ func server_personally_meld_hand(player_id: String, hand_evaluation: Dictionary)
 	dbg("server_personally_meld_hand: player_id='%s' hand_evaluation=%s" % [player_id, hand_evaluation])
 	var turn_index = player_info['turn_index']
 	game_state.public_players_info[turn_index]['played_to_table'].append_array(hand_evaluation['can_be_personally_melded'])
-	register_ack_sync_state('_rpc_personally_meld_cards_only', {'player_id': player_id})
+	register_ack_sync_state('_rpc_personally_meld_cards_only') # stay within same state, {'next_state': 'NewDiscardState'})
 	_rpc_personally_meld_cards_only.rpc(player_id, hand_evaluation)
 
 @rpc('authority', 'call_local', 'reliable')
@@ -1019,11 +980,6 @@ func _rpc_personally_meld_cards_only(player_id: String, hand_evaluation: Diction
 	# 		return
 	# 	discard_pile.push_front(top_card)
 	# 	_remove_card_from_player_hand(card_key, player_id) # Discard the highest score card.
-
-	# Update num_cards in game_state.public_players_info for the server
-	if is_server():
-		update_player_num_cards(player_id)
-
 	animate_personally_meld_cards_only_signal.emit(player_id, hand_evaluation, '_rpc_personally_meld_cards_only')
 
 func _remove_card_from_player_hand(card_key: String, player_id: String) -> void:
@@ -1086,11 +1042,6 @@ func _rpc_publicly_meld_card_only(player_id: String, card_key: String, target_pl
 		[player_id, card_key, target_player_id, meld_group_index])
 	# Move the playable card from the player's hand to the table and then perform the animations.
 	_publicly_meld_card(player_id, card_key, target_player_id, meld_group_index)
-
-	# Update num_cards in game_state.public_players_info for the server
-	if is_server():
-		update_player_num_cards(player_id)
-
 	animate_publicly_meld_card_only_signal.emit(player_id, card_key, target_player_id, meld_group_index, '_rpc_publicly_meld_card_only')
 
 func _publicly_meld_card(_player_id: String, card_key: String, target_player_id: String, meld_group_index: int) -> void:
@@ -1153,15 +1104,6 @@ func server_ack_sync_completed(peer_id: int, operation_name: String) -> void:
 	ack_sync_state.erase(operation_name) # Clear the ack state for this operation.
 	dbg("SYNC: server_ack_sync_completed(peer_id=%d, operation_name='%s'): ack_sync_state after completion: %s, current operation_params: %s" %
 		[peer_id, operation_name, str(ack_sync_state), str(operation_params)])
-
-	# Check for win condition after personally melding
-	if operation_name == '_rpc_personally_meld_cards_only' and 'player_id' in operation_params:
-		var meld_player_id = operation_params['player_id']
-		var winning_players = game_state.public_players_info.filter(func(pi): return pi['id'] == meld_player_id and pi['num_cards'] == 0)
-		if len(winning_players) > 0:
-			dbg("SYNC: server_ack_sync_completed(peer_id=%d, operation_name='%s'): player '%s' has won the round! Transitioning to PlayerWonRoundState" % [peer_id, operation_name, meld_player_id])
-			operation_params['next_state'] = 'PlayerWonRoundState'
-
 	if 'advance_player_turn' in operation_params and operation_params['advance_player_turn']:
 		# Clear all buy requests
 		game_state.current_buy_request_player_ids = {}
