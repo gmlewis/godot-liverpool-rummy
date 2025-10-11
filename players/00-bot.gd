@@ -519,6 +519,55 @@ func _evaluate_hand_pre_meld(round_num: int, hand_stats: Dictionary, all_public_
 	var penalty_score = - Global.tally_hand_cards_score(acc['recommended_discards'])
 	acc['eval_score'] += penalty_score
 
+	# If in rounds 1-6 and all cards are melded, remove one card to leave for discarding
+	if round_num < 7 and len(acc['recommended_discards']) == 0 and len(acc['can_be_personally_melded']) > 0:
+		# Count melded cards
+		var melded_cards = 0
+		for meld in acc['can_be_personally_melded']:
+			melded_cards += len(meld['card_keys'])
+		if melded_cards == hand_stats['num_cards']:
+			# Find the meld with the most cards (prefer groups over runs)
+			var max_meld = null
+			var max_len = 0
+			for meld in acc['can_be_personally_melded']:
+				var meld_len = len(meld['card_keys'])
+				if meld_len > max_len and (max_meld == null or (meld['type'] == 'group' and max_meld['type'] == 'run') or meld_len > len(max_meld['card_keys'])):
+					max_len = meld_len
+					max_meld = meld
+			if max_meld:
+				# Find the lowest scoring card in max_meld
+				var lowest_card = null
+				var lowest_score = 999
+				for card_key in max_meld['card_keys']:
+					var score = Global.card_key_score(card_key)
+					if score < lowest_score:
+						lowest_score = score
+						lowest_card = card_key
+				if lowest_card:
+					max_meld['card_keys'].erase(lowest_card)
+					# Check if the meld is still valid
+					var is_valid = false
+					if max_meld['type'] == 'group':
+						is_valid = Global.is_valid_group(max_meld['card_keys'])
+					elif max_meld['type'] == 'run':
+						is_valid = Global.is_valid_run(max_meld['card_keys'])
+					if not is_valid:
+						# Add all cards from the invalid meld to recommended_discards
+						for card_key in max_meld['card_keys']:
+							if not card_key in acc['recommended_discards']:
+								acc['recommended_discards'].append(card_key)
+						acc['can_be_personally_melded'].erase(max_meld)
+					# Add the removed card to recommended_discards
+					acc['recommended_discards'].append(lowest_card)
+					acc['recommended_discards'] = Global.sort_card_keys_by_score(acc['recommended_discards'])
+					# Recalculate penalty
+					penalty_score = - Global.tally_hand_cards_score(acc['recommended_discards'])
+					acc['eval_score'] += penalty_score
+
+	# Prevent melding if it would leave no cards to discard in rounds 1-6
+	if round_num < 7 and len(acc['recommended_discards']) == 0:
+		acc['can_be_personally_melded'] = []
+
 	if melded_groups == num_groups and melded_runs == num_runs:
 		acc['is_winning_hand'] = (round_num < 7 and len(acc['recommended_discards']) == 1) or (round_num == 7 and len(acc['recommended_discards']) == 0)
 		if acc['is_winning_hand']:

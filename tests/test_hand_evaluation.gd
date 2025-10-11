@@ -76,7 +76,12 @@ func run_all_tests() -> bool:
 		test_can_card_replace_joker_in_run,
 		test_is_valid_run,
 		test_rank_to_bitmap,
-		test_build_run_with_jokers
+		test_build_run_with_jokers,
+		test_bot_evaluation_leaves_discard_round1,
+		test_bot_evaluation_leaves_discard_round2,
+		test_bot_evaluation_full_meld_round7,
+		test_bot_evaluation_prevents_invalid_meld_round1,
+		test_bot_evaluation_with_partial_melds
 	]
 
 	return test_framework.run_test_suite("Hand Evaluation Tests", tests)
@@ -147,8 +152,8 @@ func test_evaluate_hand_pre_meld_round1() -> bool:
 	# Round 1 requires 2 groups
 	var cards = ["A-hearts-0", "A-spades-0", "A-diamonds-0", "K-hearts-0", "K-spades-0", "K-diamonds-0", "2-hearts-0"]
 	var hand_stats = test_bot.gen_bot_hand_stats(cards)
-	var all_public_meld_stats = Global._gen_all_public_meld_stats()
-	var evaluation = test_bot._evaluate_hand_pre_meld(1, hand_stats, all_public_meld_stats)
+	var _all_public_meld_stats = Global._gen_all_public_meld_stats()
+	var evaluation = test_bot._evaluate_hand_pre_meld(1, hand_stats, _all_public_meld_stats)
 
 	test_framework.assert_equal(2, len(evaluation['can_be_personally_melded']), "Should be able to meld 2 groups")
 	test_framework.assert_true(evaluation['eval_score'] > 0, "Should have positive evaluation score")
@@ -158,8 +163,8 @@ func test_evaluate_hand_pre_meld_round2() -> bool:
 	# Round 2 requires 1 group + 1 run
 	var cards = ["A-hearts-0", "A-spades-0", "A-diamonds-0", "2-hearts-0", "3-hearts-0", "4-hearts-0", "5-hearts-0", "6-hearts-0"]
 	var hand_stats = test_bot.gen_bot_hand_stats(cards)
-	var all_public_meld_stats = Global._gen_all_public_meld_stats()
-	var evaluation = test_bot._evaluate_hand_pre_meld(2, hand_stats, all_public_meld_stats)
+	var _all_public_meld_stats = Global._gen_all_public_meld_stats()
+	var evaluation = test_bot._evaluate_hand_pre_meld(2, hand_stats, _all_public_meld_stats)
 
 	test_framework.assert_equal(2, len(evaluation['can_be_personally_melded']), "Should be able to meld 1 group + 1 run")
 	# Check that we have one group and one run
@@ -178,8 +183,8 @@ func test_evaluate_hand_post_meld() -> bool:
 	# Test post-meld evaluation with some cards that can be publicly melded
 	var cards = ["A-spades-0", "2-hearts-0", "3-hearts-0"]
 	var hand_stats = test_bot.gen_bot_hand_stats(cards)
-	var all_public_meld_stats = Global._gen_all_public_meld_stats()
-	var evaluation = test_bot._evaluate_hand_post_meld(1, hand_stats, all_public_meld_stats)
+	var _all_public_meld_stats = Global._gen_all_public_meld_stats()
+	var evaluation = test_bot._evaluate_hand_post_meld(1, hand_stats, _all_public_meld_stats)
 
 	test_framework.assert_dict_has_key(evaluation, 'can_be_publicly_melded', "Should have can_be_publicly_melded")
 	test_framework.assert_dict_has_key(evaluation, 'recommended_discards', "Should have recommended_discards")
@@ -322,6 +327,80 @@ func test_build_run_with_jokers() -> bool:
 
 	var result = test_bot._build_a_run_with_suit(available_jokers, already_used, by_rank, 1)
 	test_framework.assert_dict_has_key(result, 'success', "Should have success key")
+	return true
+
+# Test bot hand evaluation with the new logic for leaving cards to discard
+func test_bot_evaluation_leaves_discard_round1() -> bool:
+	# Round 1: bot has cards that can be fully melded, should leave one for discard
+	var cards = ["A-hearts-0", "A-spades-0", "A-diamonds-0", "K-hearts-0", "K-spades-0", "K-diamonds-0", "2-hearts-0"]
+	var hand_stats = test_bot.gen_bot_hand_stats(cards)
+	var evaluation = test_bot.evaluate_bot_hand(hand_stats, "test_bot")
+
+	test_framework.assert_equal(1, len(evaluation['recommended_discards']), "Should leave exactly 1 card to discard in round 1")
+	test_framework.assert_equal(2, len(evaluation['can_be_personally_melded']), "Should meld 2 groups")
+	test_framework.assert_true(evaluation['is_winning_hand'], "Should be winning hand")
+	return true
+
+func test_bot_evaluation_leaves_discard_round2() -> bool:
+	# Round 2: bot has cards that can be fully melded, should leave one for discard
+	Global.game_state['current_round_num'] = 2
+	var cards = ["A-hearts-0", "A-spades-0", "A-diamonds-0", "2-hearts-0", "3-hearts-0", "4-hearts-0", "5-hearts-0", "6-hearts-0"]
+	var hand_stats = test_bot.gen_bot_hand_stats(cards)
+	var evaluation = test_bot.evaluate_bot_hand(hand_stats, "test_bot")
+
+	test_framework.assert_equal(1, len(evaluation['recommended_discards']), "Should leave exactly 1 card to discard in round 2")
+	test_framework.assert_true(evaluation['is_winning_hand'], "Should be winning hand")
+	Global.game_state['current_round_num'] = 1 # Reset
+	return true
+
+func test_bot_evaluation_full_meld_round7() -> bool:
+	# Round 7: bot can meld all 13 cards into 3 runs
+	Global.game_state['current_round_num'] = 7
+	var cards = ["A-hearts-0", "2-hearts-0", "3-hearts-0", "4-hearts-0", "5-diamonds-0", "6-diamonds-0", "7-diamonds-0", "8-diamonds-0", "9-diamonds-0", "10-clubs-0", "J-clubs-0", "Q-clubs-0", "K-clubs-0"]
+	var hand_stats = test_bot.gen_bot_hand_stats(cards)
+	var evaluation = test_bot.evaluate_bot_hand(hand_stats, "test_bot")
+
+	test_framework.assert_equal(0, len(evaluation['recommended_discards']), "Should have no cards to discard in round 7")
+	test_framework.assert_true(evaluation['is_winning_hand'], "Should be winning hand")
+	Global.game_state['current_round_num'] = 1 # Reset
+	return true
+
+func test_bot_evaluation_prevents_invalid_meld_round1() -> bool:
+	# Round 1: bot has only 1 group, should not be able to meld
+	var cards = ["A-hearts-0", "A-spades-0", "A-diamonds-0", "2-hearts-0", "5-clubs-0", "6-clubs-0", "9-diamonds-0"]
+	var hand_stats = test_bot.gen_bot_hand_stats(cards)
+	var evaluation = test_bot.evaluate_bot_hand(hand_stats, "test_bot")
+
+	test_framework.assert_equal(0, len(evaluation['can_be_personally_melded']), "Should not be able to meld with only 1 group in round 1")
+	return true
+
+func test_bot_evaluation_with_partial_melds() -> bool:
+	# Test with cards that can't be fully melded
+	var cards = ["A-hearts-0", "A-spades-0", "K-hearts-0", "2-hearts-0", "3-hearts-0", "6-clubs-0", "9-diamonds-0"]
+	var hand_stats = test_bot.gen_bot_hand_stats(cards)
+	var evaluation = test_bot.evaluate_bot_hand(hand_stats, "test_bot")
+
+	test_framework.assert_equal(0, len(evaluation['can_be_personally_melded']), "Should not be able to fully meld")
+	test_framework.assert_true(len(evaluation['recommended_discards']) > 0, "Should have cards to discard")
+	test_framework.assert_false(evaluation['is_winning_hand'], "Should not be winning hand")
+	return true
+
+func test_meld_validity() -> bool:
+	# Test that melds in can_be_personally_melded are valid
+	var cards = ["A-hearts-0", "A-spades-0", "A-diamonds-0", "K-hearts-0", "K-spades-0", "K-diamonds-0", "2-hearts-0"]
+	var hand_stats = test_bot.gen_bot_hand_stats(cards)
+	var evaluation = test_bot.evaluate_bot_hand(hand_stats, "test_bot")
+
+	for meld in evaluation['can_be_personally_melded']:
+		var card_keys = meld['card_keys']
+		if meld['type'] == 'group':
+			test_framework.assert_true(len(card_keys) >= 3, "Groups must have at least 3 cards")
+			var rank = Global.strip_rank_from_card_key(card_keys[0])
+			for card_key in card_keys:
+				test_framework.assert_equal(rank, Global.strip_rank_from_card_key(card_key), "All cards in group must have same rank")
+		elif meld['type'] == 'run':
+			test_framework.assert_true(len(card_keys) >= 4, "Runs must have at least 4 cards")
+			test_framework.assert_true(Global.is_valid_run(card_keys), "Run must be valid sequence")
 	return true
 
 func cleanup_test_resources() -> void:
