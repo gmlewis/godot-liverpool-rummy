@@ -357,6 +357,14 @@ func _input(event):
 	var current_state_name = game_state_machine.get_current_state_name()
 	var mouse_pos = get_global_mouse_position()
 	Global.dbg("Player: _input: Mouse click at %s, current_state=%s, is_my_turn=%s, is_playing_state=%s" % [str(mouse_pos), current_state_name, Global.is_my_turn(), game_state_machine.is_playing_state()])
+	
+	# Check if the mouse is over a card that can handle input - if so, let the card handle it
+	# This should happen BEFORE turn-based restrictions since players can organize their hand anytime
+	Global.dbg("Player: _input: About to check for interactive cards")
+	if _is_mouse_over_interactive_card(mouse_pos):
+		Global.dbg("Player: _input: Mouse over interactive card, letting card handle input")
+		return
+	
 	if Global.is_server() and (current_state_name == 'PlayerWonRoundState' or current_state_name == 'TallyScoresState'):
 		if not is_mouse_over_player(mouse_pos): return # false alarm.
 		if is_winning_player and current_state_name == 'PlayerWonRoundState':
@@ -377,12 +385,6 @@ func _input(event):
 		return
 	# Only current player can click on _ANY_ player node and only during playing state.
 	if not Global.is_my_turn() or not game_state_machine.is_playing_state(): return
-	
-	# Check if the mouse is over a card that can handle input - if so, let the card handle it
-	Global.dbg("Player: _input: About to check for interactive cards")
-	if _is_mouse_over_interactive_card(mouse_pos):
-		Global.dbg("Player: _input: Mouse over interactive card, letting card handle input")
-		return
 	
 	# Check if the mouse is actually over this player node - if not, don't handle
 	if not is_mouse_over_player(mouse_pos):
