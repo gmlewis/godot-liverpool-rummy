@@ -85,16 +85,18 @@ func deal_cards_to_players(round_num: int, cards_per_player: int) -> void:
 			var card_hand_idx = len(Global.private_player_info.card_keys_in_hand)
 			Global.private_player_info.card_keys_in_hand.append(playing_card.key) # Update the local player's hand
 			var card_x = gen_card_deal_position_x(card_hand_idx, cards_per_player)
-			var player_card_position = Vector2(card_x, Global.player_hand_y_position)
+			var card_y = gen_card_deal_position_y(card_hand_idx, cards_per_player)
+			var player_card_position = Vector2(card_x, card_y)
 			card_tween.tween_property(playing_card, "position", player_card_position, card_duration)
 			card_tween.tween_property(playing_card, "rotation", 0, card_duration)
+			card_tween.tween_property(playing_card, "z_index", 20.0 + card_hand_idx, 0.01).set_delay(card_duration)
 		else:
 			if Global.is_server() and player.is_bot:
 				Global.bots_private_player_info[player.id].card_keys_in_hand.append(playing_card.key) # Update the bot's hand
 			card_tween.tween_property(playing_card, "position", player_target_node.position, card_duration)
 			card_tween.tween_property(playing_card, "rotation", player_target_node.rotation, card_duration)
+			card_tween.tween_property(playing_card, "z_index", 20.0, 0.01).set_delay(card_duration)
 		card_tween.tween_property(playing_card, "scale", player_target_node.scale, card_duration)
-		card_tween.tween_property(playing_card, "z_index", 20.0, 0.01).set_delay(card_duration)
 
 		# Hide/flip the card after it lands
 		var hide_or_flip_card = func() -> void:
@@ -119,3 +121,10 @@ func deal_cards_to_players(round_num: int, cards_per_player: int) -> void:
 func gen_card_deal_position_x(card_hand_idx: int, cards_per_player: int) -> float:
 	var card_x = Global.player_hand_x_start() + (card_hand_idx * (Global.player_hand_x_end - Global.player_hand_x_start()) / (cards_per_player - 1))
 	return card_x
+
+func gen_card_deal_position_y(card_hand_idx: int, _cards_per_player: int) -> float:
+	# Alternate Y position slightly to make overlapping cards easier to read during dealing
+	var base_y = Global.player_hand_y_position
+	var alternation_offset = -30.0 # pixels to alternate upward for odd cards
+	var alternation = (card_hand_idx % 2) * 2
+	return base_y + (alternation * alternation_offset)
