@@ -109,6 +109,8 @@ func _on_animate_personally_meld_cards_only_signal(player_id: String, hand_evalu
 	await meld_tween.finished
 	if ack_sync_name:
 		Global.ack_sync_completed(ack_sync_name)
+	if Global.game_state.current_round_num == 7 and player_public_info['num_cards'] == 0:
+		transition_state_to('PlayerWonRoundState')
 
 func _on_animate_publicly_meld_card_only_signal(_player_id: String, card_key: String, target_player_id: String, meld_group_index: int, ack_sync_name: String) -> void:
 	var players = players_container.get_children().filter(func(node): return node.player_id == target_player_id)
