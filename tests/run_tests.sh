@@ -38,7 +38,7 @@ run_tests() {
             ;;
         "smoke")
             print_colored $BLUE "Running smoke tests..."
-            godot $godot_args --script tests/test_runner.gd -- --quick
+            godot $godot_args tests/test_scene.tscn -- test_type=smoke
             ;;
         "hand")
             print_colored $BLUE "Running hand evaluation tests..."

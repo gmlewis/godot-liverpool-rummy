@@ -1,0 +1,8 @@
+[gd_resource type="ShaderMaterial" load_steps=2 format=3 uid="uid://fuzzyrect_material"]
+
+[ext_resource type="Shader" path="res://shaders/fuzzyrect.gdshader" id="1"]
+
+[resource]
+shader = ExtResource("1")
+shader_parameter/border_width = 10.0
+shader_parameter/border_color = Color(0.5, 0.5, 0.5, 0.5)

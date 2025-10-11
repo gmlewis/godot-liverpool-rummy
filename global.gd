@@ -60,6 +60,7 @@ signal server_ack_sync_completed_signal(peer_id: int, operation_name: String, op
 signal card_clicked_signal(playing_card, global_position)
 signal card_drag_started_signal(playing_card, from_position)
 signal card_moved_signal(playing_card, from_position, global_position)
+signal meld_area_updated_signal()
 
 @onready var playing_cards_control: Control = $"/root/RootNode/PlayingCardsControl" if has_node("/root/RootNode/PlayingCardsControl") else null
 
@@ -75,6 +76,11 @@ const MELD_AREA_TOP_PERCENT = 0.7 # 70% down the screen
 const MELD_AREA_RIGHT_PERCENT = 0.5 # 50% across the screen
 const MELD_AREA_1_RIGHT_PERCENT = 0.333 * MELD_AREA_RIGHT_PERCENT # 16.65% across the screen
 const MELD_AREA_2_RIGHT_PERCENT = 0.666 * MELD_AREA_RIGHT_PERCENT # 33.3% across the screen
+
+const PLAYER_HAND_LOCAL_RADIUS = 200.0
+const PLAYER_HAND_FIRST_CARD_Y = -150.0
+const PLAYER_HAND_LOCAL_BOUNDS_MIN = Vector2(-400, -200)
+const PLAYER_HAND_LOCAL_BOUNDS_SIZE = Vector2(800, 400)
 
 # This game can be compiled in different languages (currently, only 'en' or 'de').
 const LANGUAGE = 'en' # 'en', 'fr', 'de', etc.
@@ -433,6 +439,9 @@ func emit_card_drag_started_signal(playing_card, from_position):
 
 func emit_card_moved_signal(playing_card, from_position, global_position):
 	card_moved_signal.emit(playing_card, from_position, global_position)
+
+func emit_meld_area_updated_signal():
+	meld_area_updated_signal.emit()
 
 ################################################################################
 ## Game play, stats, and hand evaluation functions

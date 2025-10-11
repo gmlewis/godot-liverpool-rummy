@@ -25,6 +25,7 @@ var is_flipping: bool = false
 var tween: Tween = null
 
 func _ready():
+	set_process_input(true)
 	# Global.dbg("PlayerCard _ready called")
 	# Global.dbg("Card position: ", global_position)
 	Global.connect('custom_card_back_texture_changed_signal', _on_custom_card_back_texture_changed_signal)

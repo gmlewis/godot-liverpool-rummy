@@ -98,7 +98,6 @@ func _on_animate_move_card_to_player_signal(playing_card: PlayingCard, player_id
 	var new_z_index = 100 # arbitrary high value
 	if player_is_me:
 		new_z_index = Global.sanitize_players_hand_z_index_values()
-		# target_position = Vector2(playing_card.position.x, Global.player_hand_y_position)
 		target_position = _get_next_card_position_in_players_hand()
 		target_rotation = 0.0
 	var card_travel_distance = target_position.distance_to(playing_card.position)
@@ -130,16 +129,12 @@ func _on_animate_move_card_to_player_signal(playing_card: PlayingCard, player_id
 	if ack_sync_name:
 		Global.ack_sync_completed(ack_sync_name)
 
-# This function returns the most-open position along the x-axis in the player's hand
-# where a new card can be placed. If there is not enough space, it chooses the least-crowded
-# x-value and then it reduces the y-value of the position until the top third of the card is visible.
 func _get_next_card_position_in_players_hand() -> Vector2:
 	var card_rects = [] as Array[Rect2]
 	for card_key in Global.private_player_info['card_keys_in_hand']:
 		var playing_card = Global.playing_cards.get(card_key) as PlayingCard
 		if playing_card:
 			var card_rect = playing_card.get_rect()
-			Global.dbg("PlayingCard: _get_next_card_position_in_players_hand: card_key=%s, rect=%s" % [card_key, str(card_rect)])
 			card_rects.append(playing_card.get_rect())
 	card_rects.sort_custom(func(a, b): return a.position.x < b.position.x)
 

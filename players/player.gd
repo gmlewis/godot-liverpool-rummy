@@ -27,6 +27,7 @@ const TURN_INDICATOR_MELD_COLOR = Color(0.38, 0.73, 0.4, 1.0) # Greenish color
 var last_hand_evaluation = null # Used to store the last hand evaluation for the player, used when melding.
 
 func _ready():
+	set_process_input(true)
 	# Global.dbg('Player Node2D ready: player_id=%s, player_name=%s, num_cards=%d, score=%d, turn_index=%d' % [player_id, player_name, num_cards, score, turn_index])
 	_on_custom_card_back_texture_changed_signal()
 	Global.connect('custom_card_back_texture_changed_signal', _on_custom_card_back_texture_changed_signal)
@@ -146,11 +147,9 @@ func _update_hand_meldability() -> void:
 		$MeldIndicatorSprite2D.hide()
 		if not already_melded and len(last_hand_evaluation['can_be_personally_melded']) > 0:
 			Global.dbg("Player('%s'): already_melded=false, setting is_meldable=true, can_be_personally_melded=%s" % [player_id, str(last_hand_evaluation['can_be_personally_melded'])])
-			$TurnIndicatorRect.color = TURN_INDICATOR_MELD_COLOR # Set color to meld color
 			is_meldable = true
 			$MeldIndicatorSprite2D.show() # Show meld indicator
 		elif already_melded and len(last_hand_evaluation['can_be_publicly_melded']) > 0:
-			$TurnIndicatorRect.color = TURN_INDICATOR_MELD_COLOR # Set color to meld color
 			Global.dbg("Player('%s'): found %d possibilities to meld publicly" % [player_id, len(last_hand_evaluation['can_be_publicly_melded'])])
 			for possibility in last_hand_evaluation['can_be_publicly_melded']:
 				var target_player_id = possibility['target_player_id']
@@ -158,6 +157,7 @@ func _update_hand_meldability() -> void:
 				var meld_group_index = possibility['meld_group_index']
 				Global.dbg("Player('%s'): calling _local_player_is_meldable_signal.emit('%s', true, '%s', '%s', %d)" % [player_id, target_player_id, player_id, card_key, meld_group_index])
 				_local_player_is_meldable_signal.emit(target_player_id, true, player_id, card_key, meld_group_index)
+	_update_turn_indicator_color(current_state_name, already_melded, is_meldable)
 
 func _on_local_player_is_meldable_signal(target_player_id: String, player_is_meldable: bool, melding_player_id: String, melding_card_key: String, melding_group_index: int) -> void:
 	if target_player_id != player_id:
@@ -176,8 +176,11 @@ func _on_local_player_is_meldable_signal(target_player_id: String, player_is_mel
 		is_meldable_meld_group_index = -1
 		$MeldIndicatorSprite2D.hide() # Hide meld indicator
 
-func _update_turn_indicator_color(current_state_name: String, already_melded: bool) -> void:
-	if current_state_name == 'PlayerDrewState':
+func _update_turn_indicator_color(current_state_name: String, already_melded: bool, is_meldable: bool = false) -> void:
+	if is_meldable:
+		Global.dbg("Setting player '%s' turn indicator to MELD color: %s" % [player_name, str(TURN_INDICATOR_MELD_COLOR)])
+		$TurnIndicatorRect.color = TURN_INDICATOR_MELD_COLOR # Set color to meld color
+	elif current_state_name == 'PlayerDrewState':
 		Global.dbg("current_state_name='%s': Setting player '%s' turn indicator to DISCARD color: %s" % [current_state_name, player_name, str(TURN_INDICATOR_DISCARD_COLOR)])
 		$TurnIndicatorRect.color = TURN_INDICATOR_DISCARD_COLOR # Set color to discard color
 	elif already_melded:
@@ -202,8 +205,10 @@ func is_mouse_over_player(mouse_pos: Vector2) -> bool:
 		texture_size # Size
 	)
 	var is_over = player_rect.has_point(mouse_pos)
-	# Global.dbg("player.gd: is_mouse_over_player(%s): player rect: %s, is_over=%s" % [str(mouse_pos), str(player_rect), str(is_over)])
+		# Global.dbg("player.gd: is_mouse_over_player(%s): player rect: %s, is_over=%s" % [str(mouse_pos), str(player_rect), str(is_over)])
 	return is_over
+
+################################################################################
 
 ################################################################################
 ## Signals
@@ -294,6 +299,7 @@ func _on_card_moved_signal(playing_card, _from_position, _global_position):
 				Global.private_player_info.meld_area_3_keys.append(playing_card.key)
 		_update_meld_area_counts()
 		_update_hand_meldability()
+		Global.emit_meld_area_updated_signal()
 		return
 
 	# Card is not in a meld area now - check if it was previously in one and remove it
@@ -309,6 +315,7 @@ func _on_card_moved_signal(playing_card, _from_position, _global_position):
 		Global.private_player_info.meld_area_3_keys.erase(playing_card.key)
 		_update_meld_area_counts()
 		_update_hand_meldability()
+		Global.emit_meld_area_updated_signal()
 		return
 
 	# Global.dbg("Player('%s'): _on_card_moved_signal: playing_card=%s, is_my_turn=%s" % [player_id, playing_card.key, str(is_my_turn)])
@@ -368,7 +375,12 @@ func _input(event):
 		return
 	# Only current player can click on _ANY_ player node and only during playing state.
 	if not Global.is_my_turn() or not game_state_machine.is_playing_state(): return
+	
+	# Check if the mouse is over a card that can handle input - if so, let the card handle it
+	if _is_mouse_over_interactive_card(mouse_pos): return
+	
 	if not is_meldable and not is_buying_card: return
+	
 	# Finally, after all the trivial rejects, now calculate if the mouse is actually over this player node.
 	if not is_mouse_over_player(mouse_pos): return # false alarm.
 	if is_meldable and is_my_turn and len(Global.private_player_info['played_to_table']) == 0:
@@ -391,6 +403,15 @@ func _input(event):
 		return
 
 const ANIMATE_SPEED = 0.005
+
+func _is_mouse_over_interactive_card(mouse_pos: Vector2) -> bool:
+	# Check if the mouse is over any card in the player's hand that can handle input
+	for card_key in Global.private_player_info.get('card_keys_in_hand', []):
+		var card = Global.playing_cards.get(card_key) as PlayingCard
+		if card and card.is_draggable or card.is_tappable:
+			if card.is_mouse_over_card(mouse_pos):
+				return true
+	return false
 
 func _process(_delta: float) -> void:
 	if is_winning_player:
@@ -441,13 +462,19 @@ func _update_meld_area_counts() -> void:
 		len(Global.private_player_info.meld_area_3_keys),
 	]
 	# Meld area counts are in a fixed location in all the scene trees.
-	var meld_area = $"/root/RootNode/RoundNode".get_child(0).get_child(2)
-	# Global.dbg("Player('%s'): _update_meld_area_counts: meld_area: %s" % [player_id, str(meld_area)])
+	var round_node = $"/root/RootNode/RoundNode"
+	if round_node.get_child_count() == 0:
+		return
+	var round_scene = round_node.get_child(0)
+	if round_scene.get_child_count() <= 2:
+		return
+	var meld_area = round_scene.get_child(2)
 	var round_children = meld_area.get_children()
 	for idx in range(len(round_children)):
 		var child = round_children[idx]
+		if child.get_child_count() == 0:
+			continue
 		var meld_area_label: Label = child.get_child(0)
-		# Global.dbg("Player('%s'): _update_meld_area_counts: found label: %s" % [player_id, meld_area_label.text])
 		_update_meld_area_label(meld_area_label, meld_area_counts[idx])
 
 func _update_meld_area_label(meld_area_label: Label, count: int) -> void:

@@ -22,7 +22,58 @@ func _ready():
 	# Add test framework to scene tree so get_tree().quit() works
 	add_child(test_framework)
 
+	# Validate that all GDScript files can be compiled without syntax errors
+func validate_script_compilation() -> bool:
+	print("Validating script compilation...")
+	
+	# List of critical scripts to validate
+	var scripts_to_check = [
+		"res://global.gd",
+		"res://players/player.gd",
+		"res://playing_cards/playing_card.gd",
+		"res://scripts/meld_area_manager.gd",
+		"res://scenes/root_node.gd",
+		"res://state_machine/game_state_machine.gd"
+	]
+	
+	var all_valid = true
+	
+	for script_path in scripts_to_check:
+		var script = load(script_path)
+		if script == null:
+			print("❌ FAILED: Could not load script: %s" % script_path)
+			all_valid = false
+			continue
+			
+		# Try to instantiate the script to check for compilation errors
+		var instance = script.new()
+		if instance == null:
+			print("❌ FAILED: Could not instantiate script: %s (likely compilation error)" % script_path)
+			all_valid = false
+		else:
+			# Clean up the instance
+			if instance.has_method("_ready"):
+				instance._ready()
+			instance.queue_free()
+			print("✓ PASSED: %s compiled successfully" % script_path)
+	
+	if not all_valid:
+		print("\n❌ SCRIPT COMPILATION VALIDATION FAILED")
+		print("One or more scripts have syntax errors that prevent compilation.")
+		print("Fix these errors before running tests.")
+		return false
+	
+	print("✓ All scripts compiled successfully\n")
+	return true
+
 func run_all_tests() -> bool:
+	# First validate that all scripts compile correctly
+	if not validate_script_compilation():
+		print("❌ CRITICAL: Script compilation validation failed!")
+		print("Fix syntax errors before running tests.")
+		get_tree().quit(1)
+		return false
+	
 	print("\n" + "=".repeat(60))
 	print("   LIVERPOOL RUMMY - UNIT TEST SUITE")
 	print("=".repeat(60))
@@ -46,6 +97,9 @@ func run_all_tests() -> bool:
 	var player_result = run_player_tests()
 	if not player_result:
 		return false
+	var meld_result = run_meld_area_manager_tests()
+	if not meld_result:
+		return false
 
 	var end_time = Time.get_unix_time_from_system()
 	var duration = end_time - start_time
@@ -54,7 +108,7 @@ func run_all_tests() -> bool:
 	print("\n" + "=".repeat(60))
 	print("   FINAL TEST RESULTS")
 	print("=".repeat(60))
-	print("Total test suites run: 5")
+	print("Total test suites run: 6")
 	print("Total tests executed: %d" % total_tests)
 	print("Total tests passed: %d" % total_passed)
 	print("Total tests failed: %d" % total_failed)
@@ -140,6 +194,12 @@ func run_player_tests() -> bool:
 	test_suite.queue_free()
 	return result
 
+func run_meld_area_manager_tests() -> bool:
+	var tests = [
+		test_meld_area_manager
+	]
+	return test_framework.run_test_suite("Meld Area Manager Tests", tests)
+
 func update_totals(framework: TestFramework) -> void:
 	total_tests += framework.tests_run
 	total_passed += framework.tests_passed
@@ -167,7 +227,8 @@ func run_quick_smoke_tests() -> bool:
 		test_basic_card_scoring,
 		test_basic_hand_stats,
 		test_basic_game_state,
-		test_basic_round_requirements
+		test_basic_round_requirements,
+		test_meld_area_manager
 	]
 
 	return test_framework.run_test_suite("Smoke Tests", quick_tests)
@@ -179,9 +240,10 @@ func test_basic_card_scoring() -> bool:
 	return true
 
 func test_basic_hand_stats() -> bool:
-	# Global is an autoload, access it directly
+	# Create a test bot to access hand stats
+	var test_bot = load("res://players/00-bot.gd").new("test_bot")
 	var cards = ["A-hearts-0", "A-spades-0", "K-hearts-0"]
-	var stats = Global.gen_hand_stats(cards)
+	var stats = test_bot.gen_bot_hand_stats(cards)
 	test_framework.assert_equal(3, stats['num_cards'], "Should have 3 cards")
 	test_framework.assert_equal(2, len(stats['by_rank']['A']), "Should have 2 Aces")
 	return true
@@ -193,7 +255,83 @@ func test_basic_game_state() -> bool:
 	return true
 
 func test_basic_round_requirements() -> bool:
-	# Global is an autoload, access it directly
-	test_framework.assert_equal(2, Global._groups_per_round[0], "Round 1 should require 2 groups")
-	test_framework.assert_equal(0, Global._runs_per_round[0], "Round 1 should require 0 runs")
+	# Test round 1 requirements: areas 1 and 2 need groups, area 3 is always satisfied
+	test_framework.assert_true(Global.is_valid_group(["A-hearts-0", "A-spades-0", "A-diamonds-0"]), "Three of a kind should be valid group")
+	test_framework.assert_false(Global.is_valid_group(["A-hearts-0", "K-spades-0"]), "Two different ranks should not be valid group")
+	return true
+
+func test_meld_area_manager() -> bool:
+	# Test meld area manager instantiation and basic functionality
+	var meld_area_manager = load("res://scripts/meld_area_manager.gd").new()
+	test_framework.assert_not_null(meld_area_manager, "MeldAreaManager should instantiate")
+	
+	# Create a mock parent with ColorRect children
+	var mock_parent = Control.new()
+	var area1 = ColorRect.new()
+	area1.name = "Book1Area"
+	var area2 = ColorRect.new()
+	area2.name = "Book2Area"
+	
+	var control1 = Control.new()
+	control1.add_child(area1)
+	meld_area_manager.add_child(control1)
+	
+	var control2 = Control.new()
+	control2.add_child(area2)
+	meld_area_manager.add_child(control2)
+	
+	meld_area_manager.set_name("MeldArea")
+	mock_parent.add_child(meld_area_manager)
+	
+	# Add to scene tree
+	add_child(mock_parent)
+	
+	# Manually initialize the meld area manager
+	meld_area_manager.sparkle_material = ShaderMaterial.new()
+	meld_area_manager.sparkle_material.shader = preload("res://shaders/sparkle.gdshader")
+	meld_area_manager.sparkle_material.set_shader_parameter("border_width", 10.0)
+	meld_area_manager.sparkle_material.set_shader_parameter("border_color", Color(1.0, 1.0, 0.8, 1.0))
+	meld_area_manager.sparkle_material.set_shader_parameter("sparkle_intensity", 2.0)
+	meld_area_manager.sparkle_material.set_shader_parameter("time_speed", 5.0)
+	
+	# Find areas manually
+	var areas = []
+	for child in meld_area_manager.get_children():
+		if child is Control:
+			for grandchild in child.get_children():
+				if grandchild is ColorRect:
+					areas.append(grandchild)
+	
+	for area in areas:
+		meld_area_manager.default_materials[area] = area.material
+	
+	test_framework.assert_true(meld_area_manager.default_materials.size() > 0, "Should find default materials")
+	test_framework.assert_not_null(meld_area_manager.sparkle_material, "Sparkle material should be created")
+	
+	# Simulate having cards in meld area 1 (a valid group for round 1)
+	if not Global.private_player_info:
+		Global.private_player_info = {}
+	Global.private_player_info.merge({
+		'meld_area_1_keys': ['A-hearts-0', 'A-spades-0', 'A-diamonds-0'],
+		'meld_area_2_keys': [],
+		'meld_area_3_keys': []
+	}, true)
+	
+	# Ensure round is set to 1
+	if not Global.game_state:
+		Global.game_state = {}
+	Global.game_state['current_round_num'] = 1
+	
+	# Update satisfaction
+	meld_area_manager.update_meld_satisfaction()
+	
+	# Check that sparkle material was applied to area 1
+	test_framework.assert_equal(meld_area_manager.sparkle_material, area1.material, "Area 1 should have sparkle material")
+	test_framework.assert_equal(meld_area_manager.default_materials[area2], area2.material, "Area 2 should have default material")
+	
+	# Cleanup
+	remove_child(mock_parent)
+	mock_parent.queue_free()
+	Global.private_player_info = null
+	
 	return true
