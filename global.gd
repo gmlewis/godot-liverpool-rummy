@@ -153,6 +153,9 @@ func player_hand_x_start() -> float:
 		return screen_size.x * MELD_AREA_2_RIGHT_PERCENT + 200 # Start just to the right of meld area 2
 	return screen_size.x * MELD_AREA_RIGHT_PERCENT + 200 # Start just to the right of meld area 3
 
+func get_card_by_key(card_key: String) -> PlayingCard:
+	return playing_cards.get(card_key)
+
 func reset_game():
 	dbg("ENTER Global.reset_game_signal")
 	game_state = {
