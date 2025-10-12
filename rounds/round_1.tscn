@@ -1,14 +1,20 @@
-[gd_scene load_steps=6 format=3 uid="uid://dd0vu47oxmnsf"]
+[gd_scene load_steps=5 format=3 uid="uid://dd0vu47oxmnsf"]
 
 [ext_resource type="Texture2D" uid="uid://fhwna4tyu5om" path="res://backgrounds/dc70a2a7-4b6d-405d-8335-fb80d6e62311.jpeg" id="1_xf23r"]
-[ext_resource type="Shader" uid="uid://dj1sits4mc06j" path="res://shaders/fuzzyrect.gdshader" id="2_1ihhj"]
-[ext_resource type="Script" path="res://scripts/meld_area_manager.gd" id="3"]
-[ext_resource type="Script" path="res://scripts/meld_area_area.gd" id="4"]
+[ext_resource type="Script" uid="uid://debcq0wgje8tg" path="res://scripts/meld_area_manager.gd" id="3"]
+[ext_resource type="Shader" uid="uid://dhkculqwul0h3" path="res://shaders/sparklerect.gdshader" id="3_u3pxr"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_1ihhj"]
-shader = ExtResource("2_1ihhj")
-shader_parameter/border_width = 10.0
-shader_parameter/border_color = Color(0.5, 0.5, 0.5, 0.5)
+shader = ExtResource("3_u3pxr")
+shader_parameter/time_scale = 1.0
+shader_parameter/spark_density = 1.0
+shader_parameter/spark_brightness = 1.5
+shader_parameter/trail_length = 0.8
+shader_parameter/spark_color = Color(1, 0.9, 0.7, 1)
+shader_parameter/core_color = Color(1, 1, 0.8, 1)
+shader_parameter/color_variation = 0.3
+shader_parameter/gravity = 0.1
+shader_parameter/wind_strength = 0.05
 
 [node name="Round1" type="Control"]
 layout_mode = 3
@@ -27,9 +33,9 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+mouse_filter = 2
 texture = ExtResource("1_xf23r")
 expand_mode = 1
-mouse_filter = 2
 
 [node name="RoundLabel" type="Label" parent="."]
 layout_mode = 1
@@ -47,8 +53,6 @@ theme_override_constants/shadow_outline_size = 7
 theme_override_font_sizes/font_size = 83
 text = "Round 1: Two books of three (6 cards)"
 horizontal_alignment = 1
-mouse_filter = 2
-mouse_filter = 2
 
 [node name="MeldArea" type="Control" parent="."]
 layout_mode = 1
@@ -56,8 +60,8 @@ anchor_top = 0.7
 anchor_right = 0.5
 anchor_bottom = 1.0
 grow_vertical = 0
-script = ExtResource("3")
 mouse_filter = 2
+script = ExtResource("3")
 
 [node name="Book1" type="Control" parent="MeldArea"]
 layout_mode = 1
@@ -76,8 +80,6 @@ theme_override_constants/shadow_outline_size = 7
 theme_override_font_sizes/font_size = 40
 text = "Book 1"
 horizontal_alignment = 1
-mouse_filter = 2
-mouse_filter = 2
 
 [node name="Book1Area" type="ColorRect" parent="MeldArea/Book1"]
 material = SubResource("ShaderMaterial_1ihhj")
@@ -107,8 +109,6 @@ theme_override_constants/shadow_outline_size = 7
 theme_override_font_sizes/font_size = 40
 text = "Book 2"
 horizontal_alignment = 1
-mouse_filter = 2
-mouse_filter = 2
 
 [node name="Book2Area" type="ColorRect" parent="MeldArea/Book2"]
 material = SubResource("ShaderMaterial_1ihhj")

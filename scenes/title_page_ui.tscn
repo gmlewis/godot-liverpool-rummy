@@ -156,8 +156,8 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-script = ExtResource("1_hfq42")
 mouse_filter = 2
+script = ExtResource("1_hfq42")
 
 [node name="SillyNamesNode" type="Node" parent="TitlePageUI"]
 script = ExtResource("4_2xesp")
@@ -317,7 +317,6 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-mouse_filter = 0
 
 [node name="RulesButton" type="Button" parent="."]
 top_level = true
@@ -342,7 +341,6 @@ title = "Liverpool Rummy Rules"
 initial_position = 4
 size = Vector2i(2800, 1350)
 content_scale_factor = 2.0
-auto_translate = false
 theme = SubResource("Theme_hppme")
 ok_button_text = "    OK    "
 
