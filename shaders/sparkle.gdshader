@@ -21,7 +21,7 @@ void fragment() {
 
     // Find minimum distance to any edge
     float min_dist = min(min(dist_left, dist_right), min(dist_top, dist_bottom));
-    float edge_factor = 1.0 - smoothstep(0.0, border_width / rect_size.x, min_dist);
+    float edge_factor = 1.0 - smoothstep(0.0, 0.2, min_dist); // Closer to edges = brighter
 
     // Create star pattern
     vec2 star_pos = pos * star_density;
@@ -44,7 +44,7 @@ void fragment() {
     star_shape = 1.0 - smoothstep(0.3, 0.7, star_shape);
 
     // Star size and twinkle
-    float star_size = 0.1 + 0.05 * sin(TIME * time_speed + star_seed);
+    float star_size = 0.05 + 0.03 * sin(TIME * time_speed + star_seed);
     float star_brightness = 1.0 - smoothstep(0.0, star_size, star_dist);
     star_brightness *= star_shape;
 

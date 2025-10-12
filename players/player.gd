@@ -306,6 +306,7 @@ func _on_card_moved_signal(playing_card, _from_position, _global_position):
 				Global.private_player_info.meld_area_2_keys.append(playing_card.key)
 			2:
 				Global.private_player_info.meld_area_3_keys.append(playing_card.key)
+		_sort_meld_area_keys(meld_area_idx)
 		_update_meld_area_counts()
 		_update_hand_meldability()
 		Global.emit_meld_area_updated_signal()
@@ -508,6 +509,56 @@ func _update_meld_area_label(meld_area_label: Label, count: int) -> void:
 		return
 	# It must be a run
 	meld_area_label.text = meld_area_label.text.substr(0, 5) + ' (%d)' % count
+
+func _sort_meld_area_keys(meld_area_idx: int) -> void:
+	var round_num = Global.game_state.current_round_num
+	var should_sort = false
+	match round_num:
+		2:
+			if meld_area_idx == 1: # meld_area_2 is a run
+				should_sort = true
+		3:
+			if meld_area_idx == 0 or meld_area_idx == 1: # both are runs
+				should_sort = true
+		5:
+			if meld_area_idx == 2: # meld_area_3 is a run
+				should_sort = true
+		6:
+			if meld_area_idx == 1 or meld_area_idx == 2: # both are runs
+				should_sort = true
+		7:
+			if meld_area_idx == 0 or meld_area_idx == 1 or meld_area_idx == 2: # all are runs
+				should_sort = true
+	
+	if should_sort:
+		var keys = []
+		match meld_area_idx:
+			0:
+				keys = Global.private_player_info.meld_area_1_keys
+			1:
+				keys = Global.private_player_info.meld_area_2_keys
+			2:
+				keys = Global.private_player_info.meld_area_3_keys
+		
+		# Sort by card value (A=1 or 14, 2-10, J=11, Q=12, K=13)
+		keys.sort_custom(func(a, b):
+			var a_parts = a.split('-')
+			var b_parts = b.split('-')
+			var a_rank = a_parts[0]
+			var b_rank = b_parts[0]
+			if a_rank == 'JOKER':
+				return true # jokers first? or last?
+			if b_rank == 'JOKER':
+				return false
+			var a_val = Global._value_lookup[a_rank]
+			var b_val = Global._value_lookup[b_rank]
+			# Handle aces - treat as high for sorting
+			if a_val == 14:
+				a_val = 14
+			if b_val == 14:
+				b_val = 14
+			return a_val < b_val
+		)
 
 ################################################################################
 ## Player hand evaluation functions
