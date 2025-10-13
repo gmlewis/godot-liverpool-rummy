@@ -364,6 +364,8 @@ func _input(event):
 			else:
 				Global.server_advance_to_next_round()
 			# Don't allow any other nodes to also handle this event.
+			if not get_viewport():
+				return # Happens in round 7 after a win.
 			get_viewport().set_input_as_handled()
 		return
 	# Only current player can click on _ANY_ player node and only during playing state.
