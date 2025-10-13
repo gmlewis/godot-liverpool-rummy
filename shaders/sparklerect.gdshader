@@ -2,9 +2,9 @@ shader_type canvas_item;
 
 uniform float border_width : hint_range(0.0, 50.0) = 20.0;
 uniform vec4 sparkle_color : source_color = vec4(1.0, 0.85, 0.0, 1.0); // Golden
-uniform float animation_speed : hint_range(0.5, 5.0) = 0.5;
+uniform float animation_speed : hint_range(0.5, 5.0) = 0.00005;
 uniform float sparkle_count : hint_range(5.0, 30.0) = 30.0;
-uniform float sparkle_intensity : hint_range(0.1, 10.0) = 1.0;
+uniform float sparkle_intensity : hint_range(0.1, 10.0) = 0.8;
 
 // Pseudo-random function
 float random(vec2 p) {
@@ -34,8 +34,9 @@ void fragment() {
 			
 			float sparkler_id = float(sparkler);
 			
-			// Random position along the perimeter
-			float perim_rand = random(vec2(sparkler_id, 100.0));
+			// Random position along the perimeter that changes over time
+			float time_cycle = mod(TIME * animation_speed * 0.1, 1.0);
+			float perim_rand = random(vec2(sparkler_id, 100.0 + time_cycle * 10.0));
 			float perimeter = 2.0 * (rect_size.x + rect_size.y);
 			float perim_offset = perim_rand * perimeter;
 			
