@@ -1,7 +1,8 @@
-[gd_scene load_steps=4 format=3 uid="uid://dd0vu47oxmnsf"]
+[gd_scene load_steps=5 format=3 uid="uid://dd0vu47oxmnsf"]
 
 [ext_resource type="Texture2D" uid="uid://fhwna4tyu5om" path="res://backgrounds/dc70a2a7-4b6d-405d-8335-fb80d6e62311.jpeg" id="1_xf23r"]
 [ext_resource type="Shader" uid="uid://dj1sits4mc06j" path="res://shaders/fuzzyrect.gdshader" id="2_1ihhj"]
+[ext_resource type="Script" uid="uid://ds0jj8r0p5g5j" path="res://scripts/shader-switcher.gd" id="3_u3pxr"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_1ihhj"]
 shader = ExtResource("2_1ihhj")
@@ -76,6 +77,7 @@ anchor_left = 0.025
 anchor_top = 0.125
 anchor_right = 0.975
 anchor_bottom = 0.975
+script = ExtResource("3_u3pxr")
 
 [node name="Book2" type="Control" parent="MeldArea"]
 layout_mode = 1
@@ -103,3 +105,4 @@ anchor_left = 0.025
 anchor_top = 0.125
 anchor_right = 0.975
 anchor_bottom = 0.975
+script = ExtResource("3_u3pxr")

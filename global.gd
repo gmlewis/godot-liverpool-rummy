@@ -60,6 +60,7 @@ signal server_ack_sync_completed_signal(peer_id: int, operation_name: String, op
 signal card_clicked_signal(playing_card, global_position)
 signal card_drag_started_signal(playing_card, from_position)
 signal card_moved_signal(playing_card, from_position, global_position)
+signal meld_area_state_changed(is_valid: bool, area_idx: int)
 
 @onready var playing_cards_control: Control = $"/root/RootNode/PlayingCardsControl" if has_node("/root/RootNode/PlayingCardsControl") else null
 
@@ -433,6 +434,10 @@ func emit_card_drag_started_signal(playing_card, from_position):
 
 func emit_card_moved_signal(playing_card, from_position, global_position):
 	card_moved_signal.emit(playing_card, from_position, global_position)
+
+func emit_meld_area_state_changed(is_valid: bool, area_idx: int):
+	dbg("GML: emit_meld_area_state_changed: is_valid=%s, area_idx=%d" % [str(is_valid), area_idx])
+	meld_area_state_changed.emit(is_valid, area_idx)
 
 ################################################################################
 ## Game play, stats, and hand evaluation functions
