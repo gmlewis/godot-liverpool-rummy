@@ -439,6 +439,37 @@ func emit_meld_area_state_changed(is_valid: bool, area_idx: int):
 	dbg("GML: emit_meld_area_state_changed: is_valid=%s, area_idx=%d" % [str(is_valid), area_idx])
 	meld_area_state_changed.emit(is_valid, area_idx)
 
+func emit_meld_areas_states() -> void:
+	var meld_area_1_keys = private_player_info['meld_area_1_keys']
+	var meld_area_2_keys = private_player_info['meld_area_2_keys']
+	var meld_area_3_keys = private_player_info['meld_area_3_keys']
+	match game_state.current_round_num:
+		1:
+			emit_meld_area_state_changed(is_valid_group(meld_area_1_keys), 0)
+			emit_meld_area_state_changed(is_valid_group(meld_area_2_keys), 1)
+		2:
+			emit_meld_area_state_changed(is_valid_group(meld_area_1_keys), 0)
+			emit_meld_area_state_changed(is_valid_run(meld_area_2_keys), 1)
+		3:
+			emit_meld_area_state_changed(is_valid_run(meld_area_1_keys), 0)
+			emit_meld_area_state_changed(is_valid_run(meld_area_2_keys), 1)
+		4:
+			emit_meld_area_state_changed(is_valid_group(meld_area_1_keys), 0)
+			emit_meld_area_state_changed(is_valid_group(meld_area_2_keys), 1)
+			emit_meld_area_state_changed(is_valid_group(meld_area_3_keys), 2)
+		5:
+			emit_meld_area_state_changed(is_valid_group(meld_area_1_keys), 0)
+			emit_meld_area_state_changed(is_valid_group(meld_area_2_keys), 1)
+			emit_meld_area_state_changed(is_valid_run(meld_area_3_keys), 2)
+		6:
+			emit_meld_area_state_changed(is_valid_group(meld_area_1_keys), 0)
+			emit_meld_area_state_changed(is_valid_run(meld_area_2_keys), 1)
+			emit_meld_area_state_changed(is_valid_run(meld_area_3_keys), 2)
+		7:
+			emit_meld_area_state_changed(is_valid_run(meld_area_1_keys), 0)
+			emit_meld_area_state_changed(is_valid_run(meld_area_2_keys), 1)
+			emit_meld_area_state_changed(is_valid_run(meld_area_3_keys), 2)
+
 ################################################################################
 ## Game play, stats, and hand evaluation functions
 ################################################################################

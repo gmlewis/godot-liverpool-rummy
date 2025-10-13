@@ -292,7 +292,7 @@ func _on_card_moved_signal(playing_card, _from_position, _global_position):
 				Global.private_player_info.meld_area_2_keys.append(playing_card.key)
 			2:
 				Global.private_player_info.meld_area_3_keys.append(playing_card.key)
-		_update_meld_area_counts()
+		_update_meld_area_counts_and_sparkles()
 		_update_hand_meldability()
 		return
 
@@ -307,7 +307,7 @@ func _on_card_moved_signal(playing_card, _from_position, _global_position):
 		Global.private_player_info.meld_area_1_keys.erase(playing_card.key)
 		Global.private_player_info.meld_area_2_keys.erase(playing_card.key)
 		Global.private_player_info.meld_area_3_keys.erase(playing_card.key)
-		_update_meld_area_counts()
+		_update_meld_area_counts_and_sparkles()
 		_update_hand_meldability()
 		return
 
@@ -438,7 +438,7 @@ func _get_playing_card_meld_area_idx(playing_card: PlayingCard) -> int:
 		return 1
 	return 0
 
-func _update_meld_area_counts() -> void:
+func _update_meld_area_counts_and_sparkles() -> void:
 	var meld_area_counts = [
 		len(Global.private_player_info.meld_area_1_keys),
 		len(Global.private_player_info.meld_area_2_keys),
@@ -446,13 +446,14 @@ func _update_meld_area_counts() -> void:
 	]
 	# Meld area counts are in a fixed location in all the scene trees.
 	var meld_area = $"/root/RootNode/RoundNode".get_child(0).get_child(2)
-	# Global.dbg("Player('%s'): _update_meld_area_counts: meld_area: %s" % [player_id, str(meld_area)])
+	# Global.dbg("Player('%s'): _update_meld_area_counts_and_sparkles: meld_area: %s" % [player_id, str(meld_area)])
 	var round_children = meld_area.get_children()
 	for idx in range(len(round_children)):
 		var child = round_children[idx]
 		var meld_area_label: Label = child.get_child(0)
-		# Global.dbg("Player('%s'): _update_meld_area_counts: found label: %s" % [player_id, meld_area_label.text])
+		# Global.dbg("Player('%s'): _update_meld_area_counts_and_sparkles: found label: %s" % [player_id, meld_area_label.text])
 		_update_meld_area_label(meld_area_label, meld_area_counts[idx])
+	Global.emit_meld_areas_states()
 
 func _update_meld_area_label(meld_area_label: Label, count: int) -> void:
 	if meld_area_label.text.begins_with('Book '):
@@ -524,79 +525,61 @@ func _evaluate_player_hand_pre_meld(hand_stats: Dictionary) -> Dictionary:
 	match round_num:
 		1:
 			meld_area_1_is_complete = Global.is_valid_group(meld_area_1_keys)
-			Global.emit_meld_area_state_changed(meld_area_1_is_complete, 0)
 			can_be_personally_melded.append({'type': 'group', 'card_keys': meld_area_1_keys.duplicate()})
 			meld_area_2_is_complete = Global.is_valid_group(meld_area_2_keys)
-			Global.emit_meld_area_state_changed(meld_area_2_is_complete, 1)
 			can_be_personally_melded.append({'type': 'group', 'card_keys': meld_area_2_keys.duplicate()})
 			meld_area_3_is_complete = true
 			have_sufficient_discards = len(recommended_discards) >= 1
 			is_winning_hand = len(recommended_discards) == 1
 		2:
 			meld_area_1_is_complete = Global.is_valid_group(meld_area_1_keys)
-			Global.emit_meld_area_state_changed(meld_area_1_is_complete, 0)
 			can_be_personally_melded.append({'type': 'group', 'card_keys': meld_area_1_keys.duplicate()})
 			meld_area_2_is_complete = Global.is_valid_run(meld_area_2_keys)
-			Global.emit_meld_area_state_changed(meld_area_2_is_complete, 1)
 			can_be_personally_melded.append({'type': 'run', 'card_keys': meld_area_2_keys.duplicate()})
 			meld_area_3_is_complete = true
 			have_sufficient_discards = len(recommended_discards) >= 1
 			is_winning_hand = len(recommended_discards) == 1
 		3:
 			meld_area_1_is_complete = Global.is_valid_run(meld_area_1_keys)
-			Global.emit_meld_area_state_changed(meld_area_1_is_complete, 0)
 			can_be_personally_melded.append({'type': 'run', 'card_keys': meld_area_1_keys.duplicate()})
 			meld_area_2_is_complete = Global.is_valid_run(meld_area_2_keys)
-			Global.emit_meld_area_state_changed(meld_area_2_is_complete, 1)
 			can_be_personally_melded.append({'type': 'run', 'card_keys': meld_area_2_keys.duplicate()})
 			meld_area_3_is_complete = true
 			have_sufficient_discards = len(recommended_discards) >= 1
 			is_winning_hand = len(recommended_discards) == 1
 		4:
 			meld_area_1_is_complete = Global.is_valid_group(meld_area_1_keys)
-			Global.emit_meld_area_state_changed(meld_area_1_is_complete, 0)
 			can_be_personally_melded.append({'type': 'group', 'card_keys': meld_area_1_keys.duplicate()})
 			meld_area_2_is_complete = Global.is_valid_group(meld_area_2_keys)
-			Global.emit_meld_area_state_changed(meld_area_2_is_complete, 1)
 			can_be_personally_melded.append({'type': 'group', 'card_keys': meld_area_2_keys.duplicate()})
 			meld_area_3_is_complete = Global.is_valid_group(meld_area_3_keys)
-			Global.emit_meld_area_state_changed(meld_area_3_is_complete, 2)
 			can_be_personally_melded.append({'type': 'group', 'card_keys': meld_area_3_keys.duplicate()})
 			have_sufficient_discards = len(recommended_discards) >= 1
 			is_winning_hand = len(recommended_discards) == 1
 		5:
 			meld_area_1_is_complete = Global.is_valid_group(meld_area_1_keys)
-			Global.emit_meld_area_state_changed(meld_area_1_is_complete, 0)
 			can_be_personally_melded.append({'type': 'group', 'card_keys': meld_area_1_keys.duplicate()})
 			meld_area_2_is_complete = Global.is_valid_group(meld_area_2_keys)
-			Global.emit_meld_area_state_changed(meld_area_2_is_complete, 1)
 			can_be_personally_melded.append({'type': 'group', 'card_keys': meld_area_2_keys.duplicate()})
 			meld_area_3_is_complete = Global.is_valid_run(meld_area_3_keys)
-			Global.emit_meld_area_state_changed(meld_area_3_is_complete, 2)
 			can_be_personally_melded.append({'type': 'run', 'card_keys': meld_area_3_keys.duplicate()})
 			have_sufficient_discards = len(recommended_discards) >= 1
 			is_winning_hand = len(recommended_discards) == 1
 		6:
 			meld_area_1_is_complete = Global.is_valid_group(meld_area_1_keys)
-			Global.emit_meld_area_state_changed(meld_area_1_is_complete, 0)
 			can_be_personally_melded.append({'type': 'group', 'card_keys': meld_area_1_keys.duplicate()})
 			meld_area_2_is_complete = Global.is_valid_run(meld_area_2_keys)
-			Global.emit_meld_area_state_changed(meld_area_2_is_complete, 1)
 			can_be_personally_melded.append({'type': 'run', 'card_keys': meld_area_2_keys.duplicate()})
 			meld_area_3_is_complete = Global.is_valid_run(meld_area_3_keys)
-			Global.emit_meld_area_state_changed(meld_area_3_is_complete, 2)
 			can_be_personally_melded.append({'type': 'run', 'card_keys': meld_area_3_keys.duplicate()})
 			have_sufficient_discards = len(recommended_discards) >= 1
 			is_winning_hand = len(recommended_discards) == 1
 		7:
 			meld_area_1_is_complete = Global.is_valid_run(meld_area_1_keys)
-			Global.emit_meld_area_state_changed(meld_area_1_is_complete, 0)
 			can_be_personally_melded.append({'type': 'run', 'card_keys': meld_area_1_keys.duplicate()})
 			meld_area_2_is_complete = Global.is_valid_run(meld_area_2_keys)
-			Global.emit_meld_area_state_changed(meld_area_2_is_complete, 1)
 			can_be_personally_melded.append({'type': 'run', 'card_keys': meld_area_2_keys.duplicate()})
 			meld_area_3_is_complete = Global.is_valid_run(meld_area_3_keys)
-			Global.emit_meld_area_state_changed(meld_area_3_is_complete, 2)
 			can_be_personally_melded.append({'type': 'run', 'card_keys': meld_area_3_keys.duplicate()})
 			have_sufficient_discards = len(recommended_discards) == 0
 			is_winning_hand = len(recommended_discards) == 0
