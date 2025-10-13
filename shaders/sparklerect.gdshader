@@ -45,7 +45,8 @@ void fragment() {
 			
 			if (pulse < 0.01) continue;
 			
-			float travel = pulse * border_width * 2.0;
+			// Sparks travel outward continuously, independent of pulse
+			float travel = mod(TIME * animation_speed * spark_speed * 50.0, border_width * 3.0);
 			vec2 spark_pos = sparkler_pos + spark_dir * travel;
 			float dist = length(pos - spark_pos);
 			
