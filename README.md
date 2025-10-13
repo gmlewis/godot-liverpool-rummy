@@ -60,7 +60,13 @@ The SVG card backs are from this collection.
 I have a friend in Switzerland who does not speak a word of English. (Hi Zdenek!)
 He's an avid game writer, who also inspired me to start writing this game.
 I figured that it might be nice for him to be able to play the game too, which
-required that it could be built it using German text.
+required that it could be built using German text.
+
+For German, change the following line in `global.gd`:
+
+```
+const LANGUAGE = 'de'
+```
 
 # AI Assistance
 
@@ -92,12 +98,14 @@ I believe that's the extent of the involvement of AI in this project.
 
 # Status
 
-There are still bugs that are quite infuriating during gameplay.
-The most infuriating bug of all is that it doesn't yet choose the optimal meld
-combination with the most clever usage of Jokers, leaving you holding
-in your hand a card that could have easily been played on a run but the
-Joker was used on a group instead. This can mean the difference between
-winning and losing a round.
+I completely ripped out the hand evaluation logic and auto-meld grouping
+from the player's hand, and instead added "meld areas" where the player
+manually decides how they want to group their cards. This eliminates a huge
+nightmare of trying to optimally meld the cards and I much prefer the gameplay
+now.
+
+Currently, there are still bugs in the bot play and melding upon other
+players' hands is not yet implemented.
 
 ----------------------------------------------------------------------
 
