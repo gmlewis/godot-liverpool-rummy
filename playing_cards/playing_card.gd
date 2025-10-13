@@ -189,19 +189,19 @@ func _input(event):
 				if not Global.is_my_turn():
 					# Global.dbg("PlayingCard: _input: Mouse PRESSED on stock pile card '%s' by non-current player at z_index=%d, position: %s - IGNORING" % [key, z_index, str(mouse_pos)])
 					return
-				Global.dbg("PlayingCard: _input: Mouse PRESSED on stock pile card '%s' by current player at z_index=%d, position: %s" % [key, z_index, str(mouse_pos)])
+				# Global.dbg("PlayingCard: _input: Mouse PRESSED on stock pile card '%s' by current player at z_index=%d, position: %s" % [key, z_index, str(mouse_pos)])
 			elif len(Global.discard_pile) > 0 and Global.discard_pile[0].key == key:
 				# CASE 2: This card is the top of the discard pile
 				if not is_mouse_over_card(mouse_pos):
 					return
-				Global.dbg("PlayingCard: _input: Mouse PRESSED on discard pile card '%s' at z_index=%d, position: %s" % [key, z_index, str(mouse_pos)])
+				# Global.dbg("PlayingCard: _input: Mouse PRESSED on discard pile card '%s' at z_index=%d, position: %s" % [key, z_index, str(mouse_pos)])
 			elif key in Global.private_player_info['card_keys_in_hand']:
 				# CASE 3: Player's hand
 				if not is_mouse_over_card(mouse_pos):
 					return
 				if not is_topmost_card_under_mouse(mouse_pos):
 					return
-				Global.dbg("PlayingCard: _input: Mouse PRESSED on player's card '%s' at z_index=%d, position: %s" % [key, z_index, str(mouse_pos)])
+				# Global.dbg("PlayingCard: _input: Mouse PRESSED on player's card '%s' at z_index=%d, position: %s" % [key, z_index, str(mouse_pos)])
 			else:
 				# Not a valid card to interact with - do NOT handle this input event!
 				return
@@ -228,7 +228,7 @@ func _input(event):
 			got_mouse_down = true
 			initial_touch_pos = mouse_pos # Store the initial touch position
 			drag_offset = mouse_pos - global_position
-			Global.dbg("PlayingCard: _input: Mouse PRESSED on card '%s' at z_index=%d, position: %s - SET_INPUT_AS_HANDLED" % [key, z_index, str(mouse_pos)])
+			# Global.dbg("PlayingCard: _input: Mouse PRESSED on card '%s' at z_index=%d, position: %s - SET_INPUT_AS_HANDLED" % [key, z_index, str(mouse_pos)])
 			get_viewport().set_input_as_handled()
 
 		elif not event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
@@ -238,13 +238,13 @@ func _input(event):
 				got_mouse_down = false
 				var from_position = global_position + drag_offset # Use release position
 				_handle_card_moved(from_position)
-				Global.dbg("PlayingCard: _input: Mouse STOPPED DRAGGING on card '%s' at z_index=%d, position: %s - SET_INPUT_AS_HANDLED" % [key, z_index, str(mouse_pos)])
+				# Global.dbg("PlayingCard: _input: Mouse STOPPED DRAGGING on card '%s' at z_index=%d, position: %s - SET_INPUT_AS_HANDLED" % [key, z_index, str(mouse_pos)])
 			elif got_mouse_down:
 				# Handle tap/click
 				got_mouse_down = false
 				if is_tappable:
 					_handle_card_click()
-				Global.dbg("PlayingCard: _input: Mouse RELEASED on card '%s' at z_index=%d, position: %s - SET_INPUT_AS_HANDLED" % [key, z_index, str(mouse_pos)])
+				# Global.dbg("PlayingCard: _input: Mouse RELEASED on card '%s' at z_index=%d, position: %s - SET_INPUT_AS_HANDLED" % [key, z_index, str(mouse_pos)])
 			get_viewport().set_input_as_handled()
 
 	elif event is InputEventMouseMotion:

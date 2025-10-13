@@ -1,7 +1,8 @@
-[gd_scene load_steps=4 format=3 uid="uid://n7ytejdevrjs"]
+[gd_scene load_steps=5 format=3 uid="uid://n7ytejdevrjs"]
 
 [ext_resource type="Texture2D" uid="uid://db21pkf7eh2cu" path="res://backgrounds/4ac7144d-81d6-4d4e-a085-25068cede138.jpeg" id="2_53f7n"]
 [ext_resource type="Shader" uid="uid://dj1sits4mc06j" path="res://shaders/fuzzyrect.gdshader" id="2_dbigv"]
+[ext_resource type="Script" uid="uid://ds0jj8r0p5g5j" path="res://scripts/shader-switcher.gd" id="3_dbigv"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_53f7n"]
 shader = ExtResource("2_dbigv")
@@ -76,6 +77,7 @@ anchor_left = 0.025
 anchor_top = 0.125
 anchor_right = 0.975
 anchor_bottom = 0.975
+script = ExtResource("3_dbigv")
 
 [node name="Run2" type="Control" parent="MeldArea"]
 layout_mode = 1
@@ -103,3 +105,4 @@ anchor_left = 0.025
 anchor_top = 0.125
 anchor_right = 0.975
 anchor_bottom = 0.975
+script = ExtResource("3_dbigv")
