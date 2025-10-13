@@ -8,6 +8,7 @@ shader = ExtResource("2_1ihhj")
 shader_parameter/border_width = 10.0
 shader_parameter/sparkle_color = Color(1, 0.85, 0, 1)
 shader_parameter/animation_speed = 2.0
+shader_parameter/sparkle_count = 15.0
 shader_parameter/sparkle_intensity = 2.0
 
 [node name="Round1" type="Control"]
