@@ -4,9 +4,6 @@
 
 extends Node
 
-# Preload required classes
-# const TestRunner = preload("res://tests/test_runner.gd")
-
 func _initialize():
 	print("Starting Liverpool Rummy test suite...")
 

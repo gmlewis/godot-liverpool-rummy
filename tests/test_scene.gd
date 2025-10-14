@@ -3,8 +3,6 @@ extends Node
 # Test Scene for Liverpool Rummy
 # This scene can run tests in the proper Godot context with autoloads
 
-# const TestRunner = preload("res://tests/test_runner.gd")
-
 func _ready():
 	print("Starting Liverpool Rummy test suite...")
 

@@ -4,12 +4,10 @@
 class_name TestPlayer
 extends Node
 
-const TestFrameworkClass = preload("res://tests/test_framework.gd")
-
-var test_framework: TestFrameworkClass
+var test_framework: TestFramework
 
 func _ready():
-	test_framework = TestFrameworkClass.new()
+	test_framework = TestFramework.new()
 	add_child(test_framework)
 
 func run_all_tests() -> bool:

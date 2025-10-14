@@ -1,8 +1,6 @@
 class_name TestBots
 extends Node
 
-# const Bot = preload("res://players/00-bot.gd")
-
 var test_bot: Bot
 
 var test_framework: TestFramework
