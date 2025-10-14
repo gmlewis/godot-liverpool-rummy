@@ -56,6 +56,10 @@ run_tests() {
             print_colored $BLUE "Running multiplayer sync tests..."
             godot $godot_args tests/test_scene.tscn -- test_type=sync
             ;;
+        "bots")
+            print_colored $BLUE "Running bot AI tests..."
+            godot $godot_args tests/test_scene.tscn -- test_type=bots
+            ;;
         *)
             print_colored $RED "Unknown test type: $test_type"
             show_help
@@ -82,6 +86,7 @@ show_help() {
     echo "  card    - Run card logic tests"
     echo "  state   - Run game state tests"
     echo "  sync    - Run multiplayer sync tests"
+    echo "  bots    - Run bot AI tests"
     echo ""
     echo "Options:"
     echo "  -h, --help     Show this help message"
@@ -92,6 +97,7 @@ show_help() {
     echo "  $0                 # Run all tests"
     echo "  $0 smoke           # Run smoke tests"
     echo "  $0 hand            # Run hand evaluation tests"
+    echo "  $0 bots            # Run bot AI tests"
     echo "  $0 --verbose all   # Run all tests with verbose output"
 }
 
@@ -131,7 +137,7 @@ main() {
                 quiet=true
                 shift
                 ;;
-            all|smoke|hand|card|state|sync)
+            all|smoke|hand|card|state|sync|bots)
                 test_type=$1
                 shift
                 ;;

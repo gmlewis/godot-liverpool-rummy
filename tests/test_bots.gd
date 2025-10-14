@@ -63,31 +63,7 @@ func setup_mock_data():
 	Global.game_state = mock_game_state
 
 func run_all_tests() -> bool:
-	var tests = [
-		test_gen_hand_stats_basic,
-		test_gen_hand_stats_with_jokers,
-		test_gen_hand_stats_groups,
-		test_gen_hand_stats_runs,
-		test_evaluate_hand_pre_meld_round1,
-		test_evaluate_hand_pre_meld_round2,
-		test_evaluate_hand_post_meld,
-		test_find_groups_can_be_publicly_melded,
-		test_find_runs_can_be_publicly_melded,
-		test_is_publicly_meldable_groups,
-		test_is_publicly_meldable_runs,
-		test_can_card_extend_run,
-		test_can_card_replace_joker_in_run,
-		test_is_valid_run,
-		test_rank_to_bitmap,
-		test_build_run_with_jokers,
-		test_bot_evaluation_leaves_discard_round1,
-		test_bot_evaluation_leaves_discard_round2,
-		test_bot_evaluation_full_meld_round7,
-		test_bot_evaluation_prevents_invalid_meld_round1,
-		test_bot_evaluation_with_partial_melds
-	]
-
-	return test_framework.run_test_suite("Bots Tests", tests)
+	return test_framework.discover_and_run_test_suite("Bots Tests", self)
 
 func test_gen_hand_stats_basic() -> bool:
 	var cards = ["A-hearts-0", "A-spades-0", "K-hearts-0", "2-hearts-0"]
@@ -374,9 +350,12 @@ func test_meld_validity() -> bool:
 		var card_keys = meld['card_keys']
 		if meld['type'] == 'group':
 			test_framework.assert_true(len(card_keys) >= 3, "Groups must have at least 3 cards")
-			var rank = Global.strip_rank_from_card_key(card_keys[0])
+			var parts = card_keys[0].split('-')
+			var rank = parts[0]
 			for card_key in card_keys:
-				test_framework.assert_equal(rank, Global.strip_rank_from_card_key(card_key), "All cards in group must have same rank")
+				var parts2 = card_key.split('-')
+				var rank2 = parts2[0]
+				test_framework.assert_equal(rank, rank2, "All cards in group must have same rank")
 		elif meld['type'] == 'run':
 			test_framework.assert_true(len(card_keys) >= 4, "Runs must have at least 4 cards")
 			test_framework.assert_true(Global.is_valid_run(card_keys), "Run must be valid sequence")

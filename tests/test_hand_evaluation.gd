@@ -51,13 +51,7 @@ func setup_mock_data():
 	Global.game_state = mock_game_state
 
 func run_all_tests() -> bool:
-	var tests = [
-		test_card_key_score,
-		test_sort_card_keys_by_score,
-		test_tally_hand_cards_score,
-	]
-
-	return test_framework.run_test_suite("Hand Evaluation Tests", tests)
+	return test_framework.discover_and_run_test_suite("Hand Evaluation Tests", self)
 
 # Test basic card scoring
 func test_card_key_score() -> bool:

@@ -32,6 +32,8 @@ func _ready():
 			result = test_runner.run_game_state_tests()
 		"sync":
 			result = test_runner.run_multiplayer_sync_tests()
+		"bots":
+			result = test_runner.run_bots_tests()
 		_:
 			result = test_runner.run_all_tests()
 

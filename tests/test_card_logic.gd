@@ -14,17 +14,7 @@ func _ready():
 	# Global is an autoload, access it directly
 
 func run_all_tests() -> bool:
-	var tests = [
-		test_gen_playing_card_key,
-		test_get_total_num_card_decks,
-		test_get_total_num_cards,
-		test_strip_deck_from_card_key,
-		test_card_key_parsing,
-		test_joker_handling,
-		test_card_generation_logic
-	]
-
-	return test_framework.run_test_suite("Card Logic Tests", tests)
+	return test_framework.discover_and_run_test_suite("Card Logic Tests", self)
 
 func test_gen_playing_card_key() -> bool:
 	var key1 = Global.gen_playing_card_key('A', 'hearts', 0)

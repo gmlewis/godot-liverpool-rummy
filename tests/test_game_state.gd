@@ -14,19 +14,7 @@ func _ready():
 	# Global is an autoload, access it directly
 
 func run_all_tests() -> bool:
-	var tests = [
-		test_reset_game,
-		test_gen_public_player_info,
-		test_get_players_by_id,
-		test_player_has_melded,
-		test_validate_current_player_turn,
-		test_is_my_turn,
-		test_round_requirements,
-		test_server_advance_to_next_round,
-		test_multiplayer_state_tracking
-	]
-
-	return test_framework.run_test_suite("Game State Tests", tests)
+	return test_framework.discover_and_run_test_suite("Game State Tests", self)
 
 func test_reset_game() -> bool:
 	# Set up some initial state
