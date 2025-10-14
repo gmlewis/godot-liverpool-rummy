@@ -83,6 +83,44 @@ func fail_test(reason: String) -> void:
 	# Don't quit here - let the test runner handle exit codes
 
 # Test suite management
+func discover_and_run_test_suite(test_suite_name: String, test_instance: Object) -> bool:
+	"""Automatically discovers and runs all test methods that start with 'test_'"""
+	print(COLOR_YELLOW + "\n=== Running Test Suite: " + test_suite_name + " ===" + COLOR_RESET)
+
+	# Check if Global is available before running any tests
+	if Global == null:
+		print(COLOR_RED + "ERROR: Global autoload is not available - likely due to syntax error in global.gd" + COLOR_RESET)
+		print(COLOR_RED + "This indicates a compilation failure that should cause tests to fail!" + COLOR_RESET)
+		print(COLOR_RED + "EXITING DUE TO GLOBAL AUTOLOAD FAILURE" + COLOR_RESET)
+		return false
+
+	# Automatically discover all test methods that start with "test_"
+	var test_methods = []
+	var method_list = test_instance.get_method_list()
+
+	for method_info in method_list:
+		var method_name = method_info["name"]
+		if method_name.begins_with("test_"):
+			test_methods.append(method_name)
+
+	# Sort test methods alphabetically for consistent ordering
+	test_methods.sort()
+
+	# Convert method names to callable references and run them
+	for method_name in test_methods:
+		var callable = Callable(test_instance, method_name)
+		var test_name = method_name
+		start_test(test_name)
+
+		var result = callable.call()
+		if result == null or result == false or current_test_failed or Global.error_count > 0:
+			print("GML: test '%s' result: %s - test failed" % [test_name, str(result)])
+			return false
+		pass_test()
+
+	print_results()
+	return true
+
 func run_test_suite(test_suite_name: String, test_functions: Array) -> bool:
 	print(COLOR_YELLOW + "\n=== Running Test Suite: " + test_suite_name + " ===" + COLOR_RESET)
 
@@ -94,14 +132,26 @@ func run_test_suite(test_suite_name: String, test_functions: Array) -> bool:
 		return false
 
 	for test_func in test_functions:
-		var test_name = str(test_func.get_method())
+		var test_name: String
+		if test_func is Callable:
+			test_name = test_func.get_method()
+		else:
+			# Fallback for older format (function references)
+			test_name = str(test_func)
+
 		start_test(test_name)
 		# GDScript doesn't have try/except, so we call the function directly
 		# If it fails, it will print errors to console
 
-		var result = test_func.call()
+		var result
+		if test_func is Callable:
+			result = test_func.call()
+		else:
+			# Fallback for older format
+			result = test_func.call()
+
 		# print("GML: test '%s' result: %s" % [test_name, str(result)])
-		if result == null or result == false or current_test_failed:
+		if result == null or result == false or current_test_failed or Global.error_count > 0:
 			print("GML: test '%s' result: %s - test failed" % [test_name, str(result)])
 			# Don't quit here - let the test runner handle exit codes
 			return false

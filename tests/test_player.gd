@@ -13,11 +13,7 @@ func _ready():
 	add_child(test_framework)
 
 func run_all_tests() -> bool:
-	var tests = [
-		test_winning_player_animation_logic
-	]
-
-	return test_framework.run_test_suite("Player Winning State Tests", tests)
+	return test_framework.discover_and_run_test_suite("Player Winning State Tests", self)
 
 func test_winning_player_animation_logic() -> bool:
 	# Test that winning animation runs without being overridden

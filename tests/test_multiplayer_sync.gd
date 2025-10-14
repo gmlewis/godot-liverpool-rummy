@@ -4,7 +4,7 @@
 class_name TestMultiplayerSync
 extends Node
 
-const TestFramework = preload("res://tests/test_framework.gd")
+# const TestFramework = preload("res://tests/test_framework.gd")
 
 var test_framework: TestFramework
 
@@ -14,18 +14,7 @@ func _ready():
 	# Global is an autoload, access it directly
 
 func run_all_tests() -> bool:
-	var tests = [
-		test_bot_creation,
-		test_bot_private_info,
-		test_multiplayer_peer_tracking,
-		test_ack_sync_state_management,
-		test_buy_request_tracking,
-		test_server_client_detection,
-		test_game_state_synchronization,
-		test_player_disconnection_handling
-	]
-
-	return test_framework.run_test_suite("Multiplayer Sync Tests", tests)
+	return test_framework.discover_and_run_test_suite("Multiplayer Sync Tests", self)
 
 func test_bot_creation() -> bool:
 	# Test bot resource names
