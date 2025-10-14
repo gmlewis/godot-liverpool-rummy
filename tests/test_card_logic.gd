@@ -4,7 +4,7 @@
 class_name TestCardLogic
 extends Node
 
-const TestFramework = preload("res://tests/test_framework.gd")
+# const TestFramework = preload("res://tests/test_framework.gd")
 
 var test_framework: TestFramework
 

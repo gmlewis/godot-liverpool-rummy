@@ -1,7 +1,7 @@
 class_name TestBots
 extends Node
 
-const Bot = preload("res://players/00-bot.gd")
+# const Bot = preload("res://players/00-bot.gd")
 
 var test_bot: Bot
 
@@ -45,7 +45,16 @@ func setup_mock_data():
 				}],
 				'score': 0,
 				'num_cards': 10
-			}
+			},
+			{
+				'id': 'test_bot',
+				'name': 'TestBot',
+				'is_bot': true,
+				'turn_index': 2,
+				'played_to_table': [],
+				'score': 0,
+				'num_cards': 10
+			},
 		],
 		'current_buy_request_player_ids': {}
 	}
@@ -128,6 +137,7 @@ func test_evaluate_hand_pre_meld_round1() -> bool:
 	return true
 
 func test_evaluate_hand_pre_meld_round2() -> bool:
+	Global.game_state['current_round_num'] = 2
 	# Round 2 requires 1 group + 1 run
 	var cards = ["A-hearts-0", "A-spades-0", "A-diamonds-0", "2-hearts-0", "3-hearts-0", "4-hearts-0", "5-hearts-0", "6-hearts-0"]
 	var hand_stats = test_bot.gen_bot_hand_stats(cards)
@@ -145,6 +155,7 @@ func test_evaluate_hand_pre_meld_round2() -> bool:
 			has_run = true
 	test_framework.assert_true(has_group, "Should have a group")
 	test_framework.assert_true(has_run, "Should have a run")
+	Global.game_state['current_round_num'] = 1 # Reset
 	return true
 
 func test_evaluate_hand_post_meld() -> bool:

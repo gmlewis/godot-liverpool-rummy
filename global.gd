@@ -188,10 +188,10 @@ func is_my_turn() -> bool:
 
 func create_game():
 	var peer = ENetMultiplayerPeer.new()
-	var error = peer.create_server(GAME_PORT, MAX_PLAYERS)
-	if error:
+	var err = peer.create_server(GAME_PORT, MAX_PLAYERS)
+	if err:
 		reset_game()
-		return error
+		return err
 	multiplayer.multiplayer_peer = peer
 	private_player_info['id'] = '1'
 	var public_player_info = gen_public_player_info(private_player_info)
@@ -251,9 +251,8 @@ func add_bot_to_game():
 
 func join_game(address):
 	var peer = ENetMultiplayerPeer.new()
-	var error = peer.create_client(address, GAME_PORT)
-	if error:
-		return error
+	var err = peer.create_client(address, GAME_PORT)
+	if err: return err
 	multiplayer.multiplayer_peer = peer
 
 func _on_peer_connected(peer_id):
@@ -261,7 +260,7 @@ func _on_peer_connected(peer_id):
 	dbg("Global._on_peer_connected(peer_id=%s): sending my player_info to peer_id: %s" % [str(peer_id), str(public_player_info)])
 	_rpc_register_player.rpc_id(peer_id, public_player_info)
 
-@rpc('any_peer', 'reliable') # TODO: Fix this.
+@rpc('any_peer', 'reliable')
 func _rpc_register_player(new_player_info):
 	if is_not_server(): return
 	var new_player_id = new_player_info['id']
@@ -1005,17 +1004,6 @@ func _rpc_personally_meld_cards_only(player_id: String, hand_evaluation: Diction
 	# Move the playable cards from the player's hand to the table and then perform the animations.
 	for meld_group in hand_evaluation['can_be_personally_melded']:
 		_personally_meld_group_update_private_player_info(meld_group, player_id)
-	# TODO: Make these separately-synced animations
-	# for card_key in hand_evaluation['can_be_publicly_melded']:
-	# 	_remove_card_from_player_hand(card_key, player_id)
-	# if len(hand_evaluation['recommended_discards']) > 0:
-	# 	var card_key = hand_evaluation['recommended_discards'][0]
-	# 	var top_card = playing_cards.get(card_key) as PlayingCard
-	# 	if not top_card:
-	# 		error("_rpc_personally_meld_cards_only: unable to find card_key='%s' in playing_cards" % [card_key])
-	# 		return
-	# 	discard_pile.push_front(top_card)
-	# 	_remove_card_from_player_hand(card_key, player_id) # Discard the highest score card.
 	animate_personally_meld_cards_only_signal.emit(player_id, hand_evaluation, '_rpc_personally_meld_cards_only')
 
 func _remove_card_from_player_hand(card_key: String, player_id: String) -> void:
@@ -1213,7 +1201,9 @@ func make_stock_pile_tappable(tappable: bool) -> void:
 		var top_card = stock_pile[0] as PlayingCard
 		top_card.is_tappable = tappable
 		top_card.is_draggable = false # Do not allow dragging the top card of the stock pile.
-	# TODO: Handle empty pile by reshuffling.
+	else:
+		# TODO: Handle empty pile by reshuffling.
+		error("make_stock_pile_tappable: stock pile is empty!")
 
 func strip_deck_from_card_key(card_key: String) -> String:
 	var parts = card_key.split('-')
