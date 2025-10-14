@@ -63,6 +63,21 @@ func setup_mock_data():
 func run_all_tests() -> bool:
 	return test_framework.discover_and_run_test_suite("Bots Tests", self)
 
+func cleanup_test_resources() -> void:
+	# Clean up test bot and any other resources
+	if test_bot and is_instance_valid(test_bot):
+		if test_bot.is_inside_tree():
+			remove_child(test_bot)
+		test_bot.queue_free()
+	test_bot = null
+
+	# Clean up test framework
+	if test_framework and is_instance_valid(test_framework):
+		if test_framework.is_inside_tree():
+			remove_child(test_framework)
+		test_framework.queue_free()
+	test_framework = null
+
 func test_gen_hand_stats_basic() -> bool:
 	var cards = ["A-hearts-0", "A-spades-0", "K-hearts-0", "2-hearts-0"]
 	var stats = test_bot.gen_bot_hand_stats(cards)
@@ -359,17 +374,34 @@ func test_meld_validity() -> bool:
 			test_framework.assert_true(Global.is_valid_run(card_keys), "Run must be valid sequence")
 	return true
 
-func cleanup_test_resources() -> void:
-	# Clean up test bot and any other resources
-	if test_bot and is_instance_valid(test_bot):
-		if test_bot.is_inside_tree():
-			remove_child(test_bot)
-		test_bot.queue_free()
-	test_bot = null
+var bot_test_scenarios = [
+	{
+		'name': 'Basic Group Meld Round 1',
+		'round': 1,
+		'cards': ["A-hearts-0", "A-spades-0", "A-diamonds-0", "K-hearts-0", "K-spades-0", "K-diamonds-0"],
+		'want_evaluation': {
+			'can_be_personally_melded': [
+				{"type": "group", "card_keys": ["A-hearts-0", "A-spades-0", "A-diamonds-0"]},
+				{"type": "group", "card_keys": ["K-hearts-0", "K-spades-0", "K-diamonds-0"]},
+			],
+			'can_be_publicly_melded': [],
+			'eval_score': [],
+			'is_winning_hand': [],
+			'recommended_discards': [],
+		},
+	},
+]
 
-	# Clean up test framework
-	if test_framework and is_instance_valid(test_framework):
-		if test_framework.is_inside_tree():
-			remove_child(test_framework)
-		test_framework.queue_free()
-	test_framework = null
+func test_bot_scenarios() -> bool:
+	for scenario in bot_test_scenarios:
+		var passed = run_test_scenario(scenario)
+		test_framework.assert_true(passed, "Scenario %s passed" % scenario.name)
+	Global.game_state['current_round_num'] = 1 # Reset
+	return true
+
+func run_test_scenario(scenario: Dictionary) -> bool:
+	Global.game_state['current_round_num'] = scenario.round
+	var hand_stats = test_bot.gen_bot_hand_stats(scenario.cards)
+	var evaluation = test_bot.evaluate_bot_hand(hand_stats, "test_bot")
+	test_framework.assert_dict_equal(scenario.want_evaluation, evaluation, "Bot hand evaluation should match expected")
+	return true
