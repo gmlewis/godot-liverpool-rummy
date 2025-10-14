@@ -223,11 +223,11 @@ func add_bot_to_game():
 	# Instantiate the bot class dynamically.
 	var bot_class = load("res://players/%s.gd" % [bot_resource_name])
 	if not bot_class:
-		dbg("ERROR: Could not load bot class: %s" % [bot_resource_name])
+		error("Could not load bot class: %s" % [bot_resource_name])
 		return
 	var bot_instance = bot_class.new(id)
 	if not bot_instance:
-		dbg("ERROR: Could not instantiate bot class: %s" % [bot_resource_name])
+		error("Could not instantiate bot class: %s" % [bot_resource_name])
 		return
 	var bot_name = bot_instance.get_bot_name()
 	var bot_private_player_info = {
@@ -271,7 +271,7 @@ func _rpc_register_player(new_player_info):
 	if current_num_players >= MAX_PLAYERS:
 		var all_bots = _get_bots()
 		if len(all_bots) == 0:
-			dbg("ERROR: no bots found when current_num_players=%d" % [current_num_players])
+			error("no bots found when current_num_players=%d" % [current_num_players])
 			return
 		_remove_bot_from_game()
 	# Assign all players their proper turn_index values.
@@ -296,7 +296,7 @@ func _get_bots() -> Array:
 # 	if len(winning_players) == 0:
 # 		return {}
 # 	if len(winning_players) > 1:
-# 		dbg("ERROR: get_winning_player_public_info: more than one winning player found: %s" % [str(winning_players)])
+# 		error("get_winning_player_public_info: more than one winning player found: %s" % [str(winning_players)])
 # 	return winning_players[0]
 
 func _on_peer_disconnected(id):
@@ -333,7 +333,7 @@ func change_custom_card_back(random_back_svg_name):
 
 func send_game_state():
 	if is_not_server():
-		dbg("ERROR: send_game_state called on a client")
+		error("send_game_state called on a client")
 		return
 	# The following line has a race condition error when sending the game state to
 	# a just-disconnected client. Therefore, send the game state individually to
@@ -513,7 +513,7 @@ func player_has_melded(player_id: String) -> bool:
 	# Check if the player has melded any cards.
 	var public_player_info = game_state.public_players_info.filter(func(pi): return pi.id == player_id)
 	if len(public_player_info) != 1:
-		dbg("ERROR: player_has_melded: could not find player_id='%s' in game_state" % [player_id])
+		error("player_has_melded: could not find player_id='%s' in game_state" % [player_id])
 		return false
 	var played_to_table = public_player_info[0].played_to_table
 	return len(played_to_table) > 0
@@ -522,7 +522,7 @@ func player_has_melded(player_id: String) -> bool:
 # 	var card_keys = {}
 # 	var public_player_info = game_state.public_players_info.filter(func(pi): return pi.id == player_id)
 # 	if len(public_player_info) != 1:
-# 		dbg("ERROR: get_public_meld_card_keys_dict: could not find player_id='%s' in game_state" % [player_id])
+# 		error("get_public_meld_card_keys_dict: could not find player_id='%s' in game_state" % [player_id])
 # 		return card_keys
 # 	var played_to_table = public_player_info[0].played_to_table
 # 	for meld_idx in range(len(played_to_table)):
@@ -712,11 +712,11 @@ func is_valid_group(card_keys: Array) -> bool:
 func validate_current_player_turn(player_id: String):
 	var player_infos = game_state.public_players_info.filter(func(pi): return pi.id == player_id)
 	if len(player_infos) != 1:
-		dbg("ERROR: validate_current_player_turn: could not find player_id='%s' in game_state" % [player_id])
+		error("validate_current_player_turn: could not find player_id='%s' in game_state" % [player_id])
 		return null
 	var player_info = player_infos[0]
 	if player_info.turn_index != game_state.current_player_turn_index:
-		# dbg("ERROR: validate_current_player_turn: player_id='%s' is not the current player (turn_index=%d)" %
+		# error("validate_current_player_turn: player_id='%s' is not the current player (turn_index=%d)" %
 		# 	[player_id, game_state.current_player_turn_index])
 		return null
 	return player_info
@@ -734,11 +734,11 @@ func _rpc_request_server_allow_outstanding_buy_request(player_id: String) -> voi
 
 func server_allow_outstanding_buy_request(player_id: String) -> void:
 	if is_not_server():
-		dbg("ERROR: server_allow_outstanding_buy_request: called on non-server peer")
+		error("server_allow_outstanding_buy_request: called on non-server peer")
 		return
 	var player_info = validate_current_player_turn(player_id)
 	if not player_info:
-		dbg("ERROR: server_allow_outstanding_buy_request: player_id='%s' is not the current player" %
+		error("server_allow_outstanding_buy_request: player_id='%s' is not the current player" %
 			[player_id])
 		return
 	if len(game_state.current_buy_request_player_ids) == 0: return
@@ -765,11 +765,11 @@ func _rpc_request_server_discard_card(player_id: String, card_key: String, playe
 
 func server_discard_card(player_id: String, card_key: String, player_won: bool) -> void:
 	if is_not_server():
-		dbg("ERROR: server_discard_card: called on non-server peer")
+		error("server_discard_card: called on non-server peer")
 		return
 	var player_info = validate_current_player_turn(player_id)
 	if not player_info:
-		dbg("ERROR: server_discard_card: player_id='%s' is not the current player" % [player_id])
+		error("server_discard_card: player_id='%s' is not the current player" % [player_id])
 		return
 	dbg("server_discard_card: player_id='%s' discarding card_key='%s', player_won=%s" % [player_id, card_key, player_won])
 	var sync_args = {
@@ -797,12 +797,12 @@ func _rpc_request_server_draw_card_from_discard_pile(player_id: String) -> void:
 
 func server_draw_card_from_discard_pile(player_id: String) -> void:
 	if is_not_server():
-		dbg("ERROR: server_draw_card_from_discard_pile: called on non-server peer")
+		error("server_draw_card_from_discard_pile: called on non-server peer")
 		return
 	server_check_if_stock_pile_empty_and_reshuffle()
 	var player_info = validate_current_player_turn(player_id)
 	if not player_info:
-		dbg("ERROR: server_draw_card_from_discard_pile: player_id='%s' is not the current player" % [player_id])
+		error("server_draw_card_from_discard_pile: player_id='%s' is not the current player" % [player_id])
 		return
 	dbg("server_draw_card_from_discard_pile: player_id='%s' drawing card from discard pile" % [player_id])
 	register_ack_sync_state('_rpc_give_top_discard_pile_card_to_player', {'next_state': 'PlayerDrewState'})
@@ -821,11 +821,11 @@ func _rpc_request_server_draw_card_from_stock_pile(player_id: String) -> void:
 
 func server_draw_card_from_stock_pile(player_id: String) -> void:
 	if is_not_server():
-		dbg("ERROR: server_draw_card_from_stock_pile: called on non-server peer")
+		error("server_draw_card_from_stock_pile: called on non-server peer")
 		return
 	var player_info = validate_current_player_turn(player_id)
 	if not player_info:
-		dbg("ERROR: server_draw_card_from_stock_pile: player_id='%s' is not the current player" % [player_id])
+		error("server_draw_card_from_stock_pile: player_id='%s' is not the current player" % [player_id])
 		return
 	if has_outstanding_buy_request():
 		allow_outstanding_buy_request(player_id)
@@ -854,14 +854,14 @@ func _rpc_request_server_request_to_buy_card_from_discard_pile(player_id: String
 
 func server_request_to_buy_card_from_discard_pile(player_id: String) -> void:
 	if is_not_server():
-		dbg("ERROR: server_request_to_buy_card_from_discard_pile: called on non-server peer")
+		error("server_request_to_buy_card_from_discard_pile: called on non-server peer")
 		return
 	var player_info = validate_current_player_turn(player_id)
 	if player_info:
-		dbg("ERROR: server_request_to_buy_card_from_discard_pile: player_id='%s' IS the current player" % [player_id])
+		error("server_request_to_buy_card_from_discard_pile: player_id='%s' IS the current player" % [player_id])
 		return
 	if len(discard_pile) == 0:
-		dbg("ERROR: server_request_to_buy_card_from_discard_pile: discard pile is empty")
+		error("server_request_to_buy_card_from_discard_pile: discard pile is empty")
 		return
 	var top_card = discard_pile[0] as PlayingCard
 	dbg("server_request_to_buy_card_from_discard_pile: player_id='%s' requesting to buy card '%s' from discard pile" % [player_id, top_card.key])
@@ -875,7 +875,7 @@ func _rpc_give_top_discard_pile_card_to_player(player_id: String) -> void:
 	game_state.current_buy_request_player_ids = {} # clear all buy requests
 	game_state_updated_signal.emit()
 	if len(discard_pile) == 0:
-		dbg("ERROR: _rpc_give_top_discard_pile_card_to_player: discard pile is empty")
+		error("_rpc_give_top_discard_pile_card_to_player: discard pile is empty")
 		return
 	var top_card = discard_pile.pop_front() as PlayingCard
 	var player_is_me = private_player_info.id == player_id
@@ -904,7 +904,7 @@ func _rpc_give_top_stock_pile_card_to_player(player_id: String) -> void:
 	game_state.current_buy_request_player_ids = {} # clear all buy requests
 	game_state_updated_signal.emit()
 	if len(stock_pile) == 0:
-		dbg("ERROR: _rpc_give_top_stock_pile_card_to_player: stock pile is empty")
+		error("_rpc_give_top_stock_pile_card_to_player: stock pile is empty")
 		return
 	var top_card = stock_pile.pop_front() as PlayingCard
 	var player_is_me = private_player_info.id == player_id
@@ -933,7 +933,7 @@ func _rpc_move_player_card_to_discard_pile(player_id: String, card_key: String, 
 	dbg("received RPC _rpc_move_player_card_to_discard_pile: player_id='%s', card_key='%s', player_won=%s" % [player_id, card_key, player_won])
 	var top_card = playing_cards.get(card_key) as PlayingCard
 	if not top_card:
-		dbg("ERROR: _rpc_move_player_card_to_discard_pile: unable to find card_key='%s' in playing_cards" % [card_key])
+		error("_rpc_move_player_card_to_discard_pile: unable to find card_key='%s' in playing_cards" % [card_key])
 		return
 	discard_pile.push_front(top_card)
 	var player_is_me = private_player_info.id == player_id
@@ -953,7 +953,7 @@ func _rpc_move_player_card_to_discard_pile(player_id: String, card_key: String, 
 
 func allow_player_to_buy_card_from_discard_pile(buying_player_id: String) -> void:
 	if is_not_server():
-		dbg("ERROR: allow_player_to_buy_card_from_discard_pile called on a client")
+		error("allow_player_to_buy_card_from_discard_pile called on a client")
 		return
 	dbg("allow_player_to_buy_card_from_discard_pile: buying_player_id='%s'" % [buying_player_id])
 	game_state.current_buy_request_player_ids = {} # clear all buy requests
@@ -963,7 +963,7 @@ func allow_player_to_buy_card_from_discard_pile(buying_player_id: String) -> voi
 
 func deal_penalty_card_to_player(buying_player_id: String) -> void:
 	if is_not_server():
-		dbg("ERROR: deal_penalty_card_to_player called on a client")
+		error("deal_penalty_card_to_player called on a client")
 		return
 	register_ack_sync_state('_rpc_give_top_stock_pile_card_to_player', {'emit': 'new_card_exposed_on_discard_pile_signal'})
 	_rpc_give_top_stock_pile_card_to_player.rpc(buying_player_id)
@@ -987,11 +987,11 @@ func _rpc_request_server_personally_meld_hand(player_id: String, hand_evaluation
 
 func server_personally_meld_hand(player_id: String, hand_evaluation: Dictionary) -> void:
 	if is_not_server():
-		dbg("ERROR: server_personally_meld_hand: called on non-server peer")
+		error("server_personally_meld_hand: called on non-server peer")
 		return
 	var player_info = validate_current_player_turn(player_id)
 	if not player_info:
-		dbg("ERROR: server_personally_meld_hand: player_id='%s' is not the current player" % [player_id])
+		error("server_personally_meld_hand: player_id='%s' is not the current player" % [player_id])
 		return
 	dbg("server_personally_meld_hand: player_id='%s' hand_evaluation=%s" % [player_id, hand_evaluation])
 	var turn_index = player_info['turn_index']
@@ -1012,7 +1012,7 @@ func _rpc_personally_meld_cards_only(player_id: String, hand_evaluation: Diction
 	# 	var card_key = hand_evaluation['recommended_discards'][0]
 	# 	var top_card = playing_cards.get(card_key) as PlayingCard
 	# 	if not top_card:
-	# 		dbg("ERROR: _rpc_personally_meld_cards_only: unable to find card_key='%s' in playing_cards" % [card_key])
+	# 		error("_rpc_personally_meld_cards_only: unable to find card_key='%s' in playing_cards" % [card_key])
 	# 		return
 	# 	discard_pile.push_front(top_card)
 	# 	_remove_card_from_player_hand(card_key, player_id) # Discard the highest score card.
@@ -1061,11 +1061,11 @@ func _rpc_request_server_meld_card_to_public_meld(player_id: String, card_key: S
 
 func server_meld_card_to_public_meld(player_id: String, card_key: String, target_player_id: String, meld_group_index: int) -> void:
 	if is_not_server():
-		dbg("ERROR: server_meld_card_to_public_meld: called on non-server peer")
+		error("server_meld_card_to_public_meld: called on non-server peer")
 		return
 	var player_info = validate_current_player_turn(player_id)
 	if not player_info:
-		dbg("ERROR: server_meld_card_to_public_meld: player_id='%s' is not the current player" % [player_id])
+		error("server_meld_card_to_public_meld: player_id='%s' is not the current player" % [player_id])
 		return
 	dbg("server_meld_card_to_public_meld: player_id='%s', card_key='%s', target_player_id='%s', meld_group_index=%d" %
 		[player_id, card_key, target_player_id, meld_group_index])
@@ -1114,7 +1114,7 @@ func _rpc_request_server_ack_sync_completed(operation_name: String) -> void:
 
 func server_ack_sync_completed(peer_id: int, operation_name: String) -> void:
 	if is_not_server():
-		dbg("ERROR: SYNC: server_ack_sync_completed(peer_id=%d, operation_name='%s'): called on non-server peer" %
+		error("SYNC: server_ack_sync_completed(peer_id=%d, operation_name='%s'): called on non-server peer" %
 			[peer_id, operation_name])
 		return
 	if not operation_name in ack_sync_state:
@@ -1159,7 +1159,7 @@ func server_ack_sync_completed(peer_id: int, operation_name: String) -> void:
 			dbg("SYNC: server_ack_sync_completed(peer_id=%d, operation_name='%s'): calling deal_penalty_card_to_player(player_id='%s')" % [peer_id, operation_name, player_id])
 			deal_penalty_card_to_player(player_id)
 		else:
-			dbg("ERROR: SYNC: server_ack_sync_completed(peer_id=%d, operation_name='%s'): unknown emit signal: %s" % [peer_id, operation_name, emit_signal_name])
+			error("SYNC: server_ack_sync_completed(peer_id=%d, operation_name='%s'): unknown emit signal: %s" % [peer_id, operation_name, emit_signal_name])
 	if 'next_state' in operation_params:
 		var next_state = operation_params['next_state']
 		if next_state != '':
@@ -1171,14 +1171,14 @@ func server_ack_sync_completed(peer_id: int, operation_name: String) -> void:
 # Convenience function only to be used on the server.
 func send_transition_all_clients_state_to_signal(new_state: String) -> void:
 	if is_not_server():
-		dbg("ERROR: send_transition_all_clients_state_to_signal('%s') called on a client" % new_state)
+		error("send_transition_all_clients_state_to_signal('%s') called on a client" % new_state)
 		return
 	dbg("SYNC: send_transition_all_clients_state_to_signal('%s'): transitioning all clients to new state" % [new_state])
 	transition_all_clients_state_to_signal.emit(new_state)
 
 func register_ack_sync_state(operation_name: String, sync_args: Dictionary = {}) -> void:
 	if is_not_server():
-		dbg("ERROR: register_ack_sync_state('%s') called on a client: sync_args=%s" % [operation_name, str(sync_args)])
+		error("register_ack_sync_state('%s') called on a client: sync_args=%s" % [operation_name, str(sync_args)])
 		return
 	ack_sync_state[operation_name] = sync_args
 	ack_sync_state[operation_name]['acks'] = {} # Initialize the acks dictionary.
@@ -1307,18 +1307,24 @@ func _rpc_send_stock_pile_order_to_clients(stock_pile_order: Array) -> void:
 	# 	var card = stock_pile[card_idx]
 	# 	var expected_z_index = new_index_by_key.get(card.key)
 	# 	if card.z_index != expected_z_index:
-	# 		dbg("ERROR! Card '%s' z_index mismatch: %d != %d" % [card.key, card.z_index, expected_z_index])
+	# 		error("Card '%s' z_index mismatch: %d != %d" % [card.key, card.z_index, expected_z_index])
 	# 	dbg("stock_pile[%d]: key='%s', z_index=%d, position=%s" % [card_idx, card.key, card.z_index, str(card.position)])
 	ack_sync_completed('synchronize_all_stock_piles')
 
 ################################################################################
-## DEBUG
+## DEBUG/ERRORS
 ################################################################################
 
 func dbg(s: String) -> void:
 	var my_peer_id = multiplayer.get_unique_id()
 	var display_id = "(%10d)" % my_peer_id if my_peer_id != 1 else "(SERVER)    "
 	print("%d: %s: %s" % [get_system_time_msec(), display_id, s])
+
+var error_count = 0 # for unit testing purposes
+
+func error(s: String) -> void:
+	error_count += 1
+	dbg("ERROR(%d): %s" % [error_count, s])
 
 func get_system_time_msec() -> int:
 	return int(1000.0 * Time.get_unix_time_from_system())

@@ -141,7 +141,7 @@ func do_i_want_discard_card(current_hand_stats: Dictionary, current_eval_score: 
 	# and the discard card does not show up in the 'recommended_discards' array,
 	# then we want to draw the discard card.
 	if eval_score_with_discard > current_eval_score and discard_key_in_discards:
-		Global.dbg("ERROR: BOT('%s'): do_i_want_discard_card: eval_score_with_discard=%d > current_eval_score=%d, discard_key_in_discards=%s" % [get_bot_name(), eval_score_with_discard, current_eval_score, str(discard_key_in_discards)])
+		Global.error("BOT('%s'): do_i_want_discard_card: eval_score_with_discard=%d > current_eval_score=%d, discard_key_in_discards=%s" % [get_bot_name(), eval_score_with_discard, current_eval_score, str(discard_key_in_discards)])
 	elif eval_score_with_discard > current_eval_score:
 		# Global.dbg("BOT('%s'): do_i_want_discard_card: eval_score_with_discard=%d > current_eval_score=%d, want_discard_card=true" % [get_bot_name(), eval_score_with_discard, current_eval_score])
 		return true
@@ -164,7 +164,7 @@ func discard_random_card(except_last_drawn_card_key: String) -> void:
 	# pick a random card from bot_private_player_info.card_keys_in_hand array
 	var card_keys_in_hand = bot_private_player_info.card_keys_in_hand
 	if card_keys_in_hand.size() == 0:
-		Global.dbg("ERROR: BOT('%s'): No cards in hand to discard!" % get_bot_name())
+		Global.error("BOT('%s'): No cards in hand to discard!" % get_bot_name())
 		return
 	var card_key = ''
 	var stripped_last_drawn_card = Global.strip_deck_from_card_key(except_last_drawn_card_key)

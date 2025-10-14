@@ -203,7 +203,7 @@ func _start_udp_discovery_server():
 	if result == OK:
 		Global.dbg("Discovery server listening on port: %s" % Global.DISCOVERY_PORT)
 	else:
-		Global.dbg("ERROR: Failed to start discovery server: %s" % result)
+		Global.error("Failed to start discovery server: %s" % result)
 
 func _start_udp_discovery_client():
 	_stop_udp_discovery()
@@ -283,13 +283,13 @@ func _scan_for_servers():
 			# Global.dbg("Bound client to port: %s:%d" % [current_ip_address, client_port])
 			break
 		if attempt == 9:
-			Global.dbg("ERROR: Failed to bind client socket")
+			Global.error("Failed to bind client socket")
 			return
 
 	client_socket.set_broadcast_enabled(true)
 
 	if client_socket.set_dest_address(broadcast_ip, Global.DISCOVERY_PORT) != OK:
-		Global.dbg("ERROR: Failed to set destination address")
+		Global.error("Failed to set destination address")
 		client_socket.close()
 		return
 
@@ -297,7 +297,7 @@ func _scan_for_servers():
 	# Global.dbg("Sending discovery request from port %d to %s:%d" % [client_port, broadcast_ip, Global.DISCOVERY_PORT])
 
 	if client_socket.put_packet(message.to_utf8_buffer()) != OK:
-		Global.dbg("ERROR: Failed to send discovery request")
+		Global.error("Failed to send discovery request")
 		client_socket.close()
 		return
 
@@ -353,9 +353,9 @@ func parse_server_response(response: String, ip: String):
 			$PanelPositionControl/StartGamePanel/IPLineEdit.text = ip_addresses[current_ip_address_idx]
 			Global.dbg("Updated IP addresses: %s" % str(ip_addresses))
 		else:
-			Global.dbg("ERROR: 'host_name' not found in server response: %s" % response)
+			Global.error("'host_name' not found in server response: %s" % response)
 	else:
-		Global.dbg("ERROR: Failed to parse server response: %s" % response)
+		Global.error("Failed to parse server response: %s" % response)
 
 
 func _on_ip_line_edit_text_changed(new_text: String) -> void:

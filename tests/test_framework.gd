@@ -101,7 +101,7 @@ func run_test_suite(test_suite_name: String, test_functions: Array) -> bool:
 
 		var result = test_func.call()
 		# print("GML: test '%s' result: %s" % [test_name, str(result)])
-		if result == null or result == false or current_test_failed:
+		if result == null or result == false or current_test_failed or Global.error_count > 0:
 			print("GML: test '%s' result: %s - test failed" % [test_name, str(result)])
 			# Don't quit here - let the test runner handle exit codes
 			return false
