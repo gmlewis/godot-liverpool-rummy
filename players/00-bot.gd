@@ -857,7 +857,12 @@ func _find_groups_can_be_publicly_melded(hand_stats: Dictionary, all_public_meld
 		if not rank in all_public_meld_stats['by_rank']:
 			continue
 		var pub_melds = all_public_meld_stats['by_rank'][rank]
-		possible_group_melds[rank] = pub_melds
+		var group_melds = []
+		for meld in pub_melds:
+			if meld['meld_group_type'] == 'group':
+				group_melds.append(meld)
+		if len(group_melds) > 0:
+			possible_group_melds[rank] = group_melds
 	return possible_group_melds
 
 func _can_card_be_used_in_run(card_key: String, run_cards: Array) -> bool:
