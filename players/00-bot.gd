@@ -359,6 +359,7 @@ func _evaluate_hand_pre_meld(round_num: int, hand_stats: Dictionary, all_public_
 
 	# Meld groups first
 	var melded_groups = 0
+	var melded_runs = 0
 
 	# First, try to meld joker-only groups if we have enough jokers
 	if num_groups > 0 and len(available_jokers) >= 3:
@@ -370,6 +371,18 @@ func _evaluate_hand_pre_meld(round_num: int, hand_stats: Dictionary, all_public_
 			acc['can_be_personally_melded'].append({
 				'type': 'group',
 				'card_keys': joker_group
+			})
+
+	# Then try to meld joker-only runs if we still need runs
+	if num_runs > 0 and len(available_jokers) >= 4:
+		while melded_runs < num_runs and len(available_jokers) >= 4:
+			var joker_run = available_jokers.slice(0, 4)
+			available_jokers = available_jokers.slice(4)
+			mark_all_as_used.call(joker_run)
+			melded_runs += 1
+			acc['can_be_personally_melded'].append({
+				'type': 'run',
+				'card_keys': joker_run
 			})
 
 	# Then meld regular groups
@@ -401,7 +414,6 @@ func _evaluate_hand_pre_meld(round_num: int, hand_stats: Dictionary, all_public_
 			})
 
 	# Meld runs second
-	var melded_runs = 0
 	for run_idx in range(num_runs):
 		if melded_runs >= len(hand_stats['runs_of_4_plus']) or run_idx >= len(hand_stats['runs_of_4_plus']):
 			break
