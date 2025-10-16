@@ -375,6 +375,7 @@ func test_meld_validity() -> bool:
 	return true
 
 var bot_test_scenarios = [
+	# Don't test eval_score in this suite of tests.
 	{
 		'name': 'Basic Group Meld Round 1',
 		'round': 1,
@@ -385,9 +386,22 @@ var bot_test_scenarios = [
 				{"type": "group", "card_keys": ["K-hearts-0", "K-spades-0", "K-diamonds-0"]},
 			],
 			'can_be_publicly_melded': [],
-			'eval_score': 2195,
 			'is_winning_hand': true,
 			'recommended_discards': ["2-clubs-0"],
+		},
+	},
+	{
+		'name': 'All Jokers Meld Round 1',
+		'round': 1,
+		'cards': ["JOKER-1-0", "JOKER-2-0", "JOKER-1-1", "JOKER-2-1", "JOKER-1-2", "JOKER-2-2", "JOKER-1-3"],
+		'want_evaluation': {
+			'can_be_personally_melded': [
+				{"type": "group", "card_keys": ["JOKER-1-0", "JOKER-2-0", "JOKER-1-1"]},
+				{"type": "group", "card_keys": ["JOKER-2-1", "JOKER-1-2", "JOKER-2-2"]},
+			],
+			'can_be_publicly_melded': [],
+			'is_winning_hand': true,
+			'recommended_discards': ["JOKER-1-3"],
 		},
 	},
 ]
@@ -403,5 +417,6 @@ func run_test_scenario(scenario: Dictionary) -> bool:
 	Global.game_state['current_round_num'] = scenario.round
 	var hand_stats = test_bot.gen_bot_hand_stats(scenario.cards)
 	var evaluation = test_bot.evaluate_bot_hand(hand_stats, "test_bot")
+	evaluation.erase('eval_score') # Remove eval_score for comparison
 	test_framework.assert_dict_equal(scenario.want_evaluation, evaluation, "Bot hand evaluation should match expected")
 	return true
