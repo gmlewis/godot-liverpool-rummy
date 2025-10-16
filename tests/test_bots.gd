@@ -580,6 +580,22 @@ var bot_test_scenarios = [
 			'recommended_discards': [],
 		},
 	},
+	# Bugs found during manual game testing
+	{
+		'name': 'Bug in Round 2 with winning bot',
+		'round': 2,
+		'cards': ['3-spades-0'],
+		'played_to_table': [
+			{'type': 'group', 'card_keys': ['7-hearts-0', '7-spades-0', '7-clubs-0']},
+			{'type': 'run', 'card_keys': ['2-hearts-0', '3-hearts-0', 'JOKER-1-0', '4-hearts-0']}
+		],
+		'want_evaluation': {
+			'can_be_personally_melded': [],
+			'can_be_publicly_melded': [],
+			'is_winning_hand': true,
+			'recommended_discards': ['3-spades-0'],
+		},
+	},
 ]
 
 func test_bot_scenarios() -> bool:
@@ -591,6 +607,10 @@ func test_bot_scenarios() -> bool:
 
 func run_test_scenario(scenario: Dictionary) -> bool:
 	Global.game_state['current_round_num'] = scenario.round
+	if 'played_to_table' in scenario:
+		Global.game_state.public_players_info[2]['played_to_table'] = scenario.played_to_table
+	else:
+		Global.game_state.public_players_info[2]['played_to_table'] = []
 	var hand_stats = test_bot.gen_bot_hand_stats(scenario.cards)
 	var evaluation = test_bot.evaluate_bot_hand(hand_stats, "test_bot")
 	evaluation.erase('eval_score') # Remove eval_score for comparison
