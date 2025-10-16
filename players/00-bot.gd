@@ -236,7 +236,6 @@ func gen_bot_hand_stats(card_keys_in_hand: Array) -> Dictionary:
 	var groups_of_3_plus = []
 	var groups_of_2 = []
 	for rank in hand_stats['by_rank'].keys():
-		# if rank == 'JOKER': continue
 		var cards = hand_stats['by_rank'][rank]
 		if len(cards) >= 3:
 			groups_of_3_plus.append(cards)
@@ -360,9 +359,25 @@ func _evaluate_hand_pre_meld(round_num: int, hand_stats: Dictionary, all_public_
 
 	# Meld groups first
 	var melded_groups = 0
+
+	# First, try to meld joker-only groups if we have enough jokers
+	if num_groups > 0 and len(available_jokers) >= 3:
+		while melded_groups < num_groups and len(available_jokers) >= 3:
+			var joker_group = available_jokers.slice(0, 3)
+			available_jokers = available_jokers.slice(3)
+			mark_all_as_used.call(joker_group)
+			melded_groups += 1
+			acc['can_be_personally_melded'].append({
+				'type': 'group',
+				'card_keys': joker_group
+			})
+
+	# Then meld regular groups
 	for group_idx in range(num_groups):
 		Global.dbg("GML: group_idx=%d, melded_groups=%d, len(groups_of_3_plus)=%d" % [group_idx, melded_groups, len(hand_stats['groups_of_3_plus'])])
-		if melded_groups >= len(hand_stats['groups_of_3_plus']) or group_idx >= len(hand_stats['groups_of_3_plus']):
+		if melded_groups >= num_groups:
+			break
+		if group_idx >= len(hand_stats['groups_of_3_plus']):
 			break
 		var hand = hand_stats['groups_of_3_plus'][group_idx]
 		var available_cards = _filter_available_cards(hand, already_used)
