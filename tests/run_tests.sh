@@ -36,13 +36,12 @@ run_tests() {
             print_colored $BLUE "Running all tests..."
             # Capture both stdout and stderr
             local output
-            output=$(godot $godot_args tests/test_scene.tscn 2>&1)
-            local exit_code=$?
-            echo "$output"
+            output=$(godot $godot_args tests/test_scene.tscn 2>&1 | tee /dev/tty)
+            local exit_code=${PIPESTATUS[0]}
 
             # Check for SCRIPT ERROR messages in output
-            if echo "$output" | grep -q "SCRIPT ERROR"; then
-                print_colored $RED "✗ SCRIPT ERROR detected in output - failing test run"
+            if echo "$output" | grep -q -e "ERROR" -e "FAILED"; then
+                print_colored $RED "✗ SCRIPT ERROR or FAILED detected in output - failing test run"
                 return 1
             fi
 
@@ -52,13 +51,12 @@ run_tests() {
             print_colored $BLUE "Running smoke tests..."
             # Capture both stdout and stderr
             local output
-            output=$(godot $godot_args --script tests/test_runner.gd -- --quick 2>&1)
-            local exit_code=$?
-            echo "$output"
+            output=$(godot $godot_args --script tests/test_runner.gd -- --quick 2>&1 | tee /dev/tty)
+            local exit_code=${PIPESTATUS[0]}
 
             # Check for SCRIPT ERROR messages in output
-            if echo "$output" | grep -q "SCRIPT ERROR"; then
-                print_colored $RED "✗ SCRIPT ERROR detected in output - failing test run"
+            if echo "$output" | grep -q -e "ERROR" -e "FAILED"; then
+                print_colored $RED "✗ SCRIPT ERROR or FAILED detected in output - failing test run"
                 return 1
             fi
 
@@ -68,13 +66,12 @@ run_tests() {
             print_colored $BLUE "Running hand evaluation tests..."
             # Capture both stdout and stderr
             local output
-            output=$(godot $godot_args tests/test_scene.tscn -- test_type=hand 2>&1)
-            local exit_code=$?
-            echo "$output"
+            output=$(godot $godot_args tests/test_scene.tscn -- test_type=hand 2>&1 | tee /dev/tty)
+            local exit_code=${PIPESTATUS[0]}
 
             # Check for SCRIPT ERROR messages in output
-            if echo "$output" | grep -q "SCRIPT ERROR"; then
-                print_colored $RED "✗ SCRIPT ERROR detected in output - failing test run"
+            if echo "$output" | grep -q -e "ERROR" -e "FAILED"; then
+                print_colored $RED "✗ SCRIPT ERROR or FAILED detected in output - failing test run"
                 return 1
             fi
 
@@ -84,13 +81,12 @@ run_tests() {
             print_colored $BLUE "Running card logic tests..."
             # Capture both stdout and stderr
             local output
-            output=$(godot $godot_args tests/test_scene.tscn -- test_type=card 2>&1)
-            local exit_code=$?
-            echo "$output"
+            output=$(godot $godot_args tests/test_scene.tscn -- test_type=card 2>&1 | tee /dev/tty)
+            local exit_code=${PIPESTATUS[0]}
 
             # Check for SCRIPT ERROR messages in output
-            if echo "$output" | grep -q "SCRIPT ERROR"; then
-                print_colored $RED "✗ SCRIPT ERROR detected in output - failing test run"
+            if echo "$output" | grep -q -e "ERROR" -e "FAILED"; then
+                print_colored $RED "✗ SCRIPT ERROR or FAILED detected in output - failing test run"
                 return 1
             fi
 
@@ -100,13 +96,12 @@ run_tests() {
             print_colored $BLUE "Running game state tests..."
             # Capture both stdout and stderr
             local output
-            output=$(godot $godot_args tests/test_scene.tscn -- test_type=state 2>&1)
-            local exit_code=$?
-            echo "$output"
+            output=$(godot $godot_args tests/test_scene.tscn -- test_type=state 2>&1 | tee /dev/tty)
+            local exit_code=${PIPESTATUS[0]}
 
             # Check for SCRIPT ERROR messages in output
-            if echo "$output" | grep -q "SCRIPT ERROR"; then
-                print_colored $RED "✗ SCRIPT ERROR detected in output - failing test run"
+            if echo "$output" | grep -q -e "ERROR" -e "FAILED"; then
+                print_colored $RED "✗ SCRIPT ERROR or FAILED detected in output - failing test run"
                 return 1
             fi
 
@@ -116,13 +111,12 @@ run_tests() {
             print_colored $BLUE "Running multiplayer sync tests..."
             # Capture both stdout and stderr
             local output
-            output=$(godot $godot_args tests/test_scene.tscn -- test_type=sync 2>&1)
-            local exit_code=$?
-            echo "$output"
+            output=$(godot $godot_args tests/test_scene.tscn -- test_type=sync 2>&1 | tee /dev/tty)
+            local exit_code=${PIPESTATUS[0]}
 
             # Check for SCRIPT ERROR messages in output
-            if echo "$output" | grep -q "SCRIPT ERROR"; then
-                print_colored $RED "✗ SCRIPT ERROR detected in output - failing test run"
+            if echo "$output" | grep -q -e "ERROR" -e "FAILED"; then
+                print_colored $RED "✗ SCRIPT ERROR or FAILED detected in output - failing test run"
                 return 1
             fi
 
@@ -132,13 +126,12 @@ run_tests() {
             print_colored $BLUE "Running bot AI tests..."
             # Capture both stdout and stderr
             local output
-            output=$(godot $godot_args tests/test_scene.tscn -- test_type=bots 2>&1)
-            local exit_code=$?
-            echo "$output"
+            output=$(godot $godot_args tests/test_scene.tscn -- test_type=bots 2>&1 | tee /dev/tty)
+            local exit_code=${PIPESTATUS[0]}
 
             # Check for SCRIPT ERROR messages in output
-            if echo "$output" | grep -q "SCRIPT ERROR"; then
-                print_colored $RED "✗ SCRIPT ERROR detected in output - failing test run"
+            if echo "$output" | grep -q -e "ERROR" -e "FAILED"; then
+                print_colored $RED "✗ SCRIPT ERROR or FAILED detected in output - failing test run"
                 return 1
             fi
 

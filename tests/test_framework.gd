@@ -60,7 +60,7 @@ func assert_in_range(value: float, min_val: float, max_val: float, message: Stri
 	if value < min_val or value > max_val:
 		fail_test("Expected value %f to be in range [%f, %f]" % [value, min_val, max_val] + (" - " + message if message else ""))
 
-func assert_dict_equal(dict_a: Dictionary, dict_b: Dictionary, message: String = "") -> void:
+func assert_dict_equal(dict_a: Dictionary, dict_b: Dictionary, message: String = "") -> bool:
 	var a_keys = dict_a.keys()
 	a_keys.sort()
 	var b_keys = dict_b.keys()
@@ -69,11 +69,18 @@ func assert_dict_equal(dict_a: Dictionary, dict_b: Dictionary, message: String =
 		Global.error("assert_dict_equal: dict_a keys: %s" % str(a_keys))
 		Global.error("assert_dict_equal: dict_b keys: %s" % str(b_keys))
 		fail_test("Dictionaries have different keys" + (" - " + message if message else ""))
-		return
+		return false
 	for key in dict_a.keys():
-		if dict_a[key] != dict_b[key]:
+		if typeof(dict_a[key]) != typeof(dict_b[key]):
+			fail_test("Dictionaries differ at key '%s': type mismatch '%s' vs '%s'" % [str(key), str(dict_a[key]), str(dict_b[key])] + (" - " + message if message else ""))
+			return false
+		if typeof(dict_a[key]) == TYPE_DICTIONARY:
+			if not assert_dict_equal(dict_a[key], dict_b[key], "at key '%s'" % str(key)):
+				return false
+		elif dict_a[key] != dict_b[key]:
 			fail_test("Dictionaries differ at key '%s': expected '%s', got '%s'" % [str(key), str(dict_a[key]), str(dict_b[key])] + (" - " + message if message else ""))
-			return
+			return false
+	return true
 
 # Test lifecycle methods
 var current_test_failed: bool = false
