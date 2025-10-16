@@ -377,7 +377,7 @@ func test_meld_validity() -> bool:
 var bot_test_scenarios = [
 	# Don't test eval_score in this suite of tests.
 	{
-		'name': 'Basic Group Meld Round 1',
+		'name': 'Basic 2 Groups Meld Round 1',
 		'round': 1,
 		'cards': ["A-hearts-0", "A-spades-0", "A-diamonds-0", "K-hearts-0", "K-spades-0", "K-diamonds-0", "2-clubs-0"],
 		'want_evaluation': {
@@ -458,6 +458,36 @@ var bot_test_scenarios = [
 			'can_be_publicly_melded': [],
 			'is_winning_hand': true,
 			'recommended_discards': ["JOKER-1-4"],
+		},
+	},
+		{
+		'name': 'Basic 3 Groups Meld Round 4',
+		'round': 4,
+		'cards': ["A-hearts-0", "A-spades-0", "A-diamonds-0", "K-hearts-0", "K-spades-0", "K-diamonds-0", "7-hearts-0", "7-spades-0", "7-diamonds-0", "2-clubs-0"],
+		'want_evaluation': {
+			'can_be_personally_melded': [
+				{"type": "group", "card_keys": ["A-hearts-0", "A-spades-0", "A-diamonds-0"]},
+				{"type": "group", "card_keys": ["K-hearts-0", "K-spades-0", "K-diamonds-0"]},
+				{"type": "group", "card_keys": ["7-hearts-0", "7-spades-0", "7-diamonds-0"]},
+			],
+			'can_be_publicly_melded': [],
+			'is_winning_hand': true,
+			'recommended_discards': ["2-clubs-0"],
+		},
+	},
+	{
+		'name': 'All Jokers Meld Round 4',
+		'round': 4,
+		'cards': ["JOKER-1-0", "JOKER-2-0", "JOKER-1-1", "JOKER-2-1", "JOKER-1-2", "JOKER-2-2", "JOKER-1-3", "JOKER-2-3", "JOKER-1-4", "JOKER-2-4"],
+		'want_evaluation': {
+			'can_be_personally_melded': [
+				{"type": "group", "card_keys": ["JOKER-1-0", "JOKER-2-0", "JOKER-1-1"]},
+				{"type": "group", "card_keys": ["JOKER-2-1", "JOKER-1-2", "JOKER-2-2"]},
+				{"type": "group", "card_keys": ["JOKER-1-3", "JOKER-2-3", "JOKER-1-4"]},
+			],
+			'can_be_publicly_melded': [],
+			'is_winning_hand': true,
+			'recommended_discards': ["JOKER-2-4"],
 		},
 	},
 ]
