@@ -63,6 +63,21 @@ func setup_mock_data():
 func run_all_tests() -> bool:
 	return test_framework.discover_and_run_test_suite("Bots Tests", self)
 
+func cleanup_test_resources() -> void:
+	# Clean up test bot and any other resources
+	if test_bot and is_instance_valid(test_bot):
+		if test_bot.is_inside_tree():
+			remove_child(test_bot)
+		test_bot.queue_free()
+	test_bot = null
+
+	# Clean up test framework
+	if test_framework and is_instance_valid(test_framework):
+		if test_framework.is_inside_tree():
+			remove_child(test_framework)
+		test_framework.queue_free()
+	test_framework = null
+
 func test_gen_hand_stats_basic() -> bool:
 	var cards = ["A-hearts-0", "A-spades-0", "K-hearts-0", "2-hearts-0"]
 	var stats = test_bot.gen_bot_hand_stats(cards)
@@ -359,17 +374,225 @@ func test_meld_validity() -> bool:
 			test_framework.assert_true(Global.is_valid_run(card_keys), "Run must be valid sequence")
 	return true
 
-func cleanup_test_resources() -> void:
-	# Clean up test bot and any other resources
-	if test_bot and is_instance_valid(test_bot):
-		if test_bot.is_inside_tree():
-			remove_child(test_bot)
-		test_bot.queue_free()
-	test_bot = null
+var bot_test_scenarios = [
+	# Don't test eval_score in this suite of tests.
+	{
+		'name': 'Basic 2 Groups Meld Round 1',
+		'round': 1,
+		'cards': ["A-hearts-0", "A-spades-0", "A-diamonds-0", "K-hearts-0", "K-spades-0", "K-diamonds-0", "2-clubs-0"],
+		'want_evaluation': {
+			'can_be_personally_melded': [
+				{"type": "group", "card_keys": ["A-hearts-0", "A-spades-0", "A-diamonds-0"]},
+				{"type": "group", "card_keys": ["K-hearts-0", "K-spades-0", "K-diamonds-0"]},
+			],
+			'can_be_publicly_melded': [],
+			'is_winning_hand': true,
+			'recommended_discards': ["2-clubs-0"],
+		},
+	},
+	{
+		'name': 'All Jokers Meld Round 1',
+		'round': 1,
+		'cards': ["JOKER-1-0", "JOKER-2-0", "JOKER-1-1", "JOKER-2-1", "JOKER-1-2", "JOKER-2-2", "JOKER-1-3"],
+		'want_evaluation': {
+			'can_be_personally_melded': [
+				{"type": "group", "card_keys": ["JOKER-1-0", "JOKER-2-0", "JOKER-1-1"]},
+				{"type": "group", "card_keys": ["JOKER-2-1", "JOKER-1-2", "JOKER-2-2"]},
+			],
+			'can_be_publicly_melded': [],
+			'is_winning_hand': true,
+			'recommended_discards': ["JOKER-1-3"],
+		},
+	},
+	{
+		'name': 'Basic Group+Run Meld Round 2',
+		'round': 2,
+		'cards': ["A-hearts-0", "A-spades-0", "A-diamonds-0", "4-hearts-0", "5-hearts-0", "6-hearts-0", "7-hearts-0", "2-clubs-0"],
+		'want_evaluation': {
+			'can_be_personally_melded': [
+				{"type": "group", "card_keys": ["A-hearts-0", "A-spades-0", "A-diamonds-0"]},
+				{"type": "run", "card_keys": ["4-hearts-0", "5-hearts-0", "6-hearts-0", "7-hearts-0"]},
+			],
+			'can_be_publicly_melded': [],
+			'is_winning_hand': true,
+			'recommended_discards': ["2-clubs-0"],
+		},
+	},
+	{
+		'name': 'All Jokers Meld Round 2',
+		'round': 2,
+		'cards': ["JOKER-1-0", "JOKER-2-0", "JOKER-1-1", "JOKER-2-1", "JOKER-1-2", "JOKER-2-2", "JOKER-1-3", "JOKER-2-3"],
+		'want_evaluation': {
+			'can_be_personally_melded': [
+				{"type": "group", "card_keys": ["JOKER-1-0", "JOKER-2-0", "JOKER-1-1"]},
+				{"type": "run", "card_keys": ["JOKER-2-1", "JOKER-1-2", "JOKER-2-2", "JOKER-1-3"]},
+			],
+			'can_be_publicly_melded': [],
+			'is_winning_hand': true,
+			'recommended_discards': ["JOKER-2-3"],
+		},
+	},
+	{
+		'name': 'Basic 2 Runs Meld Round 3',
+		'round': 3,
+		'cards': ["A-clubs-0", "2-clubs-0", "3-clubs-0", "4-clubs-0", "4-hearts-0", "5-hearts-0", "6-hearts-0", "7-hearts-0", "2-spades-0"],
+		'want_evaluation': {
+			'can_be_personally_melded': [
+				{"type": "run", "card_keys": ["A-clubs-0", "2-clubs-0", "3-clubs-0", "4-clubs-0"]},
+				{"type": "run", "card_keys": ["4-hearts-0", "5-hearts-0", "6-hearts-0", "7-hearts-0"]},
+			],
+			'can_be_publicly_melded': [],
+			'is_winning_hand': true,
+			'recommended_discards': ["2-spades-0"],
+		},
+	},
+	{
+		'name': 'All Jokers Meld Round 3',
+		'round': 3,
+		'cards': ["JOKER-1-0", "JOKER-2-0", "JOKER-1-1", "JOKER-2-1", "JOKER-1-2", "JOKER-2-2", "JOKER-1-3", "JOKER-2-3", "JOKER-1-4"],
+		'want_evaluation': {
+			'can_be_personally_melded': [
+				{"type": "run", "card_keys": ["JOKER-1-0", "JOKER-2-0", "JOKER-1-1", "JOKER-2-1"]},
+				{"type": "run", "card_keys": ["JOKER-1-2", "JOKER-2-2", "JOKER-1-3", "JOKER-2-3"]},
+			],
+			'can_be_publicly_melded': [],
+			'is_winning_hand': true,
+			'recommended_discards': ["JOKER-1-4"],
+		},
+	},
+	{
+		'name': 'Basic 3 Groups Meld Round 4',
+		'round': 4,
+		'cards': ["A-hearts-0", "A-spades-0", "A-diamonds-0", "K-hearts-0", "K-spades-0", "K-diamonds-0", "7-hearts-0", "7-spades-0", "7-diamonds-0", "2-clubs-0"],
+		'want_evaluation': {
+			'can_be_personally_melded': [
+				{"type": "group", "card_keys": ["A-hearts-0", "A-spades-0", "A-diamonds-0"]},
+				{"type": "group", "card_keys": ["K-hearts-0", "K-spades-0", "K-diamonds-0"]},
+				{"type": "group", "card_keys": ["7-hearts-0", "7-spades-0", "7-diamonds-0"]},
+			],
+			'can_be_publicly_melded': [],
+			'is_winning_hand': true,
+			'recommended_discards': ["2-clubs-0"],
+		},
+	},
+	{
+		'name': 'All Jokers Meld Round 4',
+		'round': 4,
+		'cards': ["JOKER-1-0", "JOKER-2-0", "JOKER-1-1", "JOKER-2-1", "JOKER-1-2", "JOKER-2-2", "JOKER-1-3", "JOKER-2-3", "JOKER-1-4", "JOKER-2-4"],
+		'want_evaluation': {
+			'can_be_personally_melded': [
+				{"type": "group", "card_keys": ["JOKER-1-0", "JOKER-2-0", "JOKER-1-1"]},
+				{"type": "group", "card_keys": ["JOKER-2-1", "JOKER-1-2", "JOKER-2-2"]},
+				{"type": "group", "card_keys": ["JOKER-1-3", "JOKER-2-3", "JOKER-1-4"]},
+			],
+			'can_be_publicly_melded': [],
+			'is_winning_hand': true,
+			'recommended_discards': ["JOKER-2-4"],
+		},
+	},
+	{
+		'name': 'Basic 2 Groups + 1 Run Meld Round 5',
+		'round': 5,
+		'cards': ["A-hearts-0", "A-spades-0", "A-diamonds-0", "K-hearts-0", "K-spades-0", "K-diamonds-0", "4-hearts-0", "5-hearts-0", "6-hearts-0", "7-hearts-0", "2-spades-0"],
+		'want_evaluation': {
+			'can_be_personally_melded': [
+				{"type": "group", "card_keys": ["A-hearts-0", "A-spades-0", "A-diamonds-0"]},
+				{"type": "group", "card_keys": ["K-hearts-0", "K-spades-0", "K-diamonds-0"]},
+				{"type": "run", "card_keys": ["4-hearts-0", "5-hearts-0", "6-hearts-0", "7-hearts-0"]},
+			],
+			'can_be_publicly_melded': [],
+			'is_winning_hand': true,
+			'recommended_discards': ["2-spades-0"],
+		},
+	},
+	{
+		'name': 'All Jokers Meld Round 5',
+		'round': 5,
+		'cards': ["JOKER-1-0", "JOKER-2-0", "JOKER-1-1", "JOKER-2-1", "JOKER-1-2", "JOKER-2-2", "JOKER-1-3", "JOKER-2-3", "JOKER-1-4", "JOKER-2-4", "JOKER-1-5"],
+		'want_evaluation': {
+			'can_be_personally_melded': [
+				{"type": "group", "card_keys": ["JOKER-1-0", "JOKER-2-0", "JOKER-1-1"]},
+				{"type": "group", "card_keys": ["JOKER-2-1", "JOKER-1-2", "JOKER-2-2"]},
+				{"type": "run", "card_keys": ["JOKER-1-3", "JOKER-2-3", "JOKER-1-4", "JOKER-2-4"]},
+			],
+			'can_be_publicly_melded': [],
+			'is_winning_hand': true,
+			'recommended_discards': ["JOKER-1-5"],
+		},
+	},
+	{
+		'name': 'Basic 1 Group + 2 Runs Meld Round 6',
+		'round': 6,
+		'cards': ["A-hearts-0", "A-spades-0", "A-diamonds-0", "4-hearts-0", "5-hearts-0", "6-hearts-0", "7-hearts-0", "4-clubs-0", "5-clubs-0", "6-clubs-0", "7-clubs-0", "2-spades-0"],
+		'want_evaluation': {
+			'can_be_personally_melded': [
+				{"type": "group", "card_keys": ["A-hearts-0", "A-spades-0", "A-diamonds-0"]},
+				{"type": "run", "card_keys": ["4-clubs-0", "5-clubs-0", "6-clubs-0", "7-clubs-0"]},
+				{"type": "run", "card_keys": ["4-hearts-0", "5-hearts-0", "6-hearts-0", "7-hearts-0"]},
+			],
+			'can_be_publicly_melded': [],
+			'is_winning_hand': true,
+			'recommended_discards': ["2-spades-0"],
+		},
+	},
+	{
+		'name': 'All Jokers Meld Round 6',
+		'round': 6,
+		'cards': ["JOKER-1-0", "JOKER-2-0", "JOKER-1-1", "JOKER-2-1", "JOKER-1-2", "JOKER-2-2", "JOKER-1-3", "JOKER-2-3", "JOKER-1-4", "JOKER-2-4", "JOKER-1-5", "JOKER-2-5"],
+		'want_evaluation': {
+			'can_be_personally_melded': [
+				{"type": "group", "card_keys": ["JOKER-1-0", "JOKER-2-0", "JOKER-1-1"]},
+				{"type": "run", "card_keys": ["JOKER-2-1", "JOKER-1-2", "JOKER-2-2", "JOKER-1-3"]},
+				{"type": "run", "card_keys": ["JOKER-2-3", "JOKER-1-4", "JOKER-2-4", "JOKER-1-5"]},
+			],
+			'can_be_publicly_melded': [],
+			'is_winning_hand': true,
+			'recommended_discards': ["JOKER-2-5"],
+		},
+	},
+	{
+		'name': 'Basic 3 Runs Meld Round 7 - NO DISCARD',
+		'round': 7,
+		'cards': ["4-hearts-0", "5-hearts-0", "6-hearts-0", "7-hearts-0", "4-clubs-0", "5-clubs-0", "6-clubs-0", "7-clubs-0", "4-spades-0", "5-spades-0", "6-spades-0", "7-spades-0"],
+		'want_evaluation': {
+			'can_be_personally_melded': [
+				{"type": "run", "card_keys": ["4-clubs-0", "5-clubs-0", "6-clubs-0", "7-clubs-0"]},
+				{"type": "run", "card_keys": ["4-hearts-0", "5-hearts-0", "6-hearts-0", "7-hearts-0"]},
+				{"type": "run", "card_keys": ["4-spades-0", "5-spades-0", "6-spades-0", "7-spades-0"]},
+			],
+			'can_be_publicly_melded': [],
+			'is_winning_hand': true,
+			'recommended_discards': [],
+		},
+	},
+	{
+		'name': 'All Jokers Meld Round 7 - NO DISCARD',
+		'round': 7,
+		'cards': ["JOKER-1-0", "JOKER-2-0", "JOKER-1-1", "JOKER-2-1", "JOKER-1-2", "JOKER-2-2", "JOKER-1-3", "JOKER-2-3", "JOKER-1-4", "JOKER-2-4", "JOKER-1-5", "JOKER-2-5", "JOKER-1-6"],
+		'want_evaluation': {
+			'can_be_personally_melded': [
+				{"type": "run", "card_keys": ["JOKER-1-6", "JOKER-1-0", "JOKER-2-0", "JOKER-1-1", "JOKER-2-1"]},
+				{"type": "run", "card_keys": ["JOKER-1-2", "JOKER-2-2", "JOKER-1-3", "JOKER-2-3"]},
+				{"type": "run", "card_keys": ["JOKER-1-4", "JOKER-2-4", "JOKER-1-5", "JOKER-2-5"]},
+			],
+			'can_be_publicly_melded': [],
+			'is_winning_hand': true,
+			'recommended_discards': [],
+		},
+	},
+]
 
-	# Clean up test framework
-	if test_framework and is_instance_valid(test_framework):
-		if test_framework.is_inside_tree():
-			remove_child(test_framework)
-		test_framework.queue_free()
-	test_framework = null
+func test_bot_scenarios() -> bool:
+	for scenario in bot_test_scenarios:
+		var passed = run_test_scenario(scenario)
+		test_framework.assert_true(passed, "Scenario %s passed" % scenario.name)
+	Global.game_state['current_round_num'] = 1 # Reset
+	return true
+
+func run_test_scenario(scenario: Dictionary) -> bool:
+	Global.game_state['current_round_num'] = scenario.round
+	var hand_stats = test_bot.gen_bot_hand_stats(scenario.cards)
+	var evaluation = test_bot.evaluate_bot_hand(hand_stats, "test_bot")
+	evaluation.erase('eval_score') # Remove eval_score for comparison
+	test_framework.assert_dict_equal(scenario.want_evaluation, evaluation, "Bot hand evaluation should match expected")
+	return true

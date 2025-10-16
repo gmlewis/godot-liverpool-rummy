@@ -34,31 +34,122 @@ run_tests() {
     case $test_type in
         "all")
             print_colored $BLUE "Running all tests..."
-            godot $godot_args tests/test_scene.tscn
+            # Capture both stdout and stderr to a temp file
+            local temp_output=$(mktemp)
+            godot $godot_args tests/test_scene.tscn 2>&1 | tee "$temp_output"
+            local exit_code=${PIPESTATUS[0]}
+
+            # Check for SCRIPT ERROR messages in output
+            if grep -q -e "SCRIPT ERROR" -e "FAILED" "$temp_output"; then
+                print_colored $RED "✗ SCRIPT ERROR or FAILED detected in output - failing test run"
+                rm -f "$temp_output"
+                return 1
+            fi
+
+            rm -f "$temp_output"
+            return $exit_code
             ;;
         "smoke")
             print_colored $BLUE "Running smoke tests..."
-            godot $godot_args --script tests/test_runner.gd -- --quick
+            # Capture both stdout and stderr to a temp file
+            local temp_output=$(mktemp)
+            godot $godot_args --script tests/test_runner.gd -- --quick 2>&1 | tee "$temp_output"
+            local exit_code=${PIPESTATUS[0]}
+
+            # Check for SCRIPT ERROR messages in output
+            if grep -q -e "SCRIPT ERROR" -e "FAILED" "$temp_output"; then
+                print_colored $RED "✗ SCRIPT ERROR or FAILED detected in output - failing test run"
+                rm -f "$temp_output"
+                return 1
+            fi
+
+            rm -f "$temp_output"
+            return $exit_code
             ;;
         "hand")
             print_colored $BLUE "Running hand evaluation tests..."
-            godot $godot_args tests/test_scene.tscn -- test_type=hand
+            # Capture both stdout and stderr to a temp file
+            local temp_output=$(mktemp)
+            godot $godot_args tests/test_scene.tscn -- test_type=hand 2>&1 | tee "$temp_output"
+            local exit_code=${PIPESTATUS[0]}
+
+            # Check for SCRIPT ERROR messages in output
+            if grep -q -e "SCRIPT ERROR" -e "FAILED" "$temp_output"; then
+                print_colored $RED "✗ SCRIPT ERROR or FAILED detected in output - failing test run"
+                rm -f "$temp_output"
+                return 1
+            fi
+
+            rm -f "$temp_output"
+            return $exit_code
             ;;
         "card")
             print_colored $BLUE "Running card logic tests..."
-            godot $godot_args tests/test_scene.tscn -- test_type=card
+            # Capture both stdout and stderr to a temp file
+            local temp_output=$(mktemp)
+            godot $godot_args tests/test_scene.tscn -- test_type=card 2>&1 | tee "$temp_output"
+            local exit_code=${PIPESTATUS[0]}
+
+            # Check for SCRIPT ERROR messages in output
+            if grep -q -e "SCRIPT ERROR" -e "FAILED" "$temp_output"; then
+                print_colored $RED "✗ SCRIPT ERROR or FAILED detected in output - failing test run"
+                rm -f "$temp_output"
+                return 1
+            fi
+
+            rm -f "$temp_output"
+            return $exit_code
             ;;
         "state")
             print_colored $BLUE "Running game state tests..."
-            godot $godot_args tests/test_scene.tscn -- test_type=state
+            # Capture both stdout and stderr to a temp file
+            local temp_output=$(mktemp)
+            godot $godot_args tests/test_scene.tscn -- test_type=state 2>&1 | tee "$temp_output"
+            local exit_code=${PIPESTATUS[0]}
+
+            # Check for SCRIPT ERROR messages in output
+            if grep -q -e "SCRIPT ERROR" -e "FAILED" "$temp_output"; then
+                print_colored $RED "✗ SCRIPT ERROR or FAILED detected in output - failing test run"
+                rm -f "$temp_output"
+                return 1
+            fi
+
+            rm -f "$temp_output"
+            return $exit_code
             ;;
         "sync")
             print_colored $BLUE "Running multiplayer sync tests..."
-            godot $godot_args tests/test_scene.tscn -- test_type=sync
+            # Capture both stdout and stderr to a temp file
+            local temp_output=$(mktemp)
+            godot $godot_args tests/test_scene.tscn -- test_type=sync 2>&1 | tee "$temp_output"
+            local exit_code=${PIPESTATUS[0]}
+
+            # Check for SCRIPT ERROR messages in output
+            if grep -q -e "SCRIPT ERROR" -e "FAILED" "$temp_output"; then
+                print_colored $RED "✗ SCRIPT ERROR or FAILED detected in output - failing test run"
+                rm -f "$temp_output"
+                return 1
+            fi
+
+            rm -f "$temp_output"
+            return $exit_code
             ;;
         "bots")
             print_colored $BLUE "Running bot AI tests..."
-            godot $godot_args tests/test_scene.tscn -- test_type=bots
+            # Capture both stdout and stderr to a temp file
+            local temp_output=$(mktemp)
+            godot $godot_args tests/test_scene.tscn -- test_type=bots 2>&1 | tee "$temp_output"
+            local exit_code=${PIPESTATUS[0]}
+
+            # Check for SCRIPT ERROR messages in output
+            if grep -q -e "SCRIPT ERROR" -e "FAILED" "$temp_output"; then
+                print_colored $RED "✗ SCRIPT ERROR or FAILED detected in output - failing test run"
+                rm -f "$temp_output"
+                return 1
+            fi
+
+            rm -f "$temp_output"
+            return $exit_code
             ;;
         *)
             print_colored $RED "Unknown test type: $test_type"
@@ -105,9 +196,11 @@ show_help() {
 run_with_timing() {
     local start_time=$(date +%s.%N)
     run_tests "$@"
+    local test_exit_code=$?
     local end_time=$(date +%s.%N)
     local duration=$(echo "$end_time - $start_time" | bc -l)
     print_colored $GREEN "Tests completed in ${duration}s"
+    return $test_exit_code
 }
 
 # Main script
