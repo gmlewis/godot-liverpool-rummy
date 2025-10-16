@@ -610,6 +610,24 @@ func _evaluate_hand_post_meld(round_num: int, hand_stats: Dictionary, all_public
 	var available_jokers = hand_stats['jokers'].duplicate()
 	var penalty_cards = []
 
+	# Optimization: If we have only 1 card left and round < 7, immediately discard to win
+	if hand_stats['num_cards'] == 1 and round_num < 7:
+		var single_card = null
+		# Find the single card directly from by_rank (only one rank key when one card)
+		var ranks = hand_stats['by_rank'].keys()
+		if len(ranks) == 1:
+			var rank = ranks[0]
+			var cards = hand_stats['by_rank'][rank]
+			if len(cards) == 1:
+				single_card = cards[0]
+
+		if single_card != null:
+			acc['recommended_discards'] = [single_card]
+			acc['is_winning_hand'] = true
+			acc['eval_score'] = 1000 # Winning bonus
+			acc['can_be_publicly_melded'] = []
+			return acc
+
 	# First, attempt to find publicly meldable groups
 	var possibilities = _find_groups_can_be_publicly_melded(hand_stats, all_public_meld_stats)
 	var can_be_publicly_melded = []
@@ -842,6 +860,28 @@ func _find_groups_can_be_publicly_melded(hand_stats: Dictionary, all_public_meld
 		possible_group_melds[rank] = pub_melds
 	return possible_group_melds
 
+func _can_card_be_used_in_run(card_key: String, run_cards: Array) -> bool:
+	# Check if the card has the same suit as the run (jokers can be used in any run)
+	var card_parts = card_key.split('-')
+	if len(card_parts) < 2:
+		return false
+	var is_joker = card_parts[0] == 'JOKER'
+	var card_suit = card_parts[1] if not is_joker else ""
+
+	# Determine run suit from existing cards (skip jokers)
+	var run_suit = ""
+	for run_card in run_cards:
+		var run_parts = run_card.split('-')
+		if run_parts[0] != 'JOKER':
+			run_suit = run_parts[1]
+			break
+
+	# Jokers can be used in any run, but regular cards must match suit
+	if not is_joker and run_suit != "" and card_suit != run_suit:
+		return false
+
+	return true
+
 func _can_card_extend_run(card_key: String, pub_meld: Dictionary) -> bool:
 	# Get all cards in the public run to determine if this card can extend it
 	var run_cards = []
@@ -859,6 +899,10 @@ func _can_card_extend_run(card_key: String, pub_meld: Dictionary) -> bool:
 			break
 
 	if len(run_cards) == 0:
+		return false
+
+	# Check if the card can be used in this run (suit validation)
+	if not _can_card_be_used_in_run(card_key, run_cards):
 		return false
 
 	# Try adding the card to the front or back of the run
@@ -884,6 +928,10 @@ func _can_card_replace_joker_in_run(card_key: String, pub_meld: Dictionary) -> b
 			break
 
 	if len(run_cards) == 0:
+		return false
+
+	# Check if the card can be used in this run (suit validation)
+	if not _can_card_be_used_in_run(card_key, run_cards):
 		return false
 
 	# Check if any position in the run has a joker and this card can replace it
