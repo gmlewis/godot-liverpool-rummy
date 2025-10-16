@@ -378,7 +378,7 @@ var bot_test_scenarios = [
 	{
 		'name': 'Basic Group Meld Round 1',
 		'round': 1,
-		'cards': ["A-hearts-0", "A-spades-0", "A-diamonds-0", "K-hearts-0", "K-spades-0", "K-diamonds-0"],
+		'cards': ["A-hearts-0", "A-spades-0", "A-diamonds-0", "K-hearts-0", "K-spades-0", "K-diamonds-0", "2-clubs-0"],
 		'want_evaluation': {
 			'can_be_personally_melded': [
 				{"type": "group", "card_keys": ["A-hearts-0", "A-spades-0", "A-diamonds-0"]},
@@ -387,7 +387,7 @@ var bot_test_scenarios = [
 			'can_be_publicly_melded': [],
 			'eval_score': [],
 			'is_winning_hand': [],
-			'recommended_discards': [],
+			'recommended_discards': ["2-clubs-0"],
 		},
 	},
 ]

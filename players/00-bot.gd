@@ -361,10 +361,12 @@ func _evaluate_hand_pre_meld(round_num: int, hand_stats: Dictionary, all_public_
 	# Meld groups first
 	var melded_groups = 0
 	for group_idx in range(num_groups):
+		Global.dbg("GML: group_idx=%d, melded_groups=%d, len(groups_of_3_plus)=%d" % [group_idx, melded_groups, len(hand_stats['groups_of_3_plus'])])
 		if melded_groups >= len(hand_stats['groups_of_3_plus']) or group_idx >= len(hand_stats['groups_of_3_plus']):
 			break
 		var hand = hand_stats['groups_of_3_plus'][group_idx]
 		var available_cards = _filter_available_cards(hand, already_used)
+		Global.dbg("GML: group_idx=%d, melded_groups=%d, hand=%s, available_cards=%s" % [group_idx, melded_groups, str(hand), str(available_cards)])
 		if len(available_cards) >= 3:
 			if len(available_cards) == 3:
 				mark_all_as_used.call(available_cards)
