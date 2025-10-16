@@ -66,13 +66,15 @@ func run_all_tests() -> bool:
 		print("\n❌ SOME TESTS FAILED")
 		print("Please review the failed tests above and fix the issues.")
 		print("Failed tests may indicate bugs in your game logic.")
-		get_tree().quit(1)
-		return false
 
-	print("\nSuccess rate: %.1f%%" % ((total_passed as float / total_tests as float) * 100.0))
-	print("=".repeat(60))
-	get_tree().quit(0)
-	return true
+	# Clean up resources before quitting
+	cleanup_test_resources()
+
+	if total_failed == 0:
+		get_tree().quit(0)
+	else:
+		get_tree().quit(1)
+	return total_failed == 0
 
 func run_bots_tests() -> bool:
 	var test_suite = TestBots.new()

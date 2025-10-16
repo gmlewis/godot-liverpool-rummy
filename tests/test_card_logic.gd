@@ -77,6 +77,10 @@ func test_joker_handling() -> bool:
 	test_framework.assert_equal(2, len(stats['jokers']), "Should identify 2 jokers")
 	test_framework.assert_equal(1, len(stats['by_rank']['A']), "Should have 1 ace in by_rank")
 	test_framework.assert_dict_not_has_key(stats['by_rank'], 'JOKER', "Jokers should not be in by_rank")
+
+	# Clean up the test bot
+	test_bot.queue_free()
+
 	return true
 
 func test_card_generation_logic() -> bool:

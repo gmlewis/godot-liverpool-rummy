@@ -135,6 +135,10 @@ func test_round_requirements() -> bool:
 
 	test_framework.assert_equal(0, test_bot._groups_per_round[6], "Round 7 should require 0 groups")
 	test_framework.assert_equal(3, test_bot._runs_per_round[6], "Round 7 should require 3 runs")
+
+	# Clean up the test bot
+	test_bot.queue_free()
+
 	return true
 
 func test_server_advance_to_next_round() -> bool:

@@ -29,7 +29,7 @@ check_godot() {
 # Function to run tests
 run_tests() {
     local test_type=$1
-    local godot_args="--headless --disable-render-loop"
+    local godot_args="--headless --disable-render-loop --verbose"
 
     case $test_type in
         "all")

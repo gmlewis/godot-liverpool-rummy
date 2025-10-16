@@ -97,6 +97,11 @@ func _exit_tree():
 	multiplayer.connection_failed.disconnect(_on_connection_failed)
 	multiplayer.server_disconnected.disconnect(_on_server_disconnected)
 
+	# Clean up resources
+	if custom_card_back:
+		custom_card_back.queue_free()
+		custom_card_back = null
+
 # The following are only used on the desktop.
 @export var SPLIT_SCREEN_STYLE := VERTICAL
 @export var USE_RATIO := true
