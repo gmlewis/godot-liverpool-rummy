@@ -64,7 +64,7 @@ signal meld_area_state_changed(is_valid: bool, area_idx: int)
 
 @onready var playing_cards_control: Control = $"/root/RootNode/PlayingCardsControl" if has_node("/root/RootNode/PlayingCardsControl") else null
 
-const VERSION = '0.2.0'
+const VERSION = '0.3.0'
 const GAME_PORT = 7000
 const DISCOVERY_PORT = 8910
 const MAX_PLAYERS = 10
