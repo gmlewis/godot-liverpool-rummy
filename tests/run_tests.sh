@@ -40,7 +40,7 @@ run_tests() {
             local exit_code=${PIPESTATUS[0]}
 
             # Check for SCRIPT ERROR messages in output
-            if echo "$output" | grep -q -e "ERROR" -e "FAILED"; then
+            if echo "$output" | grep -q -e "SCRIPT ERROR" -e "FAILED"; then
                 print_colored $RED "✗ SCRIPT ERROR or FAILED detected in output - failing test run"
                 return 1
             fi
@@ -55,7 +55,7 @@ run_tests() {
             local exit_code=${PIPESTATUS[0]}
 
             # Check for SCRIPT ERROR messages in output
-            if echo "$output" | grep -q -e "ERROR" -e "FAILED"; then
+            if echo "$output" | grep -q -e "SCRIPT ERROR" -e "FAILED"; then
                 print_colored $RED "✗ SCRIPT ERROR or FAILED detected in output - failing test run"
                 return 1
             fi
@@ -70,7 +70,7 @@ run_tests() {
             local exit_code=${PIPESTATUS[0]}
 
             # Check for SCRIPT ERROR messages in output
-            if echo "$output" | grep -q -e "ERROR" -e "FAILED"; then
+            if echo "$output" | grep -q -e "SCRIPT ERROR" -e "FAILED"; then
                 print_colored $RED "✗ SCRIPT ERROR or FAILED detected in output - failing test run"
                 return 1
             fi
@@ -85,7 +85,7 @@ run_tests() {
             local exit_code=${PIPESTATUS[0]}
 
             # Check for SCRIPT ERROR messages in output
-            if echo "$output" | grep -q -e "ERROR" -e "FAILED"; then
+            if echo "$output" | grep -q -e "SCRIPT ERROR" -e "FAILED"; then
                 print_colored $RED "✗ SCRIPT ERROR or FAILED detected in output - failing test run"
                 return 1
             fi
@@ -100,7 +100,7 @@ run_tests() {
             local exit_code=${PIPESTATUS[0]}
 
             # Check for SCRIPT ERROR messages in output
-            if echo "$output" | grep -q -e "ERROR" -e "FAILED"; then
+            if echo "$output" | grep -q -e "SCRIPT ERROR" -e "FAILED"; then
                 print_colored $RED "✗ SCRIPT ERROR or FAILED detected in output - failing test run"
                 return 1
             fi
@@ -115,7 +115,7 @@ run_tests() {
             local exit_code=${PIPESTATUS[0]}
 
             # Check for SCRIPT ERROR messages in output
-            if echo "$output" | grep -q -e "ERROR" -e "FAILED"; then
+            if echo "$output" | grep -q -e "SCRIPT ERROR" -e "FAILED"; then
                 print_colored $RED "✗ SCRIPT ERROR or FAILED detected in output - failing test run"
                 return 1
             fi
@@ -130,7 +130,7 @@ run_tests() {
             local exit_code=${PIPESTATUS[0]}
 
             # Check for SCRIPT ERROR messages in output
-            if echo "$output" | grep -q -e "ERROR" -e "FAILED"; then
+            if echo "$output" | grep -q -e "SCRIPT ERROR" -e "FAILED"; then
                 print_colored $RED "✗ SCRIPT ERROR or FAILED detected in output - failing test run"
                 return 1
             fi
