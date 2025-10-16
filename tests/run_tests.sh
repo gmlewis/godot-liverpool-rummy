@@ -34,31 +34,115 @@ run_tests() {
     case $test_type in
         "all")
             print_colored $BLUE "Running all tests..."
-            godot $godot_args tests/test_scene.tscn
+            # Capture both stdout and stderr
+            local output
+            output=$(godot $godot_args tests/test_scene.tscn 2>&1)
+            local exit_code=$?
+            echo "$output"
+
+            # Check for SCRIPT ERROR messages in output
+            if echo "$output" | grep -q "SCRIPT ERROR"; then
+                print_colored $RED "✗ SCRIPT ERROR detected in output - failing test run"
+                return 1
+            fi
+
+            return $exit_code
             ;;
         "smoke")
             print_colored $BLUE "Running smoke tests..."
-            godot $godot_args --script tests/test_runner.gd -- --quick
+            # Capture both stdout and stderr
+            local output
+            output=$(godot $godot_args --script tests/test_runner.gd -- --quick 2>&1)
+            local exit_code=$?
+            echo "$output"
+
+            # Check for SCRIPT ERROR messages in output
+            if echo "$output" | grep -q "SCRIPT ERROR"; then
+                print_colored $RED "✗ SCRIPT ERROR detected in output - failing test run"
+                return 1
+            fi
+
+            return $exit_code
             ;;
         "hand")
             print_colored $BLUE "Running hand evaluation tests..."
-            godot $godot_args tests/test_scene.tscn -- test_type=hand
+            # Capture both stdout and stderr
+            local output
+            output=$(godot $godot_args tests/test_scene.tscn -- test_type=hand 2>&1)
+            local exit_code=$?
+            echo "$output"
+
+            # Check for SCRIPT ERROR messages in output
+            if echo "$output" | grep -q "SCRIPT ERROR"; then
+                print_colored $RED "✗ SCRIPT ERROR detected in output - failing test run"
+                return 1
+            fi
+
+            return $exit_code
             ;;
         "card")
             print_colored $BLUE "Running card logic tests..."
-            godot $godot_args tests/test_scene.tscn -- test_type=card
+            # Capture both stdout and stderr
+            local output
+            output=$(godot $godot_args tests/test_scene.tscn -- test_type=card 2>&1)
+            local exit_code=$?
+            echo "$output"
+
+            # Check for SCRIPT ERROR messages in output
+            if echo "$output" | grep -q "SCRIPT ERROR"; then
+                print_colored $RED "✗ SCRIPT ERROR detected in output - failing test run"
+                return 1
+            fi
+
+            return $exit_code
             ;;
         "state")
             print_colored $BLUE "Running game state tests..."
-            godot $godot_args tests/test_scene.tscn -- test_type=state
+            # Capture both stdout and stderr
+            local output
+            output=$(godot $godot_args tests/test_scene.tscn -- test_type=state 2>&1)
+            local exit_code=$?
+            echo "$output"
+
+            # Check for SCRIPT ERROR messages in output
+            if echo "$output" | grep -q "SCRIPT ERROR"; then
+                print_colored $RED "✗ SCRIPT ERROR detected in output - failing test run"
+                return 1
+            fi
+
+            return $exit_code
             ;;
         "sync")
             print_colored $BLUE "Running multiplayer sync tests..."
-            godot $godot_args tests/test_scene.tscn -- test_type=sync
+            # Capture both stdout and stderr
+            local output
+            output=$(godot $godot_args tests/test_scene.tscn -- test_type=sync 2>&1)
+            local exit_code=$?
+            echo "$output"
+
+            # Check for SCRIPT ERROR messages in output
+            if echo "$output" | grep -q "SCRIPT ERROR"; then
+                print_colored $RED "✗ SCRIPT ERROR detected in output - failing test run"
+                return 1
+            fi
+
+            return $exit_code
             ;;
         "bots")
             print_colored $BLUE "Running bot AI tests..."
-            godot $godot_args tests/test_scene.tscn -- test_type=bots
+            # Capture both stdout and stderr
+            local output
+            output=$(godot $godot_args tests/test_scene.tscn -- test_type=bots 2>&1)
+            local exit_code=$?
+            echo "$output"
+
+            # Check for SCRIPT ERROR messages in output
+            if echo "$output" | grep -q "SCRIPT ERROR"; then
+                print_colored $RED "✗ SCRIPT ERROR detected in output - failing test run"
+                return 1
+            fi
+
+            return $exit_code
             ;;
         *)
             print_colored $RED "Unknown test type: $test_type"
