@@ -532,6 +532,15 @@ func _evaluate_hand_pre_meld(round_num: int, hand_stats: Dictionary, all_public_
 	# Calculate final score
 	acc['eval_score'] = 100 * len(acc['can_be_personally_melded'])
 
+	# For round 7, only allow melding if ALL cards can be melded
+	if round_num == 7:
+		var total_melded_cards = 0
+		for meld in acc['can_be_personally_melded']:
+			total_melded_cards += len(meld['card_keys'])
+		if total_melded_cards != hand_stats['num_cards']:
+			acc['can_be_personally_melded'] = []
+			acc['eval_score'] = 0
+
 	if melded_groups == num_groups and melded_runs == num_runs:
 		acc['eval_score'] += 1000 # bonus for melding
 		# Clear partial hands since we can meld

@@ -626,6 +626,22 @@ var bot_test_scenarios = [
 			'recommended_discards': ['3-spades-0'],
 		},
 	},
+	{
+		'name': 'Bug 2 - bot1 attempts to meld in Round 7 with extra discard',
+		'round': 7,
+		'cards': [
+			'9-spades-0', '10-spades-0', 'J-spades-0', 'Q-spades-0',
+			'4-spades-0', '5-spades-0', '6-spades-0', '7-spades-0',
+			'7-clubs-0', 'JOKER-2-0', '9-clubs-0', '10-clubs-0',
+			'8-diamonds-0',
+		],
+		'want_evaluation': {
+			'can_be_personally_melded': [],
+			'can_be_publicly_melded': [],
+			'is_winning_hand': false,
+			'recommended_discards': ['8-diamonds-0'],
+		},
+	},
 ]
 
 func test_bot_scenarios() -> bool:
