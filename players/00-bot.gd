@@ -627,6 +627,13 @@ func _evaluate_hand_post_meld(round_num: int, hand_stats: Dictionary, all_public
 			acc['eval_score'] = 1000 # Winning bonus
 			acc['can_be_publicly_melded'] = []
 			return acc
+	# Likewise, if it is rounds 7 and we have 0 cards, we have already won
+	if hand_stats['num_cards'] == 0 and round_num == 7:
+		acc['recommended_discards'] = []
+		acc['is_winning_hand'] = true
+		acc['eval_score'] = 1000 # Winning bonus
+		acc['can_be_publicly_melded'] = []
+		return acc
 
 	# First, attempt to find publicly meldable groups
 	var possibilities = _find_groups_can_be_publicly_melded(hand_stats, all_public_meld_stats)
