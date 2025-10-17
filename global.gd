@@ -999,9 +999,21 @@ func server_personally_meld_hand(player_id: String, hand_evaluation: Dictionary)
 		return
 	dbg("server_personally_meld_hand: player_id='%s' hand_evaluation=%s" % [player_id, hand_evaluation])
 	var turn_index = player_info['turn_index']
-	game_state.public_players_info[turn_index]['played_to_table'].append_array(hand_evaluation['can_be_personally_melded'])
+
+	# Sort cards within runs for proper display order
+	var sorted_melds = []
+	for meld in hand_evaluation['can_be_personally_melded']:
+		var sorted_meld = meld.duplicate()
+		if meld['type'] == 'run':
+			sorted_meld['card_keys'] = sort_run_cards(meld['card_keys'])
+		sorted_melds.append(sorted_meld)
+
+	game_state.public_players_info[turn_index]['played_to_table'].append_array(sorted_melds)
+	# Update hand_evaluation with sorted melds for RPC
+	var sorted_hand_evaluation = hand_evaluation.duplicate(true)
+	sorted_hand_evaluation['can_be_personally_melded'] = sorted_melds
 	register_ack_sync_state('_rpc_personally_meld_cards_only') # stay within same state, {'next_state': 'NewDiscardState'})
-	_rpc_personally_meld_cards_only.rpc(player_id, hand_evaluation)
+	_rpc_personally_meld_cards_only.rpc(player_id, sorted_hand_evaluation)
 
 @rpc('authority', 'call_local', 'reliable')
 func _rpc_personally_meld_cards_only(player_id: String, hand_evaluation: Dictionary) -> void:
@@ -1323,3 +1335,94 @@ func error(s: String) -> void:
 
 func get_system_time_msec() -> int:
 	return int(1000.0 * Time.get_unix_time_from_system())
+
+func sort_run_cards(card_keys: Array) -> Array:
+	# Sort cards in a run for proper display order
+	# Aces are positioned as low or high to minimize gaps, other cards in rank order, jokers fill gaps
+	# Separate jokers from regular cards
+	var regular_cards = []
+	var _num_jokers = 0
+	var joker_keys = []
+	var has_ace = false
+
+	for card_key in card_keys:
+		var parts = card_key.split('-')
+		var rank = parts[0]
+		if rank == 'JOKER':
+			_num_jokers += 1
+			joker_keys.append(card_key)
+		else:
+			var value = _value_lookup[rank]
+			if value == 14: # Ace
+				has_ace = true
+			regular_cards.append({'key': card_key, 'value': value, 'rank': rank})
+
+	# Determine best ace positioning
+	var best_sequence = []
+	if has_ace:
+		# Try ace as low (1)
+		var cards_low = []
+		for card in regular_cards:
+			var new_card = card.duplicate()
+			if new_card['value'] == 14:
+				new_card['value'] = 1
+			cards_low.append(new_card)
+		cards_low.sort_custom(func(a, b): return a['value'] < b['value'])
+
+		# Try ace as high (14)
+		var cards_high = []
+		for card in regular_cards:
+			var new_card = card.duplicate()
+			if new_card['value'] == 14:
+				new_card['value'] = 14
+			cards_high.append(new_card)
+		cards_high.sort_custom(func(a, b): return a['value'] < b['value'])
+
+		# Calculate gaps for both configurations
+		var gaps_low = _calculate_sequence_gaps(cards_low)
+		var gaps_high = _calculate_sequence_gaps(cards_high)
+
+		# Use the configuration with fewer gaps
+		if gaps_high < gaps_low:
+			best_sequence = cards_high
+		else:
+			best_sequence = cards_low
+	else:
+		# No ace, just sort by value
+		regular_cards.sort_custom(func(a, b): return a['value'] < b['value'])
+		best_sequence = regular_cards
+
+	# Build the sorted sequence with jokers placed in gaps
+	var result = []
+	var joker_idx = 0
+
+	for i in range(len(best_sequence)):
+		var card = best_sequence[i]
+		result.append(card['key'])
+
+		# Check if there's a gap after this card
+		if i < len(best_sequence) - 1:
+			var next_card = best_sequence[i + 1]
+			var gap_size = next_card['value'] - card['value'] - 1
+			# Fill gaps with jokers
+			for j in range(gap_size):
+				if joker_idx < len(joker_keys):
+					result.append(joker_keys[joker_idx])
+					joker_idx += 1
+
+	# Add any remaining jokers at the end
+	for j in range(joker_idx, len(joker_keys)):
+		result.append(joker_keys[j])
+
+	return result
+
+func _calculate_sequence_gaps(cards: Array) -> int:
+	if len(cards) <= 1:
+		return 0
+
+	var gaps = 0
+	for i in range(1, len(cards)):
+		var diff = cards[i]['value'] - cards[i - 1]['value'] - 1
+		if diff > 0:
+			gaps += diff
+	return gaps

@@ -261,20 +261,191 @@ func test_can_card_replace_joker_in_run() -> bool:
 func test_is_valid_run() -> bool:
 	var valid_run = ['A-hearts-0', '2-hearts-0', '3-hearts-0', '4-hearts-0']
 	var invalid_run = ['A-hearts-0', '3-hearts-0', '5-hearts-0', '7-hearts-0']
-
 	# Test basic valid and invalid runs
 	test_framework.assert_true(Global.is_valid_run(valid_run), "A-2-3-4 of hearts should be valid")
 	test_framework.assert_false(Global.is_valid_run(invalid_run), "A-3-5-7 of hearts should be invalid")
-
 	# Test runs with jokers
 	var valid_run_with_joker = ['2-hearts-0', '3-hearts-0', 'JOKER-1-0', '5-hearts-0', '6-hearts-0']
 	var invalid_run_with_joker = ['2-hearts-0', '3-hearts-0', 'JOKER-1-0', '6-hearts-0', '7-hearts-0']
 	var invalid_run_too_short = ['2-hearts-0', '3-hearts-0', 'JOKER-1-0']
-
 	test_framework.assert_true(Global.is_valid_run(valid_run_with_joker), "2-3-JOKER-5-6 should be valid (joker fills the 4)")
 	test_framework.assert_false(Global.is_valid_run(invalid_run_with_joker), "2-3-JOKER-6-7 should be invalid (joker can only fill 1 gap, but 2 gaps exist)")
 	test_framework.assert_false(Global.is_valid_run(invalid_run_too_short), "2-3-JOKER should be invalid (runs must be at least 4 cards)")
+	return true
 
+func test_sort_run_cards_simple_run() -> bool:
+	# Test basic run without aces or jokers
+	var input = ['5-hearts-0', '6-hearts-0', '7-hearts-0', '8-hearts-0']
+	var expected = ['5-hearts-0', '6-hearts-0', '7-hearts-0', '8-hearts-0']
+	var result = Global.sort_run_cards(input)
+	test_framework.assert_equal(expected, result, "Simple run should be sorted in ascending order")
+	return true
+
+func test_sort_run_cards_with_jokers_filling_gaps() -> bool:
+	# Test run with jokers filling gaps: 2,3,JOKER,5,6 should become 2,3,4,5,6 with JOKER as 4
+	var input = ['2-hearts-0', '3-hearts-0', 'JOKER-1-0', '5-hearts-0', '6-hearts-0']
+	var expected = ['2-hearts-0', '3-hearts-0', 'JOKER-1-0', '5-hearts-0', '6-hearts-0']
+	var result = Global.sort_run_cards(input)
+	test_framework.assert_equal(expected, result, "Joker should fill the gap between 3 and 5")
+	return true
+
+func test_sort_run_cards_ace_as_low() -> bool:
+	# Test ace positioned as low: A,2,3,4 should stay A,2,3,4 (ace as 1)
+	var input = ['A-hearts-0', '2-hearts-0', '3-hearts-0', '4-hearts-0']
+	var expected = ['A-hearts-0', '2-hearts-0', '3-hearts-0', '4-hearts-0']
+	var result = Global.sort_run_cards(input)
+	test_framework.assert_equal(expected, result, "Ace should be positioned as low when it creates fewer gaps")
+	return true
+
+func test_sort_run_cards_ace_as_high() -> bool:
+	# Test ace positioned as high: 10,J,Q,A should become 10,J,Q,A (ace as 14)
+	var input = ['10-hearts-0', 'J-hearts-0', 'Q-hearts-0', 'A-hearts-0']
+	var expected = ['10-hearts-0', 'J-hearts-0', 'Q-hearts-0', 'A-hearts-0']
+	var result = Global.sort_run_cards(input)
+	test_framework.assert_equal(expected, result, "Ace should be positioned as high when it creates fewer gaps")
+	return true
+
+func test_sort_run_cards_ace_chooses_minimal_gaps() -> bool:
+	# Test ace positioning chooses configuration with fewer gaps
+	# A,3,4,5: as low (1,3,4,5) has 1 gap, as high (3,4,5,14) has 8 gaps, so chooses low
+	var input = ['A-hearts-0', '3-hearts-0', '4-hearts-0', '5-hearts-0']
+	var expected = ['A-hearts-0', '3-hearts-0', '4-hearts-0', '5-hearts-0']
+	var result = Global.sort_run_cards(input)
+	test_framework.assert_equal(expected, result, "Ace should be positioned to minimize gaps")
+	return true
+
+func test_sort_run_cards_multiple_jokers() -> bool:
+	# Test multiple jokers: 2,JOKER,JOKER,6 should become 2,3,4,6 with jokers filling gaps
+	var input = ['2-hearts-0', 'JOKER-1-0', 'JOKER-2-0', '6-hearts-0']
+	var expected = ['2-hearts-0', 'JOKER-1-0', 'JOKER-2-0', '6-hearts-0']
+	var result = Global.sort_run_cards(input)
+	test_framework.assert_equal(expected, result, "Multiple jokers should fill consecutive gaps")
+	return true
+
+func test_sort_run_cards_extra_jokers_at_end() -> bool:
+	# Test extra jokers at end: 3,4,5,JOKER,JOKER should become 3,4,5,JOKER,JOKER
+	var input = ['3-hearts-0', '4-hearts-0', '5-hearts-0', 'JOKER-1-0', 'JOKER-2-0']
+	var expected = ['3-hearts-0', '4-hearts-0', '5-hearts-0', 'JOKER-1-0', 'JOKER-2-0']
+	var result = Global.sort_run_cards(input)
+	test_framework.assert_equal(expected, result, "Extra jokers should be placed at the end")
+	return true
+
+func test_sort_run_cards_complex_sequence() -> bool:
+	# Test complex sequence: A,3,JOKER,5,7,JOKER should become A,3,JOKER,5,JOKER,7
+	var input = ['JOKER-1-1', 'A-hearts-0', '3-hearts-0', 'JOKER-1-0', '5-hearts-0', '7-hearts-0', 'JOKER-2-0']
+	var expected = ['A-hearts-0', 'JOKER-1-1', '3-hearts-0', 'JOKER-1-0', '5-hearts-0', 'JOKER-2-0', '7-hearts-0']
+	var result = Global.sort_run_cards(input)
+	test_framework.assert_equal(expected, result, "Complex sequence should be properly sorted with jokers in gaps")
+	return true
+
+func test_sort_run_cards_aces_and_jokers() -> bool:
+	# Test aces and jokers together: A,JOKER,3,4 should become A,JOKER,3,4 (ace as low)
+	var input = ['A-hearts-0', 'JOKER-1-0', '3-hearts-0', '4-hearts-0']
+	var expected = ['A-hearts-0', 'JOKER-1-0', '3-hearts-0', '4-hearts-0']
+	var result = Global.sort_run_cards(input)
+	test_framework.assert_equal(expected, result, "Aces and jokers should work together correctly")
+	return true
+
+func test_sort_run_cards_multiple_aces() -> bool:
+	# Test multiple aces: A,A,2,3 should become A,A,2,3 (both aces as low)
+	var input = ['A-hearts-0', 'A-diamonds-0', '2-hearts-0', '3-hearts-0']
+	var expected = ['A-hearts-0', 'A-diamonds-0', '2-hearts-0', '3-hearts-0']
+	var result = Global.sort_run_cards(input)
+	test_framework.assert_equal(expected, result, "Multiple aces should both be positioned as low")
+	return true
+
+func test_sort_run_cards_ace_high_preferred() -> bool:
+	# Test case where ace as high is preferred: Q,K,A should become Q,K,A (ace as high)
+	var input = ['Q-hearts-0', 'K-hearts-0', 'A-hearts-0']
+	var expected = ['Q-hearts-0', 'K-hearts-0', 'A-hearts-0']
+	var result = Global.sort_run_cards(input)
+	test_framework.assert_equal(expected, result, "Ace should be positioned as high when it creates fewer gaps")
+	return true
+
+func test_sort_run_cards_joker_at_start() -> bool:
+	var input = ['JOKER-1-0', '2-hearts-0', '3-hearts-0', '4-hearts-0']
+	var expected = ['2-hearts-0', '3-hearts-0', '4-hearts-0', 'JOKER-1-0']
+	var result = Global.sort_run_cards(input)
+	test_framework.assert_equal(expected, result, "Joker at start should be placed before the sequence")
+	return true
+
+func test_sort_run_cards_all_jokers() -> bool:
+	# Test all jokers: should remain in original order
+	var input = ['JOKER-1-0', 'JOKER-2-0', 'JOKER-1-1', 'JOKER-2-1']
+	var expected = ['JOKER-1-0', 'JOKER-2-0', 'JOKER-1-1', 'JOKER-2-1']
+	var result = Global.sort_run_cards(input)
+	test_framework.assert_equal(expected, result, "All jokers should maintain their relative order")
+	return true
+
+func test_sort_run_cards_single_card() -> bool:
+	# Test single card: should remain unchanged
+	var input = ['5-hearts-0']
+	var expected = ['5-hearts-0']
+	var result = Global.sort_run_cards(input)
+	test_framework.assert_equal(expected, result, "Single card should remain unchanged")
+	return true
+
+func test_sort_run_cards_two_cards() -> bool:
+	# Test two cards: should be sorted
+	var input = ['7-hearts-0', '5-hearts-0']
+	var expected = ['5-hearts-0', '7-hearts-0']
+	var result = Global.sort_run_cards(input)
+	test_framework.assert_equal(expected, result, "Two cards should be sorted by rank")
+	return true
+
+func test_sort_run_cards_face_cards() -> bool:
+	# Test face cards: J,Q,K should be sorted properly
+	var input = ['K-hearts-0', 'J-hearts-0', 'Q-hearts-0']
+	var expected = ['J-hearts-0', 'Q-hearts-0', 'K-hearts-0']
+	var result = Global.sort_run_cards(input)
+	test_framework.assert_equal(expected, result, "Face cards should be sorted by rank")
+	return true
+
+func test_sort_run_cards_mixed_with_joker() -> bool:
+	# Test mixed cards with joker: 4,JOKER,6,7 should become 4,JOKER,6,7
+	var input = ['4-hearts-0', 'JOKER-1-0', '6-hearts-0', '7-hearts-0']
+	var expected = ['4-hearts-0', 'JOKER-1-0', '6-hearts-0', '7-hearts-0']
+	var result = Global.sort_run_cards(input)
+	test_framework.assert_equal(expected, result, "Mixed cards with joker should be properly sorted")
+	return true
+
+func test_sort_run_cards_bug_example_1() -> bool:
+	# Test the original bug example: "6,7,8,5" should become "5,6,7,8"
+	var input = ['6-hearts-0', '7-hearts-0', '8-hearts-0', '5-hearts-0']
+	var expected = ['5-hearts-0', '6-hearts-0', '7-hearts-0', '8-hearts-0']
+	var result = Global.sort_run_cards(input)
+	test_framework.assert_equal(expected, result, "Bug example 1 should be fixed")
+	return true
+
+func test_sort_run_cards_bug_example_2() -> bool:
+	# Test the second bug example: "9,10,J,8,7" should become "7,8,9,10,J"
+	var input = ['9-hearts-0', '10-hearts-0', 'J-hearts-0', '8-hearts-0', '7-hearts-0']
+	var expected = ['7-hearts-0', '8-hearts-0', '9-hearts-0', '10-hearts-0', 'J-hearts-0']
+	var result = Global.sort_run_cards(input)
+	test_framework.assert_equal(expected, result, "Bug example 2 should be fixed")
+	return true
+
+func test_calculate_sequence_gaps() -> bool:
+	# Test the gap calculation helper function
+	var cards_no_gaps = [
+		{'value': 2}, {'value': 3}, {'value': 4}, {'value': 5}
+	]
+	var gaps_none = Global._calculate_sequence_gaps(cards_no_gaps)
+	test_framework.assert_equal(0, gaps_none, "Consecutive cards should have no gaps")
+
+	var cards_with_gaps = [
+		{'value': 2}, {'value': 4}, {'value': 7}
+	]
+	var gaps_some = Global._calculate_sequence_gaps(cards_with_gaps)
+	test_framework.assert_equal(3, gaps_some, "Cards 2,4,7 should have 3 gaps (missing 3,5,6)")
+
+	var single_card = [ {'value': 5}]
+	var gaps_single = Global._calculate_sequence_gaps(single_card)
+	test_framework.assert_equal(0, gaps_single, "Single card should have no gaps")
+
+	var empty_array = []
+	var gaps_empty = Global._calculate_sequence_gaps(empty_array)
+	test_framework.assert_equal(0, gaps_empty, "Empty array should have no gaps")
 	return true
 
 func test_rank_to_bitmap() -> bool:
