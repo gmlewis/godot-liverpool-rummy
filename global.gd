@@ -1417,9 +1417,22 @@ func sort_run_cards(card_keys: Array) -> Array:
 					result.append(joker_keys[joker_idx])
 					joker_idx += 1
 
-	# Add any remaining jokers at the end
-	for j in range(joker_idx, len(joker_keys)):
-		result.append(joker_keys[j])
+	# Check if the sequence has an ace positioned high (value 14)
+	var has_high_ace = false
+	for card in best_sequence:
+		if card['value'] == 14:
+			has_high_ace = true
+			break
+
+	# Add any remaining jokers
+	if has_high_ace:
+		# Place remaining jokers at the beginning
+		for j in range(len(joker_keys) - 1, joker_idx - 1, -1):
+			result.push_front(joker_keys[j])
+	else:
+		# Place remaining jokers at the end
+		for j in range(joker_idx, len(joker_keys)):
+			result.append(joker_keys[j])
 
 	return result
 
