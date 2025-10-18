@@ -274,6 +274,8 @@ func test_is_valid_run() -> bool:
 	return true
 
 func test_sort_run_cards() -> bool:
+	# Note that in these test cases, we don't care what the order of the individual JOKERS are,
+	# so we use identical JOKER cards in the input.
 	var test_cases = [
 		{
 			'name': 'Simple run should be sorted in ascending order',
@@ -292,28 +294,28 @@ func test_sort_run_cards() -> bool:
 		},
 		{
 			'name': 'Ace should be positioned as high when it creates fewer gaps',
-			'input': ['10-hearts-0', 'J-hearts-0', 'Q-hearts-0', 'A-hearts-0'],
-			'expected': ['10-hearts-0', 'J-hearts-0', 'Q-hearts-0', 'A-hearts-0'],
+			'input': ['A-hearts-0', '10-hearts-0', 'J-hearts-0', 'Q-hearts-0', 'JOKER-1-0'],
+			'expected': ['10-hearts-0', 'J-hearts-0', 'Q-hearts-0', 'JOKER-1-0', 'A-hearts-0'],
 		},
 		{
 			'name': 'Ace should be positioned to minimize gaps',
-			'input': ['A-hearts-0', '3-hearts-0', '4-hearts-0', '5-hearts-0'],
-			'expected': ['A-hearts-0', '3-hearts-0', '4-hearts-0', '5-hearts-0'],
+			'input': ['3-hearts-0', '4-hearts-0', '5-hearts-0', 'A-hearts-0', 'JOKER-1-0'],
+			'expected': ['A-hearts-0', 'JOKER-1-0', '3-hearts-0', '4-hearts-0', '5-hearts-0'],
 		},
 		{
 			'name': 'Multiple jokers should fill consecutive gaps',
-			'input': ['2-hearts-0', 'JOKER-1-0', 'JOKER-2-0', '6-hearts-0'],
-			'expected': ['2-hearts-0', 'JOKER-1-0', 'JOKER-2-0', '6-hearts-0'],
+			'input': ['JOKER-1-0', 'JOKER-1-0', '5-hearts-0', '2-hearts-0'],
+			'expected': ['2-hearts-0', 'JOKER-1-0', 'JOKER-1-0', '5-hearts-0'],
 		},
 		{
 			'name': 'Extra jokers should be placed at the end',
-			'input': ['3-hearts-0', '4-hearts-0', '5-hearts-0', 'JOKER-1-0', 'JOKER-2-0'],
-			'expected': ['3-hearts-0', '4-hearts-0', '5-hearts-0', 'JOKER-1-0', 'JOKER-2-0'],
+			'input': ['3-hearts-0', '4-hearts-0', '5-hearts-0', 'JOKER-1-0', 'JOKER-1-0'],
+			'expected': ['3-hearts-0', '4-hearts-0', '5-hearts-0', 'JOKER-1-0', 'JOKER-1-0'],
 		},
 		{
 			'name': 'Complex sequence should be properly sorted with jokers in gaps',
-			'input': ['JOKER-1-1', 'A-hearts-0', '3-hearts-0', 'JOKER-1-0', '5-hearts-0', '7-hearts-0', 'JOKER-2-0'],
-			'expected': ['A-hearts-0', 'JOKER-1-1', '3-hearts-0', 'JOKER-1-0', '5-hearts-0', 'JOKER-2-0', '7-hearts-0'],
+			'input': ['JOKER-1-1', 'A-hearts-0', '3-hearts-0', 'JOKER-1-1', '5-hearts-0', '7-hearts-0', 'JOKER-1-1'],
+			'expected': ['A-hearts-0', 'JOKER-1-1', '3-hearts-0', 'JOKER-1-1', '5-hearts-0', 'JOKER-1-1', '7-hearts-0'],
 		},
 		{
 			'name': 'Aces and jokers should work together correctly',
@@ -321,14 +323,9 @@ func test_sort_run_cards() -> bool:
 			'expected': ['A-hearts-0', 'JOKER-1-0', '3-hearts-0', '4-hearts-0'],
 		},
 		{
-			'name': 'Multiple aces should both be positioned as low',
-			'input': ['A-hearts-0', 'A-diamonds-0', '2-hearts-0', '3-hearts-0'],
-			'expected': ['A-hearts-0', 'A-diamonds-0', '2-hearts-0', '3-hearts-0'],
-		},
-		{
 			'name': 'Ace should be positioned as high when it creates fewer gaps',
-			'input': ['Q-hearts-0', 'K-hearts-0', 'A-hearts-0'],
-			'expected': ['Q-hearts-0', 'K-hearts-0', 'A-hearts-0'],
+			'input': ['Q-hearts-0', 'K-hearts-0', 'A-hearts-0', 'JOKER-1-0'],
+			'expected': ['JOKER-1-0', 'Q-hearts-0', 'K-hearts-0', 'A-hearts-0'],
 		},
 		{
 			'name': 'Joker at start should be placed before the sequence',
@@ -336,24 +333,9 @@ func test_sort_run_cards() -> bool:
 			'expected': ['2-hearts-0', '3-hearts-0', '4-hearts-0', 'JOKER-1-0'],
 		},
 		{
-			'name': 'All jokers should maintain their relative order',
-			'input': ['JOKER-1-0', 'JOKER-2-0', 'JOKER-1-1', 'JOKER-2-1'],
-			'expected': ['JOKER-1-0', 'JOKER-2-0', 'JOKER-1-1', 'JOKER-2-1'],
-		},
-		{
-			'name': 'Single card should remain unchanged',
-			'input': ['5-hearts-0'],
-			'expected': ['5-hearts-0'],
-		},
-		{
-			'name': 'Two cards should be sorted by rank',
-			'input': ['7-hearts-0', '5-hearts-0'],
-			'expected': ['5-hearts-0', '7-hearts-0'],
-		},
-		{
 			'name': 'Face cards should be sorted by rank',
-			'input': ['K-hearts-0', 'J-hearts-0', 'Q-hearts-0'],
-			'expected': ['J-hearts-0', 'Q-hearts-0', 'K-hearts-0'],
+			'input': ['K-hearts-0', 'J-hearts-0', 'JOKER-1-0', 'Q-hearts-0'],
+			'expected': ['J-hearts-0', 'Q-hearts-0', 'K-hearts-0', 'JOKER-1-0'],
 		},
 		{
 			'name': 'Mixed cards with joker should be properly sorted',
@@ -372,6 +354,8 @@ func test_sort_run_cards() -> bool:
 		},
 	]
 	for test_case in test_cases:
+		# Scramble test_case.input to ensure sorting works:
+		test_case.input.shuffle()
 		var result = Global.sort_run_cards(test_case.input)
 		test_framework.assert_equal(test_case.expected, result, test_case.name)
 	return true

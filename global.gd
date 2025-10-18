@@ -1337,6 +1337,13 @@ func get_system_time_msec() -> int:
 	return int(1000.0 * Time.get_unix_time_from_system())
 
 func sort_run_cards(card_keys: Array) -> Array:
+	# Assert that the input card keys represent a valid run (same suit, at least 4 cards):
+	if len(card_keys) < 4:
+		error("sort_run_cards: invalid run, less than 4 cards: %s" % [str(card_keys)])
+		return card_keys
+	if !is_valid_run(card_keys):
+		error("sort_run_cards: invalid run: %s" % [str(card_keys)])
+		return card_keys
 	# Sort cards in a run for proper display order
 	# Aces are positioned as low or high to minimize gaps, other cards in rank order, jokers fill gaps
 	# Separate jokers from regular cards
