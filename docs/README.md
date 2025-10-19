@@ -21,6 +21,14 @@ Complete overview of the game flow, including:
 - Turn order and player actions
 - State persistence and multiplayer synchronization
 
+### [Card Shuffle Animations](card-shuffle-animations.md)
+Comprehensive guide to the 7 shuffle animations, including:
+- Detailed description of each animation type
+- Technical implementation details
+- Animation phases and timing breakdown
+- How to add new custom animations
+- Performance considerations and tips
+
 ## Project Structure
 
 ```
@@ -93,7 +101,7 @@ This project was developed with AI assistance. See the main [README.md](../READM
 
 - [x] Game state machine flow diagram
 - [x] Multiplayer architecture and UDP discovery
-- [ ] Card shuffle animation guide
+- [x] Card shuffle animation guide
 - [ ] Bot AI decision-making logic
 - [ ] Game rules implementation details
 - [ ] UI/UX interaction patterns
