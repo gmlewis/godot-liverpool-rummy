@@ -375,11 +375,18 @@ func _input(event):
 		if current_state_name == 'TallyScoresState':
 			# Allow host to click on any player to advance to next round (or reset game if round 7 is complete).
 			if Global.game_state.current_round_num >= 7:
-				Global.dbg("Player('%s'): _input: Round 7 complete, resetting game" % player_id)
-				Global.reset_game_signal.emit()
+				Global.dbg("Player('%s'): _input: Round 7 complete, showing final scores" % player_id)
+				var next_round_scene = load("res://rounds/final_scores.tscn") as PackedScene
+				Global.request_change_round(next_round_scene)
+				Global.send_transition_all_clients_state_to_signal('FinalScoresState')
 			else:
 				Global.server_advance_to_next_round()
 			# Don't allow any other nodes to also handle this event.
+			if not get_viewport():
+				return # Happens in round 7 after a win.
+			get_viewport().set_input_as_handled()
+		if current_state_name == 'FinalScoresState':
+			Global.reset_game_signal.emit()
 			if not get_viewport():
 				return # Happens in round 7 after a win.
 			get_viewport().set_input_as_handled()
