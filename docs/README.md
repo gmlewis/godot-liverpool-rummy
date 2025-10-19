@@ -48,6 +48,15 @@ Complete guide to how game rules are enforced in code, including:
 - Joker and Ace handling
 - Edge cases and rule enforcement architecture
 
+### [UI/UX Interaction Patterns](ui-ux-interaction-patterns.md)
+Detailed guide to player interactions and visual feedback, including:
+- Card interaction system (tap, drag, drop)
+- Meld area system with real-time validation
+- Visual feedback (sparkles, indicators, animations)
+- Turn indicators and state-dependent interactions
+- Touch-friendly design and accessibility
+- Error prevention and performance optimization
+
 ## Project Structure
 
 ```
@@ -123,5 +132,5 @@ This project was developed with AI assistance. See the main [README.md](../READM
 - [x] Card shuffle animation guide
 - [x] Bot AI decision-making logic
 - [x] Game rules implementation details
-- [ ] UI/UX interaction patterns
+- [x] UI/UX interaction patterns
 - [ ] Meld validation and scoring system
