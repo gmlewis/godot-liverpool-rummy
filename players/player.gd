@@ -285,11 +285,13 @@ func _on_card_clicked_signal(playing_card, _global_position):
 		return
 
 func _on_card_drag_started_signal(_playing_card, _from_position):
+	hack_hide_meld_indicator_next_frame = false
 	var player_is_me = Global.private_player_info.id == player_id
 	if not player_is_me: return # bots do not click or drag cards.
 	if not is_my_turn: return
 
 func _on_card_moved_signal(playing_card, _from_position, _global_position):
+	hack_hide_meld_indicator_next_frame = false
 	var player_is_me = Global.private_player_info.id == player_id
 	if not player_is_me: return # bots do not click or drag cards.
 

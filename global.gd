@@ -192,6 +192,13 @@ func is_my_turn() -> bool:
 	return private_player_info.turn_index == game_state.current_player_turn_index
 
 func create_game():
+	var current_peer = multiplayer.multiplayer_peer
+	# Close existing connection if it exists
+	if current_peer:
+		if current_peer is ENetMultiplayerPeer:
+			current_peer.close()
+		multiplayer.multiplayer_peer = null
+
 	var peer = ENetMultiplayerPeer.new()
 	var err = peer.create_server(GAME_PORT, MAX_PLAYERS)
 	if err:
