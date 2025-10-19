@@ -4,6 +4,12 @@
 class_name TestRunner
 extends Node
 
+const TestBots = preload("res://tests/test_bots.gd")
+const TestCardLogic = preload("res://tests/test_card_logic.gd")
+const TestGameState = preload("res://tests/test_game_state.gd")
+const TestHandEvaluation = preload("res://tests/test_hand_evaluation.gd")
+const TestMultiplayerSync = preload("res://tests/test_multiplayer_sync.gd")
+
 var test_framework: TestFramework
 var total_tests: int = 0
 var total_passed: int = 0
