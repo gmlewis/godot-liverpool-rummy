@@ -26,6 +26,8 @@ const TURN_INDICATOR_MELD_COLOR = Color(0.38, 0.73, 0.4, 1.0) # Greenish color
 
 var last_hand_evaluation = null # Used to store the last hand evaluation for the player, used when melding.
 
+var hack_hide_meld_indicator_next_frame: bool = false # Used to prevent meld flash after discard.
+
 func _ready():
 	# Global.dbg('Player Node2D ready: player_id=%s, player_name=%s, num_cards=%d, score=%d, turn_index=%d' % [player_id, player_name, num_cards, score, turn_index])
 	_on_custom_card_back_texture_changed_signal()
@@ -105,6 +107,7 @@ func _on_game_state_updated_signal():
 		Global.make_stock_pile_tappable(false)
 		return
 	else:
+		$TurnIndicatorRect.color = TURN_INDICATOR_DRAW_COLOR # reset
 		$TurnIndicatorRect.rotation = 0.0
 
 	# Global.dbg("Player: _on_game_state_updated_signal for player %s (turn_index=%d), current_player_turn_index=%d" % [player_name, turn_index, Global.game_state.current_player_turn_index])
@@ -133,37 +136,45 @@ func _on_game_state_updated_signal():
 
 func _update_hand_meldability() -> void:
 	var current_state_name = game_state_machine.get_current_state_name()
+	if current_state_name != 'PlayerDrewState': return
+
 	var players_by_id = Global.get_players_by_id()
 	var public_player_info = players_by_id[player_id]
 	var already_melded = len(public_player_info['played_to_table']) > 0
 	# Now see if the player can meld (more of) their hand.
 	# var card_keys_in_hand = ['card_keys_in_hand']
 	var current_hand_stats = gen_player_hand_stats(Global.private_player_info)
-	if current_state_name == 'PlayerDrewState':
-		# Store the last hand evaluation for melding when user clicks on the player.
-		last_hand_evaluation = evaluate_player_hand(current_hand_stats)
-		is_meldable = false
-		$MeldIndicatorSprite2D.hide()
-		if not already_melded and len(last_hand_evaluation['can_be_personally_melded']) > 0:
-			Global.dbg("Player('%s'): already_melded=false, setting is_meldable=true, can_be_personally_melded=%s" % [player_id, str(last_hand_evaluation['can_be_personally_melded'])])
+	# Store the last hand evaluation for melding when user clicks on the player.
+	last_hand_evaluation = evaluate_player_hand(current_hand_stats)
+	is_meldable = false
+	$MeldIndicatorSprite2D.hide()
+	if not already_melded and len(last_hand_evaluation['can_be_personally_melded']) > 0:
+		if hack_hide_meld_indicator_next_frame:
+			# Prevent meld flash right after discard
+			hack_hide_meld_indicator_next_frame = false
+			Global.dbg("Player('%s'): hack_hide_meld_indicator_next_frame is true, SKIPPING meld indicator SHOW" % [player_id])
+			return
+		var round_num = Global.game_state.current_round_num
+		if round_num < 7 or (round_num >= 7 and last_hand_evaluation['is_winning_hand']): # suppress round 7 meld flash
+			Global.dbg("Player('%s'): already_melded=false, setting is_meldable=true, can_be_personally_melded=%s SHOW MELD INDICATOR" % [player_id, str(last_hand_evaluation['can_be_personally_melded'])])
 			$TurnIndicatorRect.color = TURN_INDICATOR_MELD_COLOR # Set color to meld color
 			is_meldable = true
 			$MeldIndicatorSprite2D.show() # Show meld indicator
-		elif already_melded and len(last_hand_evaluation['can_be_publicly_melded']) > 0:
-			$TurnIndicatorRect.color = TURN_INDICATOR_MELD_COLOR # Set color to meld color
-			Global.dbg("Player('%s'): found %d possibilities to meld publicly" % [player_id, len(last_hand_evaluation['can_be_publicly_melded'])])
-			for possibility in last_hand_evaluation['can_be_publicly_melded']:
-				var target_player_id = possibility['target_player_id']
-				var card_key = possibility['card_key']
-				var meld_group_index = possibility['meld_group_index']
-				Global.dbg("Player('%s'): calling _local_player_is_meldable_signal.emit('%s', true, '%s', '%s', %d)" % [player_id, target_player_id, player_id, card_key, meld_group_index])
-				_local_player_is_meldable_signal.emit(target_player_id, true, player_id, card_key, meld_group_index)
+	elif already_melded and len(last_hand_evaluation['can_be_publicly_melded']) > 0:
+		$TurnIndicatorRect.color = TURN_INDICATOR_MELD_COLOR # Set color to meld color
+		Global.dbg("Player('%s'): found %d possibilities to meld publicly" % [player_id, len(last_hand_evaluation['can_be_publicly_melded'])])
+		for possibility in last_hand_evaluation['can_be_publicly_melded']:
+			var target_player_id = possibility['target_player_id']
+			var card_key = possibility['card_key']
+			var meld_group_index = possibility['meld_group_index']
+			Global.dbg("Player('%s'): calling _local_player_is_meldable_signal.emit('%s', true, '%s', '%s', %d)" % [player_id, target_player_id, player_id, card_key, meld_group_index])
+			_local_player_is_meldable_signal.emit(target_player_id, true, player_id, card_key, meld_group_index)
 
 func _on_local_player_is_meldable_signal(target_player_id: String, player_is_meldable: bool, melding_player_id: String, melding_card_key: String, melding_group_index: int) -> void:
 	if target_player_id != player_id:
 		Global.dbg("Player('%s'): IGNORING _on_local_player_is_meldable_signal.emit('%s', true, '%s', '%s', %d)" % [player_id, target_player_id, melding_player_id, melding_card_key, melding_group_index])
 		return
-	Global.dbg("Player('%s'): _on_local_player_is_meldable_signal: player_is_meldable=%s, melding_player_id=%s, melding_card_key=%s, melding_group_index=%d" % [player_id, str(player_is_meldable), melding_player_id, melding_card_key, melding_group_index])
+	Global.dbg("Player('%s'): _on_local_player_is_meldable_signal: player_is_meldable=%s, melding_player_id=%s, melding_card_key=%s, melding_group_index=%d SHOW MELD INDICATOR" % [player_id, str(player_is_meldable), melding_player_id, melding_card_key, melding_group_index])
 	is_meldable = player_is_meldable
 	if is_meldable:
 		is_meldable_player_id = melding_player_id
@@ -267,6 +278,9 @@ func _on_card_clicked_signal(playing_card, _global_position):
 			Global.dbg("Player('%s'): _on_card_clicked_signal: Ignoring click on meldable hand card '%s' for player %s" % [player_id, playing_card.key, player_id])
 			return
 		var player_won = len(Global.private_player_info['card_keys_in_hand']) == 1
+		Global.dbg("GML: Player('%s'): _on_card_clicked_signal: hiding meld indicator" % [player_id])
+		$MeldIndicatorSprite2D.hide() # hack to stop meld indicator showing after discard
+		hack_hide_meld_indicator_next_frame = true
 		Global.discard_card(player_id, playing_card.key, player_won)
 		return
 

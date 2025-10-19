@@ -155,6 +155,7 @@ func player_hand_x_start() -> float:
 
 func reset_game():
 	dbg("ENTER Global.reset_game_signal")
+	_on_server_disconnected() # Free up multiplayer connections
 	game_state = {
 		'current_round_num': 1, # 1..7
 		# Placing [current_state_name] in the [game_state] causes race conditions
@@ -328,7 +329,8 @@ func _on_connection_failed():
 
 func _on_server_disconnected():
 	multiplayer.multiplayer_peer = null
-	game_state.public_players_info.clear()
+	if game_state.has('public_players_info'):
+		game_state.public_players_info.clear()
 	server_disconnected_signal.emit()
 
 func change_custom_card_back(random_back_svg_name):
