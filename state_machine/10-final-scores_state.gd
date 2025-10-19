@@ -8,6 +8,7 @@ extends GameState
 var trophy1: Sprite2D
 var trophy2: Sprite2D
 var trophy3: Sprite2D
+var continue_confetti: bool = false
 
 const TROPHY1_YPOS_FACTOR = 0.2
 const TROPHY2_YPOS_FACTOR = 0.4
@@ -20,27 +21,9 @@ const TROPHY_SPACING_FACTOR = 8 # as if fitting # items next to each other, cent
 func enter(_params: Dictionary):
 	Global.dbg("ENTER FinalScoresState")
 	# Step 0: Create trophy sprites but keep them hidden for now.
-	trophy1 = Sprite2D.new()
-	trophy1.texture = trophy1_image
-	trophy1.visible = false
-	trophy1.scale = Vector2(0.01, 0.01)
-	trophy1.z_index = 200
-	trophy1.position = Global.screen_size * Vector2(0.5, 0.5)
-	add_child(trophy1)
-	trophy2 = Sprite2D.new()
-	trophy2.texture = trophy2_image
-	trophy2.visible = false
-	trophy2.scale = Vector2(0.01, 0.01)
-	trophy2.z_index = 200
-	trophy2.position = Global.screen_size * Vector2(0.5, 0.5)
-	add_child(trophy2)
-	trophy3 = Sprite2D.new()
-	trophy3.texture = trophy3_image
-	trophy3.visible = false
-	trophy3.scale = Vector2(0.01, 0.01)
-	trophy3.z_index = 200
-	trophy3.position = Global.screen_size * Vector2(0.5, 0.5)
-	add_child(trophy3)
+	trophy1 = make_trophy(trophy1_image)
+	trophy2 = make_trophy(trophy2_image)
+	trophy3 = make_trophy(trophy3_image)
 	# Step 1: Hide rid of all playing cards on the screen.
 	hide_all_playing_cards()
 	# Step 2: Sort players by total score (lowest to highest)
@@ -64,10 +47,21 @@ func enter(_params: Dictionary):
 
 func exit():
 	Global.dbg("LEAVE FinalScoresState")
+	continue_confetti = false
 	# Free resources
 	trophy1.queue_free()
 	trophy2.queue_free()
 	trophy3.queue_free()
+
+func make_trophy(image: CompressedTexture2D) -> Sprite2D:
+	var trophy = Sprite2D.new()
+	trophy.texture = image
+	trophy.visible = false
+	trophy.scale = Vector2(0.01, 0.01)
+	trophy.z_index = 200
+	trophy.position = Global.screen_size * Vector2(0.5, 0.5)
+	add_child(trophy)
+	return trophy
 
 func hide_all_playing_cards() -> void:
 	# Clear the pile arrays:
@@ -167,7 +161,11 @@ func animate_trophy_winners(player_ids: Array, ypos_factor: float) -> void:
 	await get_tree().create_timer(TROPHY_MOVE_DURATION).timeout
 
 func animate_final_confetti_and_fireworks() -> void:
-	pass
+	# TODO: fireworks
+	continue_confetti = true
+	while continue_confetti:
+		Global.send_animate_winning_confetti_explosion_signal(5000)
+		await get_tree().create_timer(5.0).timeout
 
 static func sort_winning_players_by_score(public_players_info: Array) -> Array:
 	var sorted_players = public_players_info.duplicate()
