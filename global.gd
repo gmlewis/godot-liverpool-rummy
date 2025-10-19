@@ -155,7 +155,6 @@ func player_hand_x_start() -> float:
 
 func reset_game():
 	dbg("ENTER Global.reset_game_signal")
-	_on_server_disconnected() # Free up multiplayer connections
 	game_state = {
 		'current_round_num': 1, # 1..7
 		# Placing [current_state_name] in the [game_state] causes race conditions
