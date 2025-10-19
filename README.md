@@ -112,6 +112,7 @@ For developers interested in understanding the codebase, see the [docs/](docs/) 
 - **[Multiplayer Architecture](docs/multiplayer-architecture.md)** - Detailed guide to the networking system, UDP discovery, and game synchronization
 - **[Game State Machine](docs/game-state-machine.md)** - Complete overview of game flow, states, and round progression
 - **[Card Shuffle Animations](docs/card-shuffle-animations.md)** - Guide to the 7 shuffle animation types and how to create new ones
+- **[Bot AI System](docs/bot-ai-system.md)** - Deep dive into bot decision-making, evaluation algorithms, and personalities
 
 # Status
 

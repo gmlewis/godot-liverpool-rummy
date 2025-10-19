@@ -29,6 +29,15 @@ Comprehensive guide to the 7 shuffle animations, including:
 - How to add new custom animations
 - Performance considerations and tips
 
+### [Bot AI System](bot-ai-system.md)
+Deep dive into the bot artificial intelligence, including:
+- Four bot personalities (Dumb, Stingy, Generous, Basic)
+- Decision-making process and strategy
+- Hand evaluation scoring system
+- Advanced algorithms (bitmap run building, group optimization)
+- Smart discard logic and public melding strategy
+- How to create custom bots
+
 ## Project Structure
 
 ```
@@ -102,7 +111,7 @@ This project was developed with AI assistance. See the main [README.md](../READM
 - [x] Game state machine flow diagram
 - [x] Multiplayer architecture and UDP discovery
 - [x] Card shuffle animation guide
-- [ ] Bot AI decision-making logic
+- [x] Bot AI decision-making logic
 - [ ] Game rules implementation details
 - [ ] UI/UX interaction patterns
 - [ ] Meld validation and scoring system
