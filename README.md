@@ -75,7 +75,7 @@ where I had written the hand evaluation algorithm for round 1 and it was
 time to write a hand evaluation algorithm that would support all rounds.
 
 My favorite programming language is [Go](https://go.dev), and one of my least
-favorite programming languages is Python (which is GDScript resembles), so
+favorite programming languages is Python (which is what GDScript resembles), so
 I wrote the more complex hand evaluation algorithm in Go with a huge suite
 of unit tests (since unit testing is a core beautiful feature of Go).
 
@@ -94,7 +94,7 @@ Early on, I had https://claude.ai help writing the shuffling animations, but
 those ended up being pretty buggy and needed a lot of work to get something
 remotely usable. The results from [DeepSeek](https://www.deepseek.com/en) were worse.
 
-I believe that's the extent of the involvement of AI in this project.
+Otherwise, I occasionally asked GitHub Copilot for assistance.
 
 # Status
 
@@ -104,8 +104,7 @@ manually decides how they want to group their cards. This eliminates a huge
 nightmare of trying to optimally meld the cards and I much prefer the gameplay
 now.
 
-Currently, there are still bugs in the bot play and melding upon other
-players' hands is not yet implemented.
+Currently, melding upon other players' hands is not yet implemented.
 
 ----------------------------------------------------------------------
 
