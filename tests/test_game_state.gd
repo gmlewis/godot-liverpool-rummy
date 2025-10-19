@@ -14,6 +14,14 @@ func _ready():
 func run_all_tests() -> bool:
 	return test_framework.discover_and_run_test_suite("Game State Tests", self)
 
+func cleanup_test_resources() -> void:
+	# Clean up test framework
+	if test_framework and is_instance_valid(test_framework):
+		if test_framework.is_inside_tree():
+			remove_child(test_framework)
+		test_framework.queue_free()
+	test_framework = null
+
 func test_reset_game() -> bool:
 	# Set up some initial state
 	Global.game_state = {'some_data': 'test'}
@@ -174,10 +182,62 @@ func test_multiplayer_state_tracking() -> bool:
 	test_framework.assert_equal(0, len(Global.ack_sync_state), "Should clear sync state")
 	return true
 
-func cleanup_test_resources() -> void:
-	# Clean up test framework
-	if test_framework and is_instance_valid(test_framework):
-		if test_framework.is_inside_tree():
-			remove_child(test_framework)
-		test_framework.queue_free()
-	test_framework = null
+func test_sort_winning_players_by_score() -> bool:
+	var test_cases = [
+		{
+			'name': 'Simple 2-player case - no ties',
+			'input': [
+				{'id': 'p1', 'score': 50},
+				{'id': 'p2', 'score': 30},
+			],
+			'expected': [['p2'], ['p1'], [], []],
+		},
+		{
+			'name': 'Simple 3-player case - no ties',
+			'input': [
+				{'id': 'p1', 'score': 50},
+				{'id': 'p2', 'score': 30},
+				{'id': 'p3', 'score': 70},
+			],
+			'expected': [['p2'], ['p1'], ['p3'], []],
+		},
+		{
+			'name': 'Simple 10-player case - no ties',
+			'input': [
+				{'id': 'p1', 'score': 50},
+				{'id': 'p2', 'score': 30},
+				{'id': 'p3', 'score': 70},
+				{'id': 'p4', 'score': 10},
+				{'id': 'p5', 'score': 130},
+				{'id': 'p6', 'score': 120},
+				{'id': 'p7', 'score': 110},
+				{'id': 'p8', 'score': 100},
+				{'id': 'p9', 'score': 90},
+				{'id': 'p10', 'score': 80},
+			],
+			'expected': [['p4'], ['p2'], ['p1'], ['p3', 'p10', 'p9', 'p8', 'p7', 'p6', 'p5']],
+		},
+		{
+			'name': '10-player case - many ties',
+			'input': [
+				{'id': 'p1', 'score': 50},
+				{'id': 'p2', 'score': 10},
+				{'id': 'p3', 'score': 50},
+				{'id': 'p4', 'score': 10},
+				{'id': 'p5', 'score': 130},
+				{'id': 'p6', 'score': 90},
+				{'id': 'p7', 'score': 90},
+				{'id': 'p8', 'score': 90},
+				{'id': 'p9', 'score': 90},
+				{'id': 'p10', 'score': 50},
+			],
+			'expected': [['p2', 'p4'], ['p1', 'p3', 'p10'], ['p6', 'p7', 'p8', 'p9'], ['p5']],
+		},
+	]
+
+	var final_scores = load("res://state_machine/10-final-scores_state.gd") as Script
+	for test_case in test_cases:
+		var got = final_scores.sort_winning_players_by_score(test_case['input'])
+		test_framework.assert_equal(test_case['expected'], got, "Should sort players correctly for case: %s" % test_case['name'])
+
+	return true

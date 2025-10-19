@@ -190,8 +190,8 @@ func emit_reorder_signal():
 
 func _on_start_button_pressed_signal(): # only run on host/server
 	# Normal game play:
-	Global.request_change_round(round1_scene)
-	_rpc_transition_all_clients_state_to.rpc('StartRoundShuffleState')
+	# Global.request_change_round(round1_scene)
+	# _rpc_transition_all_clients_state_to.rpc('StartRoundShuffleState')
 	#
 	# DEVELOPMENT1: Jump to specific round (change number for different rounds)
 	# var dev_round_num = 7
@@ -201,9 +201,9 @@ func _on_start_button_pressed_signal(): # only run on host/server
 	# _rpc_transition_all_clients_state_to.rpc('StartRoundShuffleState')
 	#
 	# DEVELOPMENT2: Simulate final scores scene - dole out random scores
-	# for player_info in Global.game_state['public_players_info']:
-	# 	player_info['score'] = randi() % 1000
-	# Global.game_state['current_round_num'] = 7
-	# var next_round_scene = load("res://rounds/final_scores.tscn") as PackedScene
-	# Global.request_change_round(next_round_scene)
-	# Global.send_transition_all_clients_state_to_signal('FinalScoresState')
+	for player_info in Global.game_state['public_players_info']:
+		player_info['score'] = randi() % 1000
+	Global.game_state['current_round_num'] = 7
+	var next_round_scene = load("res://rounds/final_scores.tscn") as PackedScene
+	Global.request_change_round(next_round_scene)
+	Global.send_transition_all_clients_state_to_signal('FinalScoresState')
