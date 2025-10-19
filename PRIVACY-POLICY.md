@@ -17,7 +17,7 @@ This Privacy Policy describes how Multiplayer Liverpool Rummy ("we", "our", or "
 **We do not collect any user data.**
 
 Multiplayer Liverpool Rummy is designed to respect your privacy.
-The app does not:
+The app does **NOT** :
 - Collect personal information
 - Track user behavior or analytics
 - Gather usage statistics
@@ -35,7 +35,7 @@ the game host. Data is never transmitted to external servers.
 **We do not share any user data with third parties.**
 
 Since we do not collect any user data, there is no data to share with third parties.
-The app does not:
+The app does **NOT** :
 - Share information with advertisers
 - Provide data to analytics services
 - Transfer information to third-party service providers
@@ -125,5 +125,7 @@ If you do not agree with this Privacy Policy, please do not use the app.
 ---
 
 **Developer:** on-demand-books.com
+
 **App Name:** Multiplayer Liverpool Rummy
+
 **Contact:** games@on-demand-books.com
