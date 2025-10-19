@@ -364,7 +364,7 @@ func _input(event):
 	if not (event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT): return
 	var current_state_name = game_state_machine.get_current_state_name()
 	var mouse_pos = get_global_mouse_position()
-	if Global.is_server() and (current_state_name == 'PlayerWonRoundState' or current_state_name == 'TallyScoresState'):
+	if Global.is_server() and (current_state_name == 'PlayerWonRoundState' or current_state_name == 'TallyScoresState' or current_state_name == 'FinalScoresState'):
 		if not is_mouse_over_player(mouse_pos): return # false alarm.
 		if is_winning_player and current_state_name == 'PlayerWonRoundState':
 			# Allow host to click on winner to advance to TallyScoresState
