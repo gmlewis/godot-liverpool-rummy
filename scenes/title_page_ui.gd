@@ -5,8 +5,10 @@ signal start_button_pressed_signal
 var current_ip_address_idx = 0
 var ip_addresses = []
 var remote_host_player_name = {} # Keyed by host IP address.
+var remote_host_game_started = {} # Keyed by host IP address - tracks if host has started game.
 var udp_discovery_server: UDPServer
 var udp_discovery_client_scan_timer: Timer
+var game_has_started = false # Track if this host has started the game
 
 func _ready() -> void:
 	# Note that _ready happens way after the GSM has already cycled past its
@@ -34,6 +36,8 @@ func _exit_tree():
 
 func _on_reset_game_signal() -> void:
 	_stop_udp_discovery()
+	game_has_started = false
+	remote_host_game_started = {}
 	$StatusLabel.text = 'Version %s' % [Global.VERSION]
 	$PanelPositionControl/WelcomePanel.show()
 	$PanelPositionControl/StartGamePanel.hide()
@@ -103,6 +107,7 @@ func _on_host_new_game_button_pressed() -> void:
 	Global.create_game()
 
 func _on_start_button_pressed() -> void:
+	game_has_started = true
 	_stop_udp_discovery()
 	$PanelPositionControl/StartGamePanel.hide()
 	_rpc_hide_title_page_ui.rpc()
@@ -247,11 +252,14 @@ func _handle_discovery_request(peer: PacketPeerUDP):
 			# Set destination and send response
 			if response_socket.set_dest_address(sender_ip, sender_port) == OK:
 				var host_name = $PanelPositionControl/WelcomePanel/NameLineEdit.text
-				var server_info = {'host_name': host_name}
+				var server_info = {
+					'host_name': host_name,
+					'game_started': game_has_started
+				}
 				var response = JSON.stringify(server_info)
 
 				if response_socket.put_packet(response.to_utf8_buffer()) == OK:
-					Global.dbg("Sent server info to: %s:%d" % [sender_ip, sender_port])
+					Global.dbg("Sent server info to: %s:%d (game_started: %s)" % [sender_ip, sender_port, game_has_started])
 				else:
 					Global.dbg("Failed to send response to: %s:%d" % [sender_ip, sender_port])
 			else:
@@ -328,12 +336,31 @@ func parse_server_response(response: String, ip: String):
 	var parse_result = json.parse(response)
 
 	if parse_result == OK:
-		if ip in remote_host_player_name: return # already discovered this server
 		var server_data = json.data
 		if 'host_name' in server_data:
 			var host_name = server_data['host_name']
+			var game_started = server_data.get('game_started', false)
+			
+			# Track the game state for this host
+			var was_previously_discovered = ip in remote_host_player_name
 			remote_host_player_name[ip] = host_name
-			Global.dbg("Discovered server: %s at %s" % [host_name, ip])
+			remote_host_game_started[ip] = game_started
+			
+			if not was_previously_discovered:
+				Global.dbg("Discovered server: %s at %s (game_started: %s)" % [host_name, ip, game_started])
+			
+			# If the game has started, don't show Join Game button - force host mode
+			if game_started:
+				Global.dbg("Server %s has already started game - cannot join" % host_name)
+				# Remove this IP from remote hosts since game has started
+				remote_host_player_name.erase(ip)
+				remote_host_game_started.erase(ip)
+				# Show host button, hide join button
+				$PanelPositionControl/StartGamePanel/HostNewGameButton.show()
+				$PanelPositionControl/StartGamePanel/JoinGameButton.hide()
+				return
+			
+			# Game hasn't started - allow joining
 			# Update the Join Game button text with the discovered host name
 			# JOIN_GAME_TEXT = "Join\n%s" % host_name if Global.LANGUAGE != 'de' else "Spiel\n%s beitreten" % host_name
 			$PanelPositionControl/StartGamePanel/JoinGameButton.text = JOIN_GAME_TEXT

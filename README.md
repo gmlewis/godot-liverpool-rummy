@@ -96,6 +96,13 @@ remotely usable. The results from [DeepSeek](https://www.deepseek.com/en) were w
 
 Otherwise, I occasionally asked GitHub Copilot for assistance.
 
+# Documentation
+
+For developers interested in understanding the codebase, see the [docs/](docs/) directory:
+
+- **[Multiplayer Architecture](docs/multiplayer-architecture.md)** - Detailed guide to the networking system, UDP discovery, and game synchronization
+- **[Game State Machine](docs/game-state-machine.md)** - Complete overview of game flow, states, and round progression
+
 # Status
 
 I completely ripped out the hand evaluation logic and auto-meld grouping
