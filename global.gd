@@ -328,7 +328,8 @@ func _on_connection_failed():
 
 func _on_server_disconnected():
 	multiplayer.multiplayer_peer = null
-	game_state.public_players_info.clear()
+	if game_state.has('public_players_info'):
+		game_state.public_players_info.clear()
 	server_disconnected_signal.emit()
 
 func change_custom_card_back(random_back_svg_name):
