@@ -61,7 +61,8 @@ Card shuffling animation phase.
 **File:** `state_machine/04-deal_new_round_state.gd`
 
 Deals cards to all players for the new round.
-- Deals appropriate number of cards per round (7-13 cards)
+- Deals appropriate number of cards per round (7-13 cards initially)
+- Players may gain more cards during the round by buying
 - Animates card movement from deck to hands
 - Establishes initial discard pile
 - Only server/host performs dealing, clients receive via RPC
@@ -159,15 +160,17 @@ func transition_to(next_state: String):
 
 Liverpool Rummy has 7 rounds with different meld requirements:
 
-| Round | Cards Dealt | Required Melds |
-|-------|-------------|----------------|
+| Round | Cards Initially Dealt | Required Melds |
+|-------|----------------------|----------------|
 | 1     | 7           | 2 groups of 3 |
 | 2     | 8           | 1 group of 3 + 1 run of 4 |
 | 3     | 9           | 2 runs of 4 |
 | 4     | 10          | 3 groups of 3 |
 | 5     | 11          | 2 groups of 3 + 1 run of 4 |
 | 6     | 12          | 1 group of 3 + 2 runs of 4 |
-| 7     | 13          | 3 runs of 4 |
+| 7     | 13          | 3 runs of 4 (must meld ALL cards in hand) |
+
+**Note:** Players may have more cards than initially dealt if they bought from the discard pile during the round. Each buy adds 2 cards (discard + penalty).
 
 Round requirements are enforced in **TurnDiscardState** when validating melds.
 

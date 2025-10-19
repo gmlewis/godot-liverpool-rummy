@@ -8,15 +8,17 @@ Liverpool Rummy is played over **7 rounds**, each with specific meld requirement
 
 ### Round Requirements
 
+**Note:** Card counts shown are initially dealt. Players may have more cards if they bought from the discard pile during the round (each buy adds 2 cards: the discard + penalty card).
+
 ```mermaid
 graph TD
-    Start[Game Start] --> R1[Round 1: 2 Groups of 3<br/>7 cards dealt]
-    R1 --> R2[Round 2: 1 Group of 3 + 1 Run of 4<br/>8 cards dealt]
-    R2 --> R3[Round 3: 2 Runs of 4<br/>9 cards dealt]
-    R3 --> R4[Round 4: 3 Groups of 3<br/>10 cards dealt]
-    R4 --> R5[Round 5: 2 Groups of 3 + 1 Run of 4<br/>11 cards dealt]
-    R5 --> R6[Round 6: 1 Group of 3 + 2 Runs of 4<br/>12 cards dealt]
-    R6 --> R7[Round 7: 3 Runs of 4<br/>13 cards dealt<br/>NO DISCARD!]
+    Start[Game Start] --> R1[Round 1: 2 Groups of 3<br/>7 cards initially dealt]
+    R1 --> R2[Round 2: 1 Group of 3 + 1 Run of 4<br/>8 cards initially dealt]
+    R2 --> R3[Round 3: 2 Runs of 4<br/>9 cards initially dealt]
+    R3 --> R4[Round 4: 3 Groups of 3<br/>10 cards initially dealt]
+    R4 --> R5[Round 5: 2 Groups of 3 + 1 Run of 4<br/>11 cards initially dealt]
+    R5 --> R6[Round 6: 1 Group of 3 + 2 Runs of 4<br/>12 cards initially dealt]
+    R6 --> R7[Round 7: 3 Runs of 4<br/>13 cards initially dealt<br/>NO DISCARD allowed!<br/>Must meld ALL cards in hand]
     R7 --> End[Game Complete<br/>Lowest Score Wins]
 ```
 
@@ -249,9 +251,11 @@ When a player requests to buy:
 2. Turn player decides: allow or take card themselves
 3. If allowed:
    - Buying player gets discard card
-   - Buying player gets **penalty card** from stock pile
+   - Buying player gets **penalty card** from stock pile (adds 2 cards total)
    - Turn player draws again from their choice
 4. Grace period: Other players have ~3-10 seconds to request buy
+
+**Important:** Each buy adds 2 cards to a player's hand (the discard + penalty). This means players can end up with more cards than initially dealt in any round.
 
 **Location:** `global.gd::allow_player_to_buy_card_from_discard_pile()`
 
@@ -319,24 +323,26 @@ After personal meld complete, players can add cards to ANY player's melds:
 Round 7 has unique mechanics:
 
 **Requirements:**
-- Must meld 3 runs of 4 cards
-- Uses all 13 cards dealt
+- Must meld 3 runs of 4 cards (minimum 12 cards)
+- 13 cards initially dealt (but player may have more from buying)
 - **NO DISCARD ALLOWED**
-- Must go out by melding entire hand
+- Must go out by melding entire hand (all cards, however many)
+
+**Important:** Players can have MORE than 13 cards in Round 7 if they bought cards during the round. Each buy adds 2 cards (discard card + penalty card), so a player who bought twice would have 17 cards to meld.
 
 **Implementation:**
 ```gdscript
 var current_round = Global.game_state.current_round_num
 
 if current_round == 7:
-    # Player must meld all cards with no remaining cards
+    # Player must meld ALL cards in hand (no matter how many)
     var has_cards_left = len(card_keys_in_hand) > 0
     if has_cards_left:
         cannot_go_out()  # Still have cards after melding
     else:
-        player_wins_round()  # Perfect meld!
+        player_wins_round()  # Perfect meld - all cards melded!
 else:
-    # Rounds 1-6: Must discard exactly 1 card
+    # Rounds 1-6: Must discard exactly 1 card to go out
     if len(card_keys_in_hand) == 1:
         must_discard_last_card()
         player_wins_round()
@@ -418,7 +424,8 @@ if has_ace:
 func can_win_round() -> bool:
     var has_melded = player_has_melded(player_id)
     var cards_remaining = len(card_keys_in_hand)
-    return has_melded and cards_remaining == 1  # Must discard last card
+    # Must have melded required sets/runs and have exactly 1 card left to discard
+    return has_melded and cards_remaining == 1
 ```
 
 **Round 7:**
@@ -426,7 +433,8 @@ func can_win_round() -> bool:
 func can_win_round_7() -> bool:
     var has_melded_all = player_has_melded(player_id)
     var cards_remaining = len(card_keys_in_hand)
-    return has_melded_all and cards_remaining == 0  # No cards left!
+    # Must meld ALL cards in hand (could be 13, 15, 17+ if player bought)
+    return has_melded_all and cards_remaining == 0
 ```
 
 ### Turn Validation
