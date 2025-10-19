@@ -9,6 +9,14 @@ var trophy1: Sprite2D
 var trophy2: Sprite2D
 var trophy3: Sprite2D
 
+const TROPHY1_YPOS_FACTOR = 0.2
+const TROPHY2_YPOS_FACTOR = 0.4
+const TROPHY3_YPOS_FACTOR = 0.6
+const REMAINING_PLAYERS_YPOS_FACTOR = 0.85
+const FINAL_TROPHY_SCALE = Vector2(0.25, 0.25)
+const TROPHY_MOVE_DURATION = 0.5
+const TROPHY_SPACING_FACTOR = 8 # as if fitting # items next to each other, centered
+
 func enter(_params: Dictionary):
 	Global.dbg("ENTER FinalScoresState")
 	# Step 0: Create trophy sprites but keep them hidden for now.
@@ -73,7 +81,7 @@ func move_fourth_to_last_place_players(remaining_ids: Array) -> void:
 	# Move each player into place starting with 4th place on the left to last place on the right.
 	var tween = players_container.create_tween()
 	tween.set_parallel(true)
-	var time_duration = 0.5
+	var time_duration = TROPHY_MOVE_DURATION
 	var delay = time_duration
 	var num_players_to_move = len(remaining_ids)
 
@@ -89,30 +97,74 @@ func move_fourth_to_last_place_players(remaining_ids: Array) -> void:
 			# num_players_to_move == 3 -> 0.25, 0.5, 0.75
 			# num_players_to_move == 4 -> 0.2, 0.4, 0.6, 0.8
 			# num_players_to_move == n -> (1 / (n + 1)), (2 / (n + 1)), ..., (n / (n + 1))
-			var target_pos = Global.screen_size * Vector2((player_rank + 1) / float(num_players_to_move + 1), 0.85)
-			tween.tween_property(child, "position", target_pos, time_duration).set_delay(delay)
-			tween.tween_property(child, "rotation", 0.0, time_duration).set_delay(delay)
+			var target_pos = Global.screen_size * Vector2((player_rank + 1) / float(num_players_to_move + 1), REMAINING_PLAYERS_YPOS_FACTOR)
+			tween.tween_property(child, "position", target_pos, time_duration).set_delay(delay).set_ease(Tween.EASE_OUT_IN)
+			tween.tween_property(child, "rotation", 0.0, time_duration).set_delay(delay).set_ease(Tween.EASE_OUT_IN)
 			delay += time_duration
 	await tween.finished
 
+func item_xpercent(item_index: int, num_items: int) -> float:
+	var total_width = float(num_items) / float(TROPHY_SPACING_FACTOR + 1)
+	var left_edge = 0.5 - total_width / 2.0
+	var right_edge = 0.5 + total_width / 2.0
+	var final_percent = left_edge + (item_index + 1) * (right_edge - left_edge) / float(num_items + 1)
+	Global.dbg("item_xpercent: item_index=%d, num_items=%d, left_edge=%0.2f, right_edge=%0.2f, final_percent=%0.2f" % [item_index, num_items, left_edge, right_edge, final_percent])
+	return final_percent
+
 func animate_third_place_presentation(player_ids: Array) -> void:
 	if len(player_ids) == 0: return # No third place player to present.
-	trophy3.visible = true
-	var tween = trophy3.create_tween()
-	tween.tween_property(trophy3, "scale", Vector2(1.0, 1.0), 1.0)
-	await tween.finished
+	await animate_trophy_placement(player_ids, trophy3, TROPHY3_YPOS_FACTOR)
+	await animate_trophy_winners(player_ids, TROPHY3_YPOS_FACTOR)
 
 func animate_second_place_presentation(player_ids: Array) -> void:
-	trophy2.visible = true
-	var tween = trophy2.create_tween()
-	tween.tween_property(trophy2, "scale", Vector2(1.0, 1.0), 1.0)
-	await tween.finished
+	await animate_trophy_placement(player_ids, trophy2, TROPHY2_YPOS_FACTOR)
+	await animate_trophy_winners(player_ids, TROPHY2_YPOS_FACTOR)
 
 func animate_first_place_presentation(player_ids: Array) -> void:
-	trophy1.visible = true
-	var tween = trophy1.create_tween()
-	tween.tween_property(trophy1, "scale", Vector2(1.0, 1.0), 1.0)
+	await animate_trophy_placement(player_ids, trophy1, TROPHY1_YPOS_FACTOR)
+	await animate_trophy_winners(player_ids, TROPHY1_YPOS_FACTOR)
+
+func animate_trophy_placement(player_ids: Array, trophy: Sprite2D, ypos_factor: float) -> void:
+	trophy.visible = true
+	var tween = trophy.create_tween()
+	tween.tween_property(trophy, "scale", Vector2(1.0, 1.0), TROPHY_MOVE_DURATION).set_ease(Tween.EASE_OUT_IN)
 	await tween.finished
+	await get_tree().create_timer(TROPHY_MOVE_DURATION).timeout
+	var num_items = len(player_ids) + 1
+	var target_pos = Global.screen_size * Vector2(item_xpercent(0, num_items), ypos_factor)
+	tween = trophy.create_tween()
+	tween.set_parallel(true)
+	tween.tween_property(trophy, "scale", FINAL_TROPHY_SCALE, TROPHY_MOVE_DURATION).set_ease(Tween.EASE_OUT_IN)
+	tween.tween_property(trophy, "position", target_pos, TROPHY_MOVE_DURATION).set_ease(Tween.EASE_OUT_IN)
+	tween.tween_property(trophy, "z_index", 0, TROPHY_MOVE_DURATION).set_ease(Tween.EASE_OUT_IN)
+	await tween.finished
+
+func animate_trophy_winners(player_ids: Array, ypos_factor: float) -> void:
+	var num_items = len(player_ids) + 1
+	var tween = players_container.create_tween()
+	tween.set_parallel(true)
+	var time_duration = TROPHY_MOVE_DURATION
+	var delay = time_duration
+	for player_rank in range(len(player_ids)):
+		var player_id = player_ids[player_rank]
+		for j in players_container.get_child_count():
+			var child = players_container.get_child(j)
+			if child.player_id != player_id:
+				continue
+			var original_scale = child.scale
+			var target_pos = Global.screen_size * Vector2(0.5, 0.5)
+			tween.tween_property(child, "scale", Vector2(3.0, 3.0), time_duration).set_delay(delay).set_ease(Tween.EASE_OUT_IN)
+			tween.tween_property(child, "position", target_pos, time_duration).set_delay(delay).set_ease(Tween.EASE_OUT_IN)
+			tween.tween_property(child, "rotation", 0.0, time_duration).set_delay(delay).set_ease(Tween.EASE_OUT_IN)
+			tween.tween_property(child, "z_index", 200, time_duration).set_delay(delay).set_ease(Tween.EASE_OUT_IN)
+			delay += 2 * time_duration
+			target_pos = Global.screen_size * Vector2(item_xpercent(player_rank + 1, num_items), ypos_factor)
+			tween.tween_property(child, "scale", original_scale, time_duration).set_delay(delay).set_ease(Tween.EASE_OUT_IN)
+			tween.tween_property(child, "position", target_pos, time_duration).set_delay(delay).set_ease(Tween.EASE_OUT_IN)
+			tween.tween_property(child, "z_index", 0, time_duration).set_delay(delay).set_ease(Tween.EASE_OUT_IN)
+			delay += time_duration
+	await tween.finished
+	await get_tree().create_timer(TROPHY_MOVE_DURATION).timeout
 
 func animate_final_confetti_and_fireworks() -> void:
 	pass
