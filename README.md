@@ -113,6 +113,7 @@ For developers interested in understanding the codebase, see the [docs/](docs/) 
 - **[Game State Machine](docs/game-state-machine.md)** - Complete overview of game flow, states, and round progression
 - **[Card Shuffle Animations](docs/card-shuffle-animations.md)** - Guide to the 7 shuffle animation types and how to create new ones
 - **[Bot AI System](docs/bot-ai-system.md)** - Deep dive into bot decision-making, evaluation algorithms, and personalities
+- **[Game Rules Implementation](docs/game-rules-implementation.md)** - How Liverpool Rummy rules are enforced in code
 
 # Status
 

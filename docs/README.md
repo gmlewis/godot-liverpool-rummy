@@ -38,6 +38,16 @@ Deep dive into the bot artificial intelligence, including:
 - Smart discard logic and public melding strategy
 - How to create custom bots
 
+### [Game Rules Implementation](game-rules-implementation.md)
+Complete guide to how game rules are enforced in code, including:
+- Group and run validation algorithms
+- Scoring system and point values
+- Turn mechanics and buy request system
+- Melding rules (personal and public)
+- Special Round 7 rules (no discard)
+- Joker and Ace handling
+- Edge cases and rule enforcement architecture
+
 ## Project Structure
 
 ```
@@ -112,6 +122,6 @@ This project was developed with AI assistance. See the main [README.md](../READM
 - [x] Multiplayer architecture and UDP discovery
 - [x] Card shuffle animation guide
 - [x] Bot AI decision-making logic
-- [ ] Game rules implementation details
+- [x] Game rules implementation details
 - [ ] UI/UX interaction patterns
 - [ ] Meld validation and scoring system
