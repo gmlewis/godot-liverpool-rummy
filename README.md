@@ -96,6 +96,15 @@ remotely usable. The results from [DeepSeek](https://www.deepseek.com/en) were w
 
 Otherwise, I occasionally asked GitHub Copilot for assistance.
 
+**FLASH** - October 19, 2025: I enjoy reading "Joy & Curiosity" by Thorsten Ball
+(available at Register Spill: https://registerspill.thorstenball.com/subscribe)
+and he recently mentioned [Amp free](https://ampcode.com/free) which has
+completely changed the way I now think about AI agents. I've tried many of
+them and wasted hundreds of dollars on them, so I was super reluctant to try Amp.
+Now that they have a free tier, I decided to try it out. Wow, am I impressed.
+With Amp, I'm hoping to complete this game in the order of weeks instead of months.
+Thank you, Thorsten!
+
 # Documentation
 
 For developers interested in understanding the codebase, see the [docs/](docs/) directory:
