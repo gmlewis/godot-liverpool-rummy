@@ -67,7 +67,7 @@ signal meld_area_state_changed(is_valid: bool, area_idx: int)
 
 @onready var playing_cards_control: Control = $"/root/RootNode/PlayingCardsControl" if has_node("/root/RootNode/PlayingCardsControl") else null
 
-const VERSION = '0.4.0'
+const VERSION = '0.5.0'
 const GAME_PORT = 7000
 const DISCOVERY_PORT = 8910
 const MAX_PLAYERS = 10
@@ -1462,3 +1462,118 @@ func _calculate_sequence_gaps(cards: Array) -> int:
 		if diff > 0:
 			gaps += diff
 	return gaps
+
+# Post-meld public melding functions
+func can_publicly_meld_card(card_key: String, all_public_meld_stats: Dictionary) -> bool:
+	# Check if card can be melded to public groups or runs
+	if all_public_meld_stats == null:
+		return false
+
+	var parts = card_key.split('-')
+	var rank = parts[0]
+	var suit = parts[1] if len(parts) > 1 else ""
+
+	# Check for groups - same rank can be added to existing groups
+	if rank in all_public_meld_stats['by_rank']:
+		var melds_by_rank = all_public_meld_stats['by_rank'][rank]
+		for single_meld in melds_by_rank:
+			if single_meld['meld_group_type'] == 'group':
+				return true
+
+	# Check for runs - card can extend or replace jokers in runs of same suit
+	if suit in all_public_meld_stats['by_suit']:
+		for pub_rank in all_public_meld_stats['by_suit'][suit]:
+			for pub_meld in all_public_meld_stats['by_suit'][suit][pub_rank]:
+				if pub_meld['meld_group_type'] == 'run':
+					# Check if this card can extend or replace in this run
+					if can_card_extend_run(card_key, pub_meld) or can_card_replace_joker_in_run(card_key, pub_meld):
+						return true
+
+	return false
+
+func can_card_extend_run(card_key: String, pub_meld: Dictionary) -> bool:
+	# Get all cards in the public run to determine if this card can extend it
+	var run_cards = []
+	var player_id = pub_meld['player_id']
+	var meld_group_index = pub_meld['meld_group_index']
+
+	# Find the actual run by looking at the player's played_to_table
+	for ppi in game_state.public_players_info:
+		if ppi.id == player_id:
+			if meld_group_index < len(ppi.played_to_table):
+				var meld_group = ppi.played_to_table[meld_group_index]
+				if meld_group['type'] == 'run':
+					run_cards = meld_group['card_keys']
+					break
+			break
+
+	if len(run_cards) == 0:
+		return false
+
+	# Check if the card can be used in this run (suit validation)
+	if not can_card_be_used_in_run(card_key, run_cards):
+		return false
+
+	# Try adding the card to the front or back of the run
+	var test_run_front = [card_key] + run_cards
+	var test_run_back = run_cards + [card_key]
+
+	return is_valid_run(test_run_front) or is_valid_run(test_run_back)
+
+func can_card_replace_joker_in_run(card_key: String, pub_meld: Dictionary) -> bool:
+	# Get all cards in the public run to determine if this card can replace a joker
+	var run_cards = []
+	var player_id = pub_meld['player_id']
+	var meld_group_index = pub_meld['meld_group_index']
+
+	# Find the actual run by looking at the player's played_to_table
+	for ppi in game_state.public_players_info:
+		if ppi.id == player_id:
+			if meld_group_index < len(ppi.played_to_table):
+				var meld_group = ppi.played_to_table[meld_group_index]
+				if meld_group['type'] == 'run':
+					run_cards = meld_group['card_keys']
+					break
+			break
+
+	if len(run_cards) == 0:
+		return false
+
+	# Check if the card can be used in this run (suit validation)
+	if not can_card_be_used_in_run(card_key, run_cards):
+		return false
+
+	# Check if any position in the run has a joker and this card can replace it
+	for i in range(len(run_cards)):
+		var run_card = run_cards[i]
+		var parts = run_card.split('-')
+		if parts[0] == 'JOKER':
+			# Try replacing this joker with our card
+			var test_run = run_cards.duplicate()
+			test_run[i] = card_key
+			if is_valid_run(test_run):
+				return true
+
+	return false
+
+func can_card_be_used_in_run(card_key: String, run_cards: Array) -> bool:
+	# Check if the card has the same suit as the run (jokers can be used in any run)
+	var card_parts = card_key.split('-')
+	if len(card_parts) < 2:
+		return false
+	var is_joker = card_parts[0] == 'JOKER'
+	var card_suit = card_parts[1] if not is_joker else ""
+
+	# Determine run suit from existing cards (skip jokers)
+	var run_suit = ""
+	for run_card in run_cards:
+		var run_parts = run_card.split('-')
+		if run_parts[0] != 'JOKER':
+			run_suit = run_parts[1]
+			break
+
+	# Jokers can be used in any run, but regular cards must match suit
+	if is_joker:
+		return run_suit != ""  # Jokers can only be used in runs with at least one non-joker card
+	else:
+		return card_suit == run_suit
