@@ -19,7 +19,7 @@ classDiagram
     Bot <|-- StingyBot
     Bot <|-- GenerousBot
     Bot <|-- BasicBot
-    
+
     class Bot {
         +String bot_id
         +bool is_my_turn
@@ -30,22 +30,22 @@ classDiagram
         #_on_new_discard_state_entered()
         #_on_player_drew_state_entered()
     }
-    
+
     class DumbBot {
         +_on_new_discard_state_entered()
         Random 50/50 draw decision
     }
-    
+
     class StingyBot {
         +_on_new_discard_state_entered()
         Blocks buy requests
     }
-    
+
     class GenerousBot {
         +_on_new_discard_state_entered()
         Allows all buy requests
     }
-    
+
     class BasicBot {
         +_on_new_discard_state_entered()
         Full evaluation-based strategy
@@ -161,16 +161,16 @@ func _on_new_discard_state_entered():
     var current_hand_evaluation = evaluate_bot_hand(current_hand_stats, bot_id)
     var current_eval_score = current_hand_evaluation['eval_score']
     var want_discard_card = do_i_want_discard_card(current_hand_stats, current_eval_score)
-    
+
     if not is_my_turn:
         if want_discard_card:
             Global.request_to_buy_card_from_discard_pile(bot_id)
         return
-    
+
     if not want_discard_card and Global.has_outstanding_buy_request():
         Global.allow_outstanding_buy_request(bot_id)
         return
-    
+
     if want_discard_card:
         _draw_card_from_discard_pile()
     else:
@@ -190,27 +190,27 @@ func _on_new_discard_state_entered():
 ```mermaid
 flowchart TD
     Start[Turn Starts: New Discard State]
-    
+
     Start --> CheckTurn{Is My Turn?}
-    
+
     CheckTurn -->|No| EvalForBuy[Evaluate if discard helps hand]
     EvalForBuy --> WantCard{Want Card?}
     WantCard -->|Yes| RequestBuy[Request to Buy Card]
     WantCard -->|No| Wait[Wait for Turn]
     RequestBuy --> Wait
-    
+
     CheckTurn -->|Yes| CheckBuyReq{Outstanding Buy Request?}
-    
+
     CheckBuyReq -->|Yes| WantDiscardCheck{Do I Want Discard?}
     WantDiscardCheck -->|Yes| DrawDiscard1[Draw from Discard]
     WantDiscardCheck -->|No| AllowBuy[Allow Buy Request]
-    
+
     CheckBuyReq -->|No| EvalDiscard[Evaluate Discard Card]
     EvalDiscard --> WantDiscard2{Improves Hand?}
-    
+
     WantDiscard2 -->|Yes| DrawDiscard2[Draw from Discard]
     WantDiscard2 -->|No| DrawStock[Draw from Stock]
-    
+
     DrawDiscard1 --> PlayerDrewState
     DrawDiscard2 --> PlayerDrewState
     DrawStock --> PlayerDrewState
@@ -218,18 +218,18 @@ flowchart TD
     WaitForBuyComplete --> CheckBuyReqAgain{More Buy Requests?}
     CheckBuyReqAgain -->|Yes| CheckBuyReq
     CheckBuyReqAgain -->|No| EvalDiscard
-    
+
     PlayerDrewState[Enter Player Drew State]
     PlayerDrewState --> EvalHandAfterDraw[Evaluate Full Hand]
     EvalHandAfterDraw --> CanMeld{Can Meld Required Sets?}
-    
+
     CanMeld -->|Yes| MeldHand[Personally Meld Hand]
     CanMeld -->|No| SmartDiscard[Smart Discard Card]
-    
+
     MeldHand --> CheckPublicMeld{Can Add to Public Melds?}
     CheckPublicMeld -->|Yes| PublicMeld[Meld One Card to Public]
     CheckPublicMeld -->|No| FinalDiscard[Discard Remaining Card]
-    
+
     PublicMeld --> CheckPublicMeld
     SmartDiscard --> TurnEnd[Turn Ends]
     FinalDiscard --> CheckWin{Hand Empty?}
@@ -378,7 +378,7 @@ This ensures jokers are used most efficiently.
 
 ### 4. Smart Discard Logic
 
-**Discard Priority** (lowest to highest):
+**Discard Priority:**
 
 1. **Cards with no meld potential** (singletons, non-sequential)
 2. **Low-value cards** (2, 3, 4 if not in sequences)
@@ -390,7 +390,7 @@ This ensures jokers are used most efficiently.
 8. **Cards that can extend public melds** (keep for post-meld phase)
 9. **High-value cards in groups of 3+** (strong meld potential)
 10. **Jokers** (NEVER discard)
-11. **Last drawn card from discard** (illegal to discard)
+11. **Last drawn card from discard** (stupid move - why did you take it?!?)
 
 **Special Cases:**
 - If recommended discard is empty or last drawn card → discard random card
@@ -489,7 +489,7 @@ func get_bot_name() -> String:
 
 func _on_new_discard_state_entered() -> void:
     if not is_my_turn: return
-    
+
     # Custom draw logic here
     # Can use:
     # - gen_current_hand_stats()
@@ -497,7 +497,7 @@ func _on_new_discard_state_entered() -> void:
     # - do_i_want_discard_card()
     # - _draw_card_from_discard_pile()
     # - _draw_card_from_stock_pile()
-    
+
 # Optional: override discard behavior
 # Otherwise inherits _smart_discard_card()
 ```
@@ -533,7 +533,7 @@ func test_bot_hand_evaluation():
     var card_keys = ["A-hearts-0", "A-clubs-0", "A-diamonds-0"]
     var hand_stats = bot.gen_bot_hand_stats(card_keys)
     var evaluation = bot.evaluate_bot_hand(hand_stats, "test_bot")
-    
+
     assert(evaluation['can_be_personally_melded'].size() > 0)
     assert(evaluation['eval_score'] > 0)
 ```
