@@ -3,6 +3,29 @@ extends Control
 @export var players_container: Node2D
 @export var player_scene: PackedScene
 
+################################################################################
+## Screen orientation settings
+################################################################################
+
+# Configuration
+@export var rotation_threshold: float = 0.6 # How tilted before triggering rotation
+@export var rotation_speed: float = 3.0 # Speed of smooth rotation (higher = faster)
+@export var stability_time: float = 0.3 # How long orientation must be stable before rotating
+
+# Internal state
+var target_rotation: float = 0.0 # Target rotation in degrees (0 or 180)
+var current_rotation: float = 0.0 # Current smoothed rotation
+var pending_orientation: int = 0 # 0 or 180
+var orientation_stable_timer: float = 0.0
+
+# Track which orientation we're in (0 = normal landscape, 180 = flipped)
+var current_orientation: int = 0
+
+################################################################################
+## End of screen orientation settings
+################################################################################
+
+
 var player_circle_radius: float
 
 const PLAYER_SCENE_PATH = 'res://players/player.tscn'
@@ -70,7 +93,7 @@ func change_round(scene: PackedScene, ack_sync_name: String) -> void:
 		$RoundNode.add_child(scene.instantiate())
 	if ack_sync_name != '':
 		Global.ack_sync_completed(ack_sync_name)
-	
+
 func _on_player_connected_signal(_id, player_info):
 	#player_info['turn_index'] = len(players_container.get_children())
 	# Global.dbg("root_node:_on_player_connected_signal(%s): %s" % [str(id), str(player_info)])
@@ -279,6 +302,81 @@ func _cleanup_confetti(emitters: Array) -> void:
 			# Wait a bit for particles to fade out, then remove
 			var cleanup_tween = create_tween()
 			cleanup_tween.tween_callback(emitter.queue_free).set_delay(2.0)
+
+################################################################################
+## Handle screen orientation changes
+################################################################################
+
+func set_up_screen_rotation_detection() -> void:
+	# Make sure we start at 0 rotation
+	rotation_degrees = 0
+	current_rotation = 0
+	target_rotation = 0
+
+	Global.dbg("Landscape rotation controller initialized")
+	Global.dbg("Accelerometer enabled: %s" % str(Input.get_accelerometer() != Vector3.ZERO))
+
+func _process(delta: float):
+	# Only process rotation on Android/iOS or when testing
+	if not OS.has_feature("mobile") and Input.get_accelerometer() == Vector3.ZERO:
+		return
+
+	# Get accelerometer data
+	var accel: Vector3 = Input.get_accelerometer()
+
+	# Determine desired orientation based on gravity
+	# In landscape mode, we care about the Y axis (vertical when held in landscape)
+	# Positive Y = normal orientation, Negative Y = flipped 180°
+	var desired_orientation: int = current_orientation
+
+	if accel.y > rotation_threshold:
+		# Device is in normal landscape orientation
+		desired_orientation = 0
+	elif accel.y < -rotation_threshold:
+		# Device is flipped 180 degrees
+		desired_orientation = 180
+
+	# Check if orientation has changed and is stable
+	if desired_orientation != pending_orientation:
+		# New orientation detected, reset stability timer
+		pending_orientation = desired_orientation
+		orientation_stable_timer = 0.0
+	else:
+		# Same orientation, increment stability timer
+		orientation_stable_timer += delta
+
+		# If orientation has been stable long enough, commit to rotation
+		if orientation_stable_timer >= stability_time and desired_orientation != current_orientation:
+			current_orientation = desired_orientation
+			target_rotation = float(current_orientation)
+			print("Rotating to: ", current_orientation, " degrees")
+
+	# Smoothly interpolate to target rotation
+	if abs(current_rotation - target_rotation) > 0.01:
+		current_rotation = lerp(current_rotation, target_rotation, rotation_speed * delta)
+		rotation_degrees = current_rotation
+	else:
+		# Snap to exact value when very close
+		current_rotation = target_rotation
+		rotation_degrees = target_rotation
+
+# Optional: Debug function to manually test rotation
+func _input(event: InputEvent):
+	# For desktop testing: press Space to toggle rotation
+	if event is InputEventKey and event.pressed and event.keycode == KEY_SPACE:
+		if not OS.has_feature("mobile"):
+			print("Manual rotation toggle (testing)")
+			current_orientation = 180 if current_orientation == 0 else 0
+			target_rotation = float(current_orientation)
+			orientation_stable_timer = stability_time # Skip stability wait for testing
+
+# Public function to get current orientation (useful for other scripts)
+func get_current_orientation() -> int:
+	return current_orientation
+
+# Public function to check if rotation is in progress
+func is_rotating() -> bool:
+	return abs(current_rotation - target_rotation) > 0.01
 
 ################################################################################
 
