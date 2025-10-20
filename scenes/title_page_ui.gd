@@ -37,6 +37,7 @@ func _exit_tree():
 func _on_reset_game_signal() -> void:
 	_stop_udp_discovery()
 	game_has_started = false
+	Global.game_has_started = false
 	remote_host_game_started = {}
 	$StatusLabel.text = 'Version %s' % [Global.VERSION]
 	$PanelPositionControl/WelcomePanel.show()
@@ -108,7 +109,7 @@ func _on_host_new_game_button_pressed() -> void:
 
 func _on_start_button_pressed() -> void:
 	game_has_started = true
-	_stop_udp_discovery()
+	Global.game_has_started = true
 	$PanelPositionControl/StartGamePanel.hide()
 	_rpc_hide_title_page_ui.rpc()
 	start_button_pressed_signal.emit()

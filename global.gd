@@ -19,6 +19,9 @@ var bots_private_player_info = {}
 # Each peer (server or client) can customize their view of their playing card backs.
 var custom_card_back: Sprite2D = Sprite2D.new()
 
+# Flag to track if the game has started (prevents late joins)
+var game_has_started = false
+
 # playing_cards is a Dictionary (uniquely keyed by rank-suit-deck, e.g. 'A-spades-0', 'Joker-1-0', 'Joker-2-0', etc.)
 # of Node2D instances of the PlayingCard class, one for each card in play.
 # It is generated on-demand in the StartRoundShuffleState and each peer (server and clients) have their own copy.
@@ -268,6 +271,11 @@ func join_game(address):
 	multiplayer.multiplayer_peer = peer
 
 func _on_peer_connected(peer_id):
+	if game_has_started:
+		# Reject connection if game has already started
+		dbg("Global._on_peer_connected: rejecting peer %d because game has started" % peer_id)
+		multiplayer.multiplayer_peer.disconnect_peer(peer_id)
+		return
 	var public_player_info = gen_public_player_info(private_player_info)
 	dbg("Global._on_peer_connected(peer_id=%s): sending my player_info to peer_id: %s" % [str(peer_id), str(public_player_info)])
 	_rpc_register_player.rpc_id(peer_id, public_player_info)

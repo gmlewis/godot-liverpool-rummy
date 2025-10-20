@@ -150,9 +150,9 @@ To test multiplayer functionality locally:
 ## Troubleshooting
 
 ### "Join Game" still visible after host starts
-- Ensure UDP discovery server stops when game starts
-- Verify `game_has_started` flag is set correctly
-- Check that clients properly parse `game_started` in UDP response
+- Ensure UDP discovery server continues running when game starts (it should respond with `game_started: true`)
+- Verify `game_has_started` flag is set correctly in both `title_page_ui.gd` and `global.gd`
+- Check that clients properly parse `game_started` in UDP response and hide join button
 
 ### Cannot discover hosts on network
 - Verify firewall allows UDP broadcast on port 9999
