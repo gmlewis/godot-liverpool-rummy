@@ -363,37 +363,40 @@ func _process(delta: float):
 	if abs(current_rotation - target_rotation) > 0.01:
 		current_rotation = lerp(current_rotation, target_rotation, rotation_speed * delta)
 		rotation_degrees = current_rotation
-		rotate_canvas_layers(current_rotation)
+		# Only update canvas layers when rotation changes significantly
+		if abs(current_rotation - target_rotation) < 1.0: # Near the end
+			rotate_canvas_layers(target_rotation) # Snap to target
 	else:
 		# Snap to exact value when very close
-		current_rotation = target_rotation
-		rotation_degrees = target_rotation
-		rotate_canvas_layers(target_rotation)
+		if current_rotation != target_rotation:
+			current_rotation = target_rotation
+			rotation_degrees = target_rotation
+			rotate_canvas_layers(target_rotation)
 
 # Rotate all CanvasLayer nodes (they don't inherit parent rotation)
 func rotate_canvas_layers(rot_degrees: float):
 	# Find all CanvasLayer nodes in the scene tree
 	var canvas_layers = find_canvas_layers(get_tree().root)
+
 	for layer in canvas_layers:
 		# Only rotate CanvasLayers that have a Control node as their container
 		# Skip ones with Node2D children (like Sprite2D, Label with position)
 		var has_control_child = false
 		var has_node2d_child = false
+		var control_child = null
 
 		for child in layer.get_children():
 			if child is Control:
 				has_control_child = true
+				control_child = child
 			if child is Node2D or child is Label:
 				has_node2d_child = true
 
 		# Only rotate if it has a Control container and no direct Node2D positioning
-		if has_control_child and not has_node2d_child:
-			for child in layer.get_children():
-				if child is Control:
-					var screen_center = get_viewport_rect().size / 2.0
-					child.pivot_offset = screen_center
-					child.rotation_degrees = rot_degrees
-					break
+		if has_control_child and not has_node2d_child and control_child:
+			var screen_center = get_viewport_rect().size / 2.0
+			control_child.pivot_offset = screen_center
+			control_child.rotation_degrees = rot_degrees
 
 # Recursively find all CanvasLayer nodes
 func find_canvas_layers(node: Node) -> Array:
