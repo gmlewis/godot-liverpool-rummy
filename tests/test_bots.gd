@@ -118,7 +118,7 @@ func test_evaluate_hand_pre_meld_round1() -> bool:
 	# Round 1 requires 2 groups
 	var cards = ["A-hearts-0", "A-spades-0", "A-diamonds-0", "K-hearts-0", "K-spades-0", "K-diamonds-0", "2-hearts-0"]
 	var hand_stats = test_bot.gen_bot_hand_stats(cards)
-	var _all_public_meld_stats = Global._gen_all_public_meld_stats()
+	var _all_public_meld_stats = Bot._gen_all_public_meld_stats()
 	var evaluation = test_bot._evaluate_hand_pre_meld(1, hand_stats, _all_public_meld_stats)
 
 	test_framework.assert_equal(2, len(evaluation['can_be_personally_melded']), "Should be able to meld 2 groups")
@@ -130,7 +130,7 @@ func test_evaluate_hand_pre_meld_round2() -> bool:
 	# Round 2 requires 1 group + 1 run
 	var cards = ["A-hearts-0", "A-spades-0", "A-diamonds-0", "2-hearts-0", "3-hearts-0", "4-hearts-0", "5-hearts-0", "6-hearts-0"]
 	var hand_stats = test_bot.gen_bot_hand_stats(cards)
-	var _all_public_meld_stats = Global._gen_all_public_meld_stats()
+	var _all_public_meld_stats = Bot._gen_all_public_meld_stats()
 	var evaluation = test_bot._evaluate_hand_pre_meld(2, hand_stats, _all_public_meld_stats)
 
 	test_framework.assert_equal(2, len(evaluation['can_be_personally_melded']), "Should be able to meld 1 group + 1 run")
@@ -151,7 +151,7 @@ func test_evaluate_hand_post_meld() -> bool:
 	# Test post-meld evaluation with some cards that can be publicly melded
 	var cards = ["A-spades-0", "2-hearts-0", "3-hearts-0"]
 	var hand_stats = test_bot.gen_bot_hand_stats(cards)
-	var _all_public_meld_stats = Global._gen_all_public_meld_stats()
+	var _all_public_meld_stats = Bot._gen_all_public_meld_stats()
 	var evaluation = test_bot._evaluate_hand_post_meld(1, hand_stats, _all_public_meld_stats)
 
 	test_framework.assert_dict_has_key(evaluation, 'can_be_publicly_melded', "Should have can_be_publicly_melded")

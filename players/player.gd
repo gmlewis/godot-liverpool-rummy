@@ -520,8 +520,7 @@ func evaluate_player_hand(hand_stats: Dictionary) -> Dictionary:
 
 func _evaluate_player_hand_pre_meld(hand_stats: Dictionary) -> Dictionary:
 	var round_num = Global.game_state.current_round_num
-	var all_public_meld_stats = Global._gen_all_public_meld_stats()
-	Global.dbg("ENTER _evaluate_player_hand_pre_meld: round_num=%d, player_id='%s', hand_stats=%s, all_public_meld_stats=%s" % [round_num, player_id, str(hand_stats), str(all_public_meld_stats)])
+	Global.dbg("ENTER _evaluate_player_hand_pre_meld: round_num=%d, player_id='%s', hand_stats=%s" % [round_num, player_id, str(hand_stats)])
 
 	var acc = Global.empty_evaluation()
 
@@ -617,8 +616,7 @@ func _evaluate_player_hand_pre_meld(hand_stats: Dictionary) -> Dictionary:
 
 func _evaluate_player_hand_post_meld(hand_stats: Dictionary) -> Dictionary:
 	var round_num = Global.game_state.current_round_num
-	var all_public_meld_stats = Global._gen_all_public_meld_stats()
-	Global.dbg("ENTER _evaluate_player_handpost_meld: round_num=%d, player_id='%s', hand_stats=%s, all_public_meld_stats=%s" % [round_num, player_id, str(hand_stats), str(all_public_meld_stats)])
+	Global.dbg("ENTER _evaluate_player_handpost_meld: round_num=%d, player_id='%s', hand_stats=%s" % [round_num, player_id, str(hand_stats)])
 
 	var acc = Global.empty_evaluation()
 	# TODO

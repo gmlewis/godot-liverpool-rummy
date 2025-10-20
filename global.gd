@@ -444,7 +444,9 @@ func get_total_num_cards() -> int:
 func gen_playing_card_key(rank: String, suit: String, deck: int) -> String:
 	return "%s-%s-%d" % [rank, suit, deck]
 
-# Local player card manipulation signals:
+################################################################################
+# Local player card meld area signals:
+################################################################################
 
 func emit_card_clicked_signal(playing_card, global_position):
 	card_clicked_signal.emit(playing_card, global_position)
@@ -460,6 +462,21 @@ func emit_meld_area_state_changed(is_valid: bool, area_idx: int):
 	meld_area_state_changed.emit(is_valid, area_idx)
 
 func emit_meld_areas_states() -> void:
+	if player_has_melded(private_player_info['id']):
+		emit_meld_areas_states_post_meld()
+		return
+	emit_meld_areas_states_pre_meld()
+
+func emit_meld_areas_states_post_meld() -> void:
+	var meld_area_1_keys = private_player_info['meld_area_1_keys']
+	var meld_area_2_keys = private_player_info['meld_area_2_keys']
+	var meld_area_3_keys = private_player_info['meld_area_3_keys']
+	emit_meld_area_state_changed(all_keys_can_publicly_meld_to_idx(meld_area_1_keys, 0), 0)
+	emit_meld_area_state_changed(all_keys_can_publicly_meld_to_idx(meld_area_2_keys, 1), 1)
+	if game_state.current_round_num >= 4:
+		emit_meld_area_state_changed(all_keys_can_publicly_meld_to_idx(meld_area_3_keys, 2), 2)
+
+func emit_meld_areas_states_pre_meld() -> void:
 	var meld_area_1_keys = private_player_info['meld_area_1_keys']
 	var meld_area_2_keys = private_player_info['meld_area_2_keys']
 	var meld_area_3_keys = private_player_info['meld_area_3_keys']
@@ -489,6 +506,9 @@ func emit_meld_areas_states() -> void:
 			emit_meld_area_state_changed(is_valid_run(meld_area_1_keys), 0)
 			emit_meld_area_state_changed(is_valid_run(meld_area_2_keys), 1)
 			emit_meld_area_state_changed(is_valid_run(meld_area_3_keys), 2)
+
+func all_keys_can_publicly_meld_to_idx(card_keys: Array, meld_area_idx: int) -> bool:
+	return false
 
 ################################################################################
 ## Game play, stats, and hand evaluation functions
@@ -611,21 +631,6 @@ func add_card_to_stats(acc: Dictionary, card_key: String, player_id: String = ''
 	else:
 		acc['by_suit'][suit][rank].append(card_key)
 	return acc
-
-func _gen_all_public_meld_stats() -> Dictionary:
-	var all_melds = game_state.public_players_info.reduce(func(acc, ppi):
-		for meld_idx in range(len(ppi.played_to_table)):
-			var meld = ppi.played_to_table[meld_idx]
-			var meld_type = meld['type'] # 'group' or 'run'
-			for card_key in meld['card_keys']:
-				acc = add_card_to_stats(acc, card_key, ppi.id, meld_idx, meld_type)
-		return acc, {
-		'by_rank': {},
-		'by_suit': {},
-		# 'num_cards': 0,
-		'jokers': [],
-	})
-	return all_melds
 
 func empty_evaluation() -> Dictionary:
 	return {

@@ -125,36 +125,3 @@ func test_card_logic_scenario():
 		print("✓ Invalid run correctly rejected")
 	else:
 		print("✗ Invalid run incorrectly accepted")
-
-# Add your own custom test functions here
-func test_my_specific_bug():
-	# Customize this function to reproduce your specific issue
-	print("\n--- Testing My Specific Bug ---")
-
-	# Set up the exact scenario that's failing
-	# Add debug output
-	# Test the specific functionality
-
-	pass
-
-# Uncomment and modify this to test joker scenarios
-# func test_joker_scenarios(Global: Global):
-#     print("\n--- Testing Joker Scenarios ---")
-#
-#     var joker_hand = ["JOKER-1-0", "JOKER-2-0", "A-hearts-0", "3-hearts-0", "4-hearts-0"]
-#     var hand_stats = Global.gen_hand_stats(joker_hand)
-#     DebugHelper.print_hand_stats(hand_stats)
-#
-#     # Test run building with jokers
-#     var all_public_meld_stats = Global._gen_all_public_meld_stats()
-#     var evaluation = Global._evaluate_hand_pre_meld(2, hand_stats, all_public_meld_stats)
-#     DebugHelper.print_hand_evaluation(evaluation)
-
-# Uncomment and modify this to test specific round requirements
-# func test_round_requirements(Global: Global):
-#     print("\n--- Testing Round Requirements ---")
-#
-#     for round_num in range(1, 8):
-#         var groups_required = Global._groups_per_round[round_num - 1]
-#         var runs_required = Global._runs_per_round[round_num - 1]
-#         print("Round %d: %d groups, %d runs" % [round_num, groups_required, runs_required])

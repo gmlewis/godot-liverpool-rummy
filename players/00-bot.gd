@@ -218,6 +218,21 @@ func _draw_card_from_stock_pile() -> void:
 ## Bot hand evaluation functions
 ################################################################################
 
+static func _gen_all_public_meld_stats() -> Dictionary:
+	var all_melds = Global.game_state.public_players_info.reduce(func(acc, ppi):
+		for meld_idx in range(len(ppi.played_to_table)):
+			var meld = ppi.played_to_table[meld_idx]
+			var meld_type = meld['type'] # 'group' or 'run'
+			for card_key in meld['card_keys']:
+				acc = Global.add_card_to_stats(acc, card_key, ppi.id, meld_idx, meld_type)
+		return acc, {
+		'by_rank': {},
+		'by_suit': {},
+		# 'num_cards': 0,
+		'jokers': [],
+	})
+	return all_melds
+
 func gen_bot_hand_stats(card_keys_in_hand: Array) -> Dictionary:
 	var hand_stats = card_keys_in_hand.reduce(func(acc, card_key):
 		return Global.add_card_to_stats(acc, card_key), {
@@ -310,7 +325,7 @@ func _sort_hands_by_score(hands: Array) -> Array:
 	return sorted_hands
 
 func evaluate_bot_hand(hand_stats: Dictionary, player_id: String) -> Dictionary:
-	var all_public_meld_stats = Global._gen_all_public_meld_stats()
+	var all_public_meld_stats = _gen_all_public_meld_stats()
 	var pre_meld = not Global.player_has_melded(player_id)
 	var evaluation = null
 	if pre_meld:
