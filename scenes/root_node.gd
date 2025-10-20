@@ -363,6 +363,8 @@ func _process(delta: float):
 	if abs(current_rotation - target_rotation) > 0.01:
 		current_rotation = lerp(current_rotation, target_rotation, rotation_speed * delta)
 		rotation_degrees = current_rotation
+		# Also rotate any CanvasLayer children
+		# rotate_canvas_layers(current_rotation)
 	else:
 		# Snap to exact value when very close
 		current_rotation = target_rotation
