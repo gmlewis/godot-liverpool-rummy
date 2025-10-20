@@ -101,8 +101,14 @@ Otherwise, I occasionally asked GitHub Copilot for assistance.
 and he recently mentioned [Amp free](https://ampcode.com/free) which has
 completely changed the way I now think about AI agents. I've tried many of
 them and wasted hundreds of dollars on them, so I was super reluctant to try Amp.
-Now that they have a free tier, I decided to try it out. Wow, am I impressed.
-With Amp, I'm hoping to complete this game in the order of weeks instead of months.
+Now that they have a free tier, I decided to try it out.
+Wow, am I impressed with the "smart" version (using my $10 credits)! It really was helpful.
+I'm finding that the "free" version is significantly less helpful because of its
+dramatically-smaller context window. The "smart" version was decidedly helpful,
+whereas the "free" version either will fail because of too much context or just
+spits out some slop that demonstrates a lack-of-understanding of the full picture.
+However, I'm hoping that Amp can help me finish this project in the order of weeks
+instead of months.
 Thank you, Thorsten!
 
 # Documentation
