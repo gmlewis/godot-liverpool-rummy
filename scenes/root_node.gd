@@ -396,13 +396,10 @@ func rotate_canvas_layers(rot_degrees: float):
 			var screen_center = get_viewport_rect().size / 2.0
 			var rotation_radians = deg_to_rad(rot_degrees)
 
-			# Create a transform that rotates around the screen center
-			var transform = Transform2D()
-			transform = transform.translated(screen_center) # Move origin to center
-			transform = transform.rotated(rotation_radians) # Rotate
-			transform = transform.translated(-screen_center) # Move back
-
-			layer.transform = transform
+			# Use CanvasLayer's built-in offset and rotation
+			# Set the rotation point to screen center
+			layer.offset = screen_center
+			layer.rotation = rotation_radians
 
 # Recursively find all CanvasLayer nodes
 func find_canvas_layers(node: Node) -> Array:
