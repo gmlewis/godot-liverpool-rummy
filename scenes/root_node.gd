@@ -53,10 +53,10 @@ func _ready():
 	Global.connect('animate_winning_confetti_explosion_signal', _on_animate_winning_confetti_explosion_signal)
 
 	player_circle_radius = $AllPlayersControl.size.x * PLAYER_CIRCLE_RADIUS_RATIO
-	$RulesButton/RulesAcceptDialog.size = get_viewport().get_visible_rect().size * Vector2(0.9, 0.9)
+	$HUDLayer/Control/RulesButton/RulesAcceptDialog.size = get_viewport().get_visible_rect().size * Vector2(0.9, 0.9)
 	if Global.LANGUAGE == 'de':
-		$RulesButton/RulesAcceptDialog.title = "Regeln für Liverpool Rummy"
-		$RulesButton/RulesAcceptDialog/ScrollContainer/Label.text = german_rules_text
+		$HUDLayer/Control/RulesButton/RulesAcceptDialog.title = "Regeln für Liverpool Rummy"
+		$HUDLayer/Control/RulesButton/RulesAcceptDialog/ScrollContainer/Label.text = german_rules_text
 
 func _exit_tree():
 	Global.disconnect('change_round_signal', _on_change_round_signal)
@@ -69,7 +69,7 @@ func _exit_tree():
 	Global.disconnect('animate_winning_confetti_explosion_signal', _on_animate_winning_confetti_explosion_signal)
 
 func _on_rules_button_pressed() -> void:
-	$RulesButton/RulesAcceptDialog.popup_centered()
+	$HUDLayer/Control/RulesButton/RulesAcceptDialog.popup_centered()
 
 func _on_reset_game_signal() -> void:
 	# Global.dbg("root_node:_on_reset_game_signal")
