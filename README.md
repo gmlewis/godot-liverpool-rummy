@@ -96,6 +96,32 @@ remotely usable. The results from [DeepSeek](https://www.deepseek.com/en) were w
 
 Otherwise, I occasionally asked GitHub Copilot for assistance.
 
+**FLASH** - October 19, 2025: I enjoy reading "Joy & Curiosity" by Thorsten Ball
+(available at Register Spill: https://registerspill.thorstenball.com/subscribe)
+and he recently mentioned [Amp free](https://ampcode.com/free) which has
+completely changed the way I now think about AI agents. I've tried many of
+them and wasted hundreds of dollars on them, so I was super reluctant to try Amp.
+Now that they have a free tier, I decided to try it out.
+Wow, am I impressed with the "smart" version (using my $10 credits)! It really was helpful.
+I'm finding that the "free" version is significantly less helpful because of its
+dramatically-smaller context window. The "smart" version was decidedly helpful,
+whereas the "free" version either will fail because of too much context or just
+spits out some slop that demonstrates a lack-of-understanding of the full picture.
+However, I'm hoping that Amp can help me finish this project in the order of weeks
+instead of months.
+Thank you, Thorsten!
+
+# Documentation
+
+For developers interested in understanding the codebase, see the [docs/](docs/) directory:
+
+- **[Multiplayer Architecture](docs/multiplayer-architecture.md)** - Detailed guide to the networking system, UDP discovery, and game synchronization
+- **[Game State Machine](docs/game-state-machine.md)** - Complete overview of game flow, states, and round progression
+- **[Card Shuffle Animations](docs/card-shuffle-animations.md)** - Guide to the 7 shuffle animation types and how to create new ones
+- **[Bot AI System](docs/bot-ai-system.md)** - Deep dive into bot decision-making, evaluation algorithms, and personalities
+- **[Game Rules Implementation](docs/game-rules-implementation.md)** - How Liverpool Rummy rules are enforced in code
+- **[UI/UX Interaction Patterns](docs/ui-ux-interaction-patterns.md)** - Player interactions, meld areas, and visual feedback
+
 # Status
 
 I completely ripped out the hand evaluation logic and auto-meld grouping

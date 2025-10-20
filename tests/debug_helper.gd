@@ -14,7 +14,7 @@ static func print_game_state(game_state: Dictionary) -> void:
 	for i in range(len(game_state.get('public_players_info', []))):
 		var player = game_state['public_players_info'][i]
 		print("  Player %d: %s (ID: %s, Cards: %d, Melded: %d)" % [
-			i, player.get('name', 'Unknown'), player.get('id', 'N/A'), 
+			i, player.get('name', 'Unknown'), player.get('id', 'N/A'),
 			player.get('num_cards', 0), len(player.get('played_to_table', []))
 		])
 	
