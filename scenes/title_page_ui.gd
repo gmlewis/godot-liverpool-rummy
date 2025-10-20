@@ -340,12 +340,12 @@ func parse_server_response(response: String, ip: String):
 		if 'host_name' in server_data:
 			var host_name = server_data['host_name']
 			var game_started = server_data.get('game_started', false)
-			
+
 			# Track the game state for this host
 			var was_previously_discovered = ip in remote_host_player_name
 			remote_host_player_name[ip] = host_name
 			remote_host_game_started[ip] = game_started
-			
+
 			if not was_previously_discovered:
 				Global.dbg("Discovered server: %s at %s (game_started: %s)" % [host_name, ip, game_started])
 			
