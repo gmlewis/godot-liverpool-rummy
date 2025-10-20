@@ -363,12 +363,23 @@ func _process(delta: float):
 	if abs(current_rotation - target_rotation) > 0.01:
 		current_rotation = lerp(current_rotation, target_rotation, rotation_speed * delta)
 		rotation_degrees = current_rotation
-		# Also rotate any CanvasLayer children
-		# rotate_canvas_layers(current_rotation)
+		rotate_canvas_layers(current_rotation)
 	else:
 		# Snap to exact value when very close
 		current_rotation = target_rotation
 		rotation_degrees = target_rotation
+		rotate_canvas_layers(target_rotation)
+
+# Rotate all CanvasLayer nodes (they don't inherit parent rotation)
+func rotate_canvas_layers(rotation: float):
+	for child in get_children():
+		if child is CanvasLayer:
+			# CanvasLayers need their own pivot point set
+			child.rotation_degrees = rotation
+			# Set transform to rotate around screen center
+			var screen_center = get_viewport_rect().size / 2.0
+			child.offset = screen_center
+			child.transform = Transform2D().translated(-screen_center).rotated(deg_to_rad(rotation)).translated(screen_center)
 
 # Optional: Debug function to manually test rotation
 func _input(event: InputEvent):
@@ -387,6 +398,27 @@ func get_current_orientation() -> int:
 # Public function to check if rotation is in progress
 func is_rotating() -> bool:
 	return abs(current_rotation - target_rotation) > 0.01
+
+# Helper function: Convert global position accounting for current rotation
+# Use this instead of global_position when positioning nodes
+func get_rotated_global_position(node: Node2D) -> Vector2:
+	if current_orientation == 0:
+		return node.global_position
+	else:
+		# When rotated 180°, flip the position around screen center
+		var screen_center = get_viewport_rect().size / 2.0
+		var offset = node.global_position - screen_center
+		return screen_center - offset
+
+# Helper function: Set global position accounting for current rotation
+func set_rotated_global_position(node: Node2D, pos: Vector2):
+	if current_orientation == 0:
+		node.global_position = pos
+	else:
+		# When rotated 180°, flip the position around screen center
+		var screen_center = get_viewport_rect().size / 2.0
+		var offset = pos - screen_center
+		node.global_position = screen_center - offset
 
 ################################################################################
 
