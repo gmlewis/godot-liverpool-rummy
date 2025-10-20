@@ -9,6 +9,7 @@ var remote_host_game_started = {} # Keyed by host IP address - tracks if host ha
 var udp_discovery_server: UDPServer
 var udp_discovery_client_scan_timer: Timer
 var game_has_started = false # Track if this host has started the game
+var any_game_started_detected = false # Track if any host has started a game
 
 func _ready() -> void:
 	# Note that _ready happens way after the GSM has already cycled past its
@@ -38,6 +39,7 @@ func _on_reset_game_signal() -> void:
 	_stop_udp_discovery()
 	game_has_started = false
 	Global.game_has_started = false
+	any_game_started_detected = false
 	remote_host_game_started = {}
 	$StatusLabel.text = 'Version %s' % [Global.VERSION]
 	$PanelPositionControl/WelcomePanel.show()
@@ -270,10 +272,7 @@ func _handle_discovery_request(peer: PacketPeerUDP):
 
 func _scan_for_servers():
 	var current_ip_address = ip_addresses[current_ip_address_idx]
-	# If this current_ip_address already has a host server, skip it.
-	if current_ip_address in remote_host_player_name:
-		# Global.dbg("Skipping scan for current IP address: %s (already has a host server)" % current_ip_address)
-		return
+	# Continue scanning even if we already found a host, to get updates (e.g., game_started status)
 	var parts = current_ip_address.split('.')
 	if len(parts) != 4:
 		if current_ip_address != 'localhost':
@@ -353,6 +352,7 @@ func parse_server_response(response: String, ip: String):
 			# If the game has started, don't show Join Game button - force host mode
 			if game_started:
 				Global.dbg("Server %s has already started game - cannot join" % host_name)
+				any_game_started_detected = true
 				# Remove this IP from remote hosts since game has started
 				remote_host_player_name.erase(ip)
 				remote_host_game_started.erase(ip)
@@ -360,13 +360,14 @@ func parse_server_response(response: String, ip: String):
 				$PanelPositionControl/StartGamePanel/HostNewGameButton.show()
 				$PanelPositionControl/StartGamePanel/JoinGameButton.hide()
 				return
-			
-			# Game hasn't started - allow joining
-			# Update the Join Game button text with the discovered host name
-			# JOIN_GAME_TEXT = "Join\n%s" % host_name if Global.LANGUAGE != 'de' else "Spiel\n%s beitreten" % host_name
-			$PanelPositionControl/StartGamePanel/JoinGameButton.text = JOIN_GAME_TEXT
-			$PanelPositionControl/StartGamePanel/JoinGameButton.show()
-			$PanelPositionControl/StartGamePanel/HostNewGameButton.hide()
+
+			# Game hasn't started - allow joining only if no game has been detected as started
+			if not any_game_started_detected:
+				# Update the Join Game button text with the discovered host name
+				# JOIN_GAME_TEXT = "Join\n%s" % host_name if Global.LANGUAGE != 'de' else "Spiel\n%s beitreten" % host_name
+				$PanelPositionControl/StartGamePanel/JoinGameButton.text = JOIN_GAME_TEXT
+				$PanelPositionControl/StartGamePanel/JoinGameButton.show()
+				$PanelPositionControl/StartGamePanel/HostNewGameButton.hide()
 			var lookup_ip_address_idx = -1
 			for idx in range(len(ip_addresses)):
 				if ip_addresses[idx] == ip:
