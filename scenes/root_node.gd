@@ -384,24 +384,25 @@ func rotate_canvas_layers(rot_degrees: float):
 		# Skip ones with Node2D children (like Sprite2D, Label with position)
 		var has_control_child = false
 		var has_node2d_child = false
-		var control_child = null
 
 		for child in layer.get_children():
 			if child is Control:
 				has_control_child = true
-				control_child = child
 			if child is Node2D or child is Label:
 				has_node2d_child = true
 
 		# Only rotate if it has a Control container and no direct Node2D positioning
-		if has_control_child and not has_node2d_child and control_child:
+		if has_control_child and not has_node2d_child:
 			var screen_center = get_viewport_rect().size / 2.0
-
-			# Use transform directly for more reliable rotation
 			var rotation_radians = deg_to_rad(rot_degrees)
-			control_child.position = screen_center
-			control_child.pivot_offset = screen_center
-			control_child.rotation = rotation_radians
+
+			# Create a transform that rotates around the screen center
+			var transform = Transform2D()
+			transform = transform.translated(screen_center) # Move origin to center
+			transform = transform.rotated(rotation_radians) # Rotate
+			transform = transform.translated(-screen_center) # Move back
+
+			layer.transform = transform
 
 # Recursively find all CanvasLayer nodes
 func find_canvas_layers(node: Node) -> Array:
