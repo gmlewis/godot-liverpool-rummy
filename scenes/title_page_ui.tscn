@@ -426,15 +426,6 @@ flat = true
 [node name="CardBacksNode" type="Node" parent="HUDLayer/Control/NewCardBackButton"]
 script = ExtResource("4_l6opf")
 
-[node name="ColorRect" type="ColorRect" parent="HUDLayer/Control"]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-color = Color(1, 0.22745098, 1, 0.5137255)
-
 [connection signal="text_submitted" from="TitlePageUI/PanelPositionControl/WelcomePanel/NameLineEdit" to="TitlePageUI" method="_on_line_edit_text_submitted"]
 [connection signal="pressed" from="TitlePageUI/PanelPositionControl/WelcomePanel/RefreshNameButton" to="TitlePageUI" method="_on_refresh_name_button_pressed"]
 [connection signal="pressed" from="TitlePageUI/PanelPositionControl/WelcomePanel/AcceptNameButton" to="TitlePageUI" method="_on_accept_name_button_pressed"]

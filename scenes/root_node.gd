@@ -395,11 +395,12 @@ func rotate_canvas_layers(rot_degrees: float):
 			var screen_center = get_viewport_rect().size / 2.0
 			var rotation_radians = deg_to_rad(rot_degrees)
 
-			# Build transform that rotates around screen center without moving the layer
+			# Build transform that rotates around screen center
+			# Order: translate to origin, rotate, translate back
 			var t = Transform2D()
-			t = t.translated(screen_center)
-			t = t.rotated(rotation_radians)
-			t = t.translated(-screen_center)
+			t = t.translated(-screen_center) # Move center to origin
+			t = t.rotated(rotation_radians) # Rotate around origin
+			t = t.translated(screen_center) # Move back
 
 			layer.transform = t
 
