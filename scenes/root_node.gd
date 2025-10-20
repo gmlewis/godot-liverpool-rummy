@@ -9,7 +9,7 @@ extends Control
 
 # Configuration
 @export var rotation_threshold: float = 0.6 # How tilted before triggering rotation
-@export var rotation_speed: float = 3.0 # Speed of smooth rotation (higher = faster)
+@export var rotation_speed: float = 10.0 # Speed of smooth rotation (higher = faster)
 @export var stability_time: float = 0.3 # How long orientation must be stable before rotating
 
 # Internal state
@@ -41,6 +41,7 @@ func _ready():
 	else:
 		Global.dbg("RootNode: _ready(): screen_aspect_ratio=%f, background_aspect_ratio=%f, setting Background to EXPAND_FIT_HEIGHT_PROPORTIONAL" % [Global.screen_aspect_ratio, background_aspect_ratio])
 		$Background.expand_mode = TextureRect.EXPAND_FIT_HEIGHT_PROPORTIONAL
+	set_up_screen_rotation_detection()
 	Global.dbg("RootNode: _ready(): screen_aspect_ratio=%f, $Background.expand_mode=%s" % [Global.screen_aspect_ratio, str($Background.expand_mode)])
 	Global.connect('change_round_signal', _on_change_round_signal)
 	Global.connect('player_connected_signal', _on_player_connected_signal)
@@ -308,48 +309,55 @@ func _cleanup_confetti(emitters: Array) -> void:
 ################################################################################
 
 func set_up_screen_rotation_detection() -> void:
+	# Set pivot to center of screen for proper rotation
+	pivot_offset = size / 2.0
+
 	# Make sure we start at 0 rotation
 	rotation_degrees = 0
 	current_rotation = 0
 	target_rotation = 0
 
 	Global.dbg("Landscape rotation controller initialized")
-	Global.dbg("Accelerometer enabled: %s" % str(Input.get_accelerometer() != Vector3.ZERO))
+	Global.dbg("Control size: %s" % size)
+	Global.dbg("Pivot offset: %s" % pivot_offset)
+	# Accelerometer is automatically enabled on mobile devices in Godot 4
+	Global.dbg("Accelerometer detected: %s" % str(Input.get_accelerometer() != Vector3.ZERO))
 
 func _process(delta: float):
-	# Only process rotation on Android/iOS or when testing
-	if not OS.has_feature("mobile") and Input.get_accelerometer() == Vector3.ZERO:
-		return
-
 	# Get accelerometer data
 	var accel: Vector3 = Input.get_accelerometer()
+
+	# Only process accelerometer-based rotation on mobile devices
+	var is_mobile = OS.has_feature("mobile") or accel != Vector3.ZERO
 
 	# Determine desired orientation based on gravity
 	# In landscape mode, we care about the Y axis (vertical when held in landscape)
 	# Positive Y = normal orientation, Negative Y = flipped 180°
 	var desired_orientation: int = current_orientation
 
-	if accel.y > rotation_threshold:
-		# Device is in normal landscape orientation
-		desired_orientation = 0
-	elif accel.y < -rotation_threshold:
-		# Device is flipped 180 degrees
-		desired_orientation = 180
+	# Only check accelerometer on mobile devices
+	if is_mobile:
+		if accel.y > rotation_threshold:
+			# Device is in normal landscape orientation
+			desired_orientation = 0
+		elif accel.y < -rotation_threshold:
+			# Device is flipped 180 degrees
+			desired_orientation = 180
 
-	# Check if orientation has changed and is stable
-	if desired_orientation != pending_orientation:
-		# New orientation detected, reset stability timer
-		pending_orientation = desired_orientation
-		orientation_stable_timer = 0.0
-	else:
-		# Same orientation, increment stability timer
-		orientation_stable_timer += delta
+		# Check if orientation has changed and is stable
+		if desired_orientation != pending_orientation:
+			# New orientation detected, reset stability timer
+			pending_orientation = desired_orientation
+			orientation_stable_timer = 0.0
+		else:
+			# Same orientation, increment stability timer
+			orientation_stable_timer += delta
 
-		# If orientation has been stable long enough, commit to rotation
-		if orientation_stable_timer >= stability_time and desired_orientation != current_orientation:
-			current_orientation = desired_orientation
-			target_rotation = float(current_orientation)
-			print("Rotating to: ", current_orientation, " degrees")
+			# If orientation has been stable long enough, commit to rotation
+			if orientation_stable_timer >= stability_time and desired_orientation != current_orientation:
+				current_orientation = desired_orientation
+				target_rotation = float(current_orientation)
+				print("Rotating to: ", current_orientation, " degrees")
 
 	# Smoothly interpolate to target rotation
 	if abs(current_rotation - target_rotation) > 0.01:
