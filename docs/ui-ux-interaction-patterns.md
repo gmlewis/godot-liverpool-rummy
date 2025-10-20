@@ -22,7 +22,7 @@ stateDiagram-v2
     [*] --> FaceDown: Initial State
     FaceDown --> FaceUp: Flip Animation
     FaceUp --> FaceDown: Flip Back
-    
+
     state FaceDown {
         [*] --> NotInteractive
         NotInteractive --> Tappable: In Pile
@@ -74,19 +74,19 @@ _handle_card_moved(from_position, to_position)
 ```mermaid
 flowchart TD
     Input[Mouse/Touch Event] --> Type{Event Type?}
-    
+
     Type -->|Press| CheckCard{Card Interactive?}
     CheckCard -->|No| Ignore1[Ignore Event]
     CheckCard -->|Yes| TopCheck{Topmost Card?}
     TopCheck -->|No| Ignore2[Ignore Event]
     TopCheck -->|Yes| RecordDown[Record Mouse Down<br/>Store Position]
-    
+
     Type -->|Motion| Moving{Currently Dragging?}
     Moving -->|Yes| UpdatePos[Update Card Position]
     Moving -->|No| CheckThreshold{Moved > Threshold?}
     CheckThreshold -->|Yes & Draggable| StartDrag[Start Dragging<br/>Raise Z-Index]
     CheckThreshold -->|No| Wait[Continue Waiting]
-    
+
     Type -->|Release| WasDragging{Was Dragging?}
     WasDragging -->|Yes| HandleDrop[Handle Drop<br/>Determine Destination]
     WasDragging -->|No| WasDown{Got Mouse Down?}
@@ -103,13 +103,13 @@ Only the topmost card under cursor responds to input:
 func is_topmost_card_under_mouse(mouse_pos: Vector2) -> bool:
     var highest_z_index = self.z_index
     var topmost_card = self
-    
+
     for card in player_hand:
         if card.is_mouse_over_card(mouse_pos):
             if card.z_index > highest_z_index:
                 highest_z_index = card.z_index
                 topmost_card = card
-    
+
     return topmost_card == self
 ```
 
@@ -124,15 +124,15 @@ Meld areas are designated regions where players arrange cards to form valid grou
 **Location:** Bottom portion of player's screen area
 
 ```
-┌─────────────────────────────────────────┐
-│                                         │
-│         Main Play Area                  │
-│         (Stock, Discard, Opponents)     │
-│                                         │
-├─────────────────────────────────────────┤ ← 70% mark
-│  Meld 1   │  Meld 2   │  Meld 3        │ ← Meld Areas
-│  (Cards)  │  (Cards)  │  (Cards)       │   (when needed)
-└─────────────────────────────────────────┘
+┌─────────────────────────────────────────────────────────────────────────┐
+│                                                                         │
+│                         Main Public Play Area                           │
+│                      (Stock, Discard, Opponents)                        │
+│         vvv private vvv                  vvv private vvv                │
+├──────────────────────────────────|──────────────────────────────────────┤
+│  Meld 1   │  Meld 2   │  Meld 3  │ Free-form player's private hand area |
+│  (Cards)  │  (Cards)  │  (Cards) │ ← Meld Areas (50% mark)              |
+└─────────────────────────────────────────────────────────────────────────┘
 ```
 
 ### Meld Area Layout
@@ -156,9 +156,9 @@ Meld areas are designated regions where players arrange cards to form valid grou
 **Code Constants** (in `global.gd`):
 ```gdscript
 const MELD_AREA_TOP_PERCENT = 0.7  // Meld areas start at 70% down screen
-const MELD_AREA_1_RIGHT_PERCENT = 0.33
-const MELD_AREA_2_RIGHT_PERCENT = 0.66
-const MELD_AREA_RIGHT_PERCENT = 1.0
+const MELD_AREA_1_RIGHT_PERCENT = 0.33 // of half of the screen width
+const MELD_AREA_2_RIGHT_PERCENT = 0.66 // of half of the screen width
+const MELD_AREA_RIGHT_PERCENT = 1.0 // of half of the screen width
 ```
 
 ### Real-Time Validation
@@ -172,10 +172,10 @@ flowchart LR
     Drag[Player Drags Card] --> Drop[Card Dropped in Meld Area]
     Drop --> Update[Update Meld Area Keys]
     Update --> Validate{Validate Meld}
-    
+
     Validate -->|Valid| Green[Show Green Border<br/>Sparkle Effect]
     Validate -->|Invalid| Red[Show Red Border<br/>No Sparkle]
-    
+
     Green --> Signal[Emit meld_area_updated_signal]
     Red --> Signal
     Signal --> CheckAll{All Areas Valid?}
@@ -323,20 +323,20 @@ sequenceDiagram
     participant C as Card
     participant M as Meld Area
     participant V as Visual System
-    
+
     P->>C: Mouse Down on Card
     Note over C: Record initial position
     P->>C: Drag Card (move > 15px)
     C->>C: Set dragging = true<br/>Raise z_index
-    
+
     loop While Dragging
         P->>C: Mouse Motion
         C->>C: Update position = mouse - offset
     end
-    
+
     P->>C: Mouse Release
     C->>M: Check position in meld area?
-    
+
     alt In Meld Area
         M->>M: Add card to meld_area_N_keys
         M->>V: Trigger validation
@@ -346,7 +346,7 @@ sequenceDiagram
     else Not in Meld Area
         M->>M: Remove from meld areas<br/>Keep in hand
     end
-    
+
     M->>P: Update meldability indicator
 ```
 
@@ -359,10 +359,10 @@ func _get_playing_card_meld_area_idx(card: PlayingCard) -> int:
     // Quick reject: Above meld area threshold
     if card.position.y <= screen_height * 0.7:
         return -1
-    
+
     // Check horizontal position
     var round = Global.game_state.current_round_num
-    
+
     if round <= 3:  // 2 meld areas
         if card.x >= screen_width * 0.5:
             return 1  // Right area
@@ -522,7 +522,7 @@ Player requested to buy:
 **5. Meld Ready Indicator**
 ```
 Can meld hand:
-    ├─ MeldIndicator icon visible  
+    ├─ MeldIndicator icon visible
     ├─ Pulsing animation
     └─ Clickable area highlighted
 ```
@@ -567,14 +567,14 @@ func _on_card_clicked_signal(card, position):
             draw_from_discard()
         else:
             request_to_buy()
-    
+
     elif card in stock_pile:
         if is_my_turn:
             if has_buy_requests:
                 allow_buy()
             else:
                 draw_from_stock()
-    
+
     elif card in my_hand:
         if not in_meld_area:
             discard_card()
@@ -586,7 +586,7 @@ func _on_card_clicked_signal(card, position):
 ```gdscript
 func _on_card_moved_signal(card, from_pos, to_pos):
     var meld_area = determine_meld_area(to_pos)
-    
+
     if meld_area >= 0:
         // Add to meld area
         add_to_meld_area(card, meld_area)
@@ -594,7 +594,7 @@ func _on_card_moved_signal(card, from_pos, to_pos):
     else:
         // Remove from meld areas
         remove_from_all_meld_areas(card)
-    
+
     if near_discard_pile(to_pos):
         discard_card(card)
 ```
@@ -733,7 +733,7 @@ if mouse.y < meld_area_threshold:
 // Only update z-index when dragging starts
 func _handle_card_drag_started():
     z_index = get_max_z_index() + 1
-    
+
 // Not updated every frame
 ```
 
