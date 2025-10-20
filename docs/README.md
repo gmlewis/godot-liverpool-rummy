@@ -124,13 +124,3 @@ When adding new features or fixing bugs:
 This project was developed with AI assistance. See the main [README.md](../README.md) for details on the AI-assisted development process.
 
 ---
-
-## Documentation To-Do
-
-- [x] Game state machine flow diagram
-- [x] Multiplayer architecture and UDP discovery
-- [x] Card shuffle animation guide
-- [x] Bot AI decision-making logic
-- [x] Game rules implementation details
-- [x] UI/UX interaction patterns
-- [ ] Meld validation and scoring system
