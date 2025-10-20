@@ -364,9 +364,8 @@ func _process(delta: float):
 	if abs(current_rotation - target_rotation) > 0.01:
 		current_rotation = lerp(current_rotation, target_rotation, rotation_speed * delta)
 		rotation_degrees = current_rotation
-		# Only update canvas layers when rotation changes significantly
-		if abs(current_rotation - target_rotation) < 1.0: # Near the end
-			rotate_canvas_layers(target_rotation) # Snap to target
+		# Update canvas layers DURING animation, not just at the end
+		rotate_canvas_layers(current_rotation)
 	else:
 		# Snap to exact value when very close
 		if current_rotation != target_rotation:
@@ -396,10 +395,13 @@ func rotate_canvas_layers(rot_degrees: float):
 			var screen_center = get_viewport_rect().size / 2.0
 			var rotation_radians = deg_to_rad(rot_degrees)
 
-			# Use CanvasLayer's built-in offset and rotation
-			# Set the rotation point to screen center
-			layer.offset = screen_center
-			layer.rotation = rotation_radians
+			# Build transform that rotates around screen center without moving the layer
+			var t = Transform2D()
+			t = t.translated(screen_center)
+			t = t.rotated(rotation_radians)
+			t = t.translated(-screen_center)
+
+			layer.transform = t
 
 # Recursively find all CanvasLayer nodes
 func find_canvas_layers(node: Node) -> Array:
