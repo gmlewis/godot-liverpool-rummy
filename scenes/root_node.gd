@@ -371,15 +371,23 @@ func _process(delta: float):
 		rotate_canvas_layers(target_rotation)
 
 # Rotate all CanvasLayer nodes (they don't inherit parent rotation)
-func rotate_canvas_layers(rotation: float):
-	for child in get_children():
-		if child is CanvasLayer:
-			# CanvasLayers need their own pivot point set
-			child.rotation_degrees = rotation
-			# Set transform to rotate around screen center
-			var screen_center = get_viewport_rect().size / 2.0
-			child.offset = screen_center
-			child.transform = Transform2D().translated(-screen_center).rotated(deg_to_rad(rotation)).translated(screen_center)
+func rotate_canvas_layers(rot_degrees: float):
+	# Find all CanvasLayer nodes in the scene tree
+	var canvas_layers = find_canvas_layers(get_tree().root)
+	for layer in canvas_layers:
+		# Set the rotation around the screen center
+		var screen_center = get_viewport_rect().size / 2.0
+		layer.offset = screen_center
+		layer.rotation_degrees = rot_degrees
+
+# Recursively find all CanvasLayer nodes
+func find_canvas_layers(node: Node) -> Array:
+	var layers = []
+	if node is CanvasLayer:
+		layers.append(node)
+	for child in node.get_children():
+		layers.append_array(find_canvas_layers(child))
+	return layers
 
 # Optional: Debug function to manually test rotation
 func _input(event: InputEvent):
