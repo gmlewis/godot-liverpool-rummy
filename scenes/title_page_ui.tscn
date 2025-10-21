@@ -1,4 +1,4 @@
-[gd_scene load_steps=32 format=3 uid="uid://cr0477tbltrwb"]
+[gd_scene load_steps=33 format=3 uid="uid://cr0477tbltrwb"]
 
 [ext_resource type="Script" uid="uid://c0vhxe5f80og6" path="res://scenes/root_node.gd" id="1_3twdq"]
 [ext_resource type="Texture2D" uid="uid://cvo43b68mb4qu" path="res://backgrounds/openart-image_HhP98Etm_1749088776837_raw.jpg" id="1_elm8r"]
@@ -67,8 +67,31 @@ corner_radius_bottom_right = 3
 corner_radius_bottom_left = 3
 corner_detail = 5
 
-[sub_resource type="Theme" id="Theme_hppme"]
-default_font = ExtResource("4_3twdq")
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_pfi7e"]
+bg_color = Color(0.10196078, 0.10196078, 0.10196078, 0.8627451)
+corner_radius_top_left = 30
+corner_radius_top_right = 30
+corner_radius_bottom_right = 30
+corner_radius_bottom_left = 30
+corner_detail = 5
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_jwwji"]
+content_margin_left = 50.0
+content_margin_top = 50.0
+content_margin_right = 50.0
+content_margin_bottom = 0.0
+bg_color = Color(0, 0, 0, 1)
+draw_center = false
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(1, 1, 1, 0.75)
+corner_radius_top_left = 3
+corner_radius_top_right = 3
+corner_radius_bottom_right = 3
+corner_radius_bottom_left = 3
+corner_detail = 5
 
 [node name="RootNode" type="Control" node_paths=PackedStringArray("players_container")]
 layout_mode = 3
@@ -355,25 +378,46 @@ theme_override_font_sizes/font_size = 200
 icon = ExtResource("15_jmw2h")
 flat = true
 
-[node name="RulesAcceptDialog" type="AcceptDialog" parent="HUDLayer/Control/RulesButton"]
-auto_translate_mode = 2
-oversampling_override = 1.0
-title = "Liverpool Rummy Rules"
-initial_position = 4
-size = Vector2i(2800, 1350)
-content_scale_factor = 2.0
-auto_translate = false
-theme = SubResource("Theme_hppme")
-ok_button_text = "    OK    "
+[node name="NewCardBackButton" type="Button" parent="HUDLayer/Control"]
+top_level = true
+z_index = 2
+layout_mode = 1
+offset_right = 86.0
+offset_bottom = 101.0
+scale = Vector2(2, 2)
+focus_mode = 0
+theme_override_font_sizes/font_size = 68
+text = "🔄"
+icon = SubResource("ImageTexture_dhk4a")
+flat = true
 
-[node name="ScrollContainer" type="ScrollContainer" parent="HUDLayer/Control/RulesButton/RulesAcceptDialog"]
-offset_left = 8.0
-offset_top = 8.0
-offset_right = 1392.0
-offset_bottom = 625.0
+[node name="CardBacksNode" type="Node" parent="HUDLayer/Control/NewCardBackButton"]
+script = ExtResource("4_l6opf")
 
-[node name="Label" type="Label" parent="HUDLayer/Control/RulesButton/RulesAcceptDialog/ScrollContainer"]
+[node name="CustomRulesDialog" type="Panel" parent="HUDLayer/Control"]
+visible = false
+z_index = 100
+layout_mode = 0
+offset_right = 2800.0
+offset_bottom = 1350.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_pfi7e")
+
+[node name="ScrollContainer" type="ScrollContainer" parent="HUDLayer/Control/CustomRulesDialog"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_bottom = -100.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/focus = SubResource("StyleBoxFlat_jwwji")
+draw_focus_border = true
+vertical_scroll_mode = 2
+
+[node name="Label" type="Label" parent="HUDLayer/Control/CustomRulesDialog/ScrollContainer"]
 layout_mode = 2
+theme_override_fonts/font = ExtResource("4_3twdq")
+theme_override_font_sizes/font_size = 40
 text = "# Liverpool Rummy: All Rounds and Their Requirements
 
 Liverpool Rummy is played over seven rounds, each with a specific
@@ -383,7 +427,7 @@ more challenging. Here are the round-by-round requirements:
 
 	      |                                                             | Total Cards
 Round | Requirement                                                 | Needed
-------|-------------------------------------------------------------|------------
+------|------------------------------------------------------------|------------
   1   | Two books of three (2 sets of 3 cards)                      | 6
   2   | One book of three and one run of four                       | 7
   3   | Two runs of four                                            | 8
@@ -410,21 +454,20 @@ Round | Requirement                                                 | Needed
   can lay down your cards.
 "
 
-[node name="NewCardBackButton" type="Button" parent="HUDLayer/Control"]
-top_level = true
-z_index = 2
+[node name="Button" type="Button" parent="HUDLayer/Control/CustomRulesDialog"]
 layout_mode = 1
-offset_right = 86.0
-offset_bottom = 101.0
-scale = Vector2(2, 2)
-focus_mode = 0
-theme_override_font_sizes/font_size = 68
-text = "🔄"
-icon = SubResource("ImageTexture_dhk4a")
-flat = true
-
-[node name="CardBacksNode" type="Node" parent="HUDLayer/Control/NewCardBackButton"]
-script = ExtResource("4_l6opf")
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -4.0
+offset_top = -8.0
+offset_right = 4.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_font_sizes/font_size = 50
+text = "       OK       "
 
 [connection signal="text_submitted" from="TitlePageUI/PanelPositionControl/WelcomePanel/NameLineEdit" to="TitlePageUI" method="_on_line_edit_text_submitted"]
 [connection signal="pressed" from="TitlePageUI/PanelPositionControl/WelcomePanel/RefreshNameButton" to="TitlePageUI" method="_on_refresh_name_button_pressed"]
@@ -435,3 +478,4 @@ script = ExtResource("4_l6opf")
 [connection signal="pressed" from="TitlePageUI/PanelPositionControl/StartGamePanel/NextIPAddressButton" to="TitlePageUI" method="_on_next_ip_address_button_pressed"]
 [connection signal="pressed" from="HUDLayer/Control/RulesButton" to="." method="_on_rules_button_pressed"]
 [connection signal="pressed" from="HUDLayer/Control/NewCardBackButton" to="HUDLayer/Control/NewCardBackButton/CardBacksNode" method="_on_new_card_back_button_pressed"]
+[connection signal="pressed" from="HUDLayer/Control/CustomRulesDialog/Button" to="." method="_on_custom_rules_dialog_button_pressed"]

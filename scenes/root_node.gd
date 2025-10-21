@@ -53,10 +53,10 @@ func _ready():
 	Global.connect('animate_winning_confetti_explosion_signal', _on_animate_winning_confetti_explosion_signal)
 
 	player_circle_radius = $AllPlayersControl.size.x * PLAYER_CIRCLE_RADIUS_RATIO
-	$HUDLayer/Control/RulesButton/RulesAcceptDialog.size = get_viewport().get_visible_rect().size * Vector2(0.9, 0.9)
+	$HUDLayer/Control/CustomRulesDialog.size = get_viewport().get_visible_rect().size * Vector2(0.9, 0.9)
 	if Global.LANGUAGE == 'de':
-		$HUDLayer/Control/RulesButton/RulesAcceptDialog.title = "Regeln für Liverpool Rummy"
-		$HUDLayer/Control/RulesButton/RulesAcceptDialog/ScrollContainer/Label.text = german_rules_text
+		$HUDLayer/Control/CustomRulesDialog.title = "Regeln für Liverpool Rummy"
+		$HUDLayer/Control/CustomRulesDialog/ScrollContainer/Label.text = german_rules_text
 
 func _exit_tree():
 	Global.disconnect('change_round_signal', _on_change_round_signal)
@@ -69,7 +69,15 @@ func _exit_tree():
 	Global.disconnect('animate_winning_confetti_explosion_signal', _on_animate_winning_confetti_explosion_signal)
 
 func _on_rules_button_pressed() -> void:
-	$HUDLayer/Control/RulesButton/RulesAcceptDialog.popup_centered()
+	var dialog = $HUDLayer/Control/CustomRulesDialog
+	dialog.size = Global.screen_size * Vector2(0.9, 0.9)
+	dialog.position = Global.screen_center - dialog.size / 2.0
+	rotate_popup_content(dialog)
+	dialog.show()
+
+func _on_custom_rules_dialog_button_pressed() -> void:
+	var dialog = $HUDLayer/Control/CustomRulesDialog
+	dialog.hide()
 
 func _on_reset_game_signal() -> void:
 	# Global.dbg("root_node:_on_reset_game_signal")
@@ -430,6 +438,21 @@ func get_current_orientation() -> int:
 # Public function to check if rotation is in progress
 func is_rotating() -> bool:
 	return abs(current_rotation - target_rotation) > 0.01
+
+# Helper function to rotate content inside a popup/dialog
+# Call this before showing popups since they can't be rotated themselves
+func rotate_popup_content(popup: Panel) -> void:
+	var rotation_angle = float(get_current_orientation())
+
+	# Find all Control children and rotate them
+	for child in popup.get_children():
+		if child is Control:
+			var popup_center = popup.size / 2.0
+			child.pivot_offset = popup_center
+			child.rotation_degrees = rotation_angle
+			# Adjust position to keep centered after rotation
+			if rotation_angle == 180:
+				child.position = Vector2.ZERO
 
 # Helper function: Convert global position accounting for current rotation
 # Use this instead of global_position when positioning nodes
