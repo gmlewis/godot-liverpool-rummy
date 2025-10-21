@@ -72,8 +72,6 @@ func _on_rules_button_pressed() -> void:
 	var panel = $HUDLayer/Control/CustomRulesDialog/CustomRulesPanel
 	panel.size = Global.screen_size * Vector2(0.9, 0.9)
 	panel.position = Global.screen_center - panel.size / 2.0
-	var dialog = $HUDLayer/Control/CustomRulesDialog
-	rotate_popup_content(dialog)
 	panel.show()
 
 func _on_custom_rules_dialog_button_pressed() -> void:
@@ -366,8 +364,8 @@ func _process(delta: float):
 			if orientation_stable_timer >= stability_time and desired_orientation != current_orientation:
 				current_orientation = desired_orientation
 				target_rotation = float(current_orientation)
-				print("Rotating to: ", current_orientation, " degrees")
-				print("About to call rotate_canvas_layers with rotation: ", target_rotation)
+				# Global.dbg("Rotating to: ", current_orientation, " degrees")
+				# Global.dbg("About to call rotate_canvas_layers with rotation: ", target_rotation)
 
 	# Smoothly interpolate to target rotation
 	if abs(current_rotation - target_rotation) > 0.01:
@@ -421,65 +419,19 @@ func find_canvas_layers(node: Node) -> Array:
 		layers.append_array(find_canvas_layers(child))
 	return layers
 
-# Optional: Debug function to manually test rotation
-func _input(event: InputEvent):
+# Debug function to manually test rotation
+# func _input(event: InputEvent):
 	# For desktop testing: press Space to toggle rotation
-	if event is InputEventKey and event.pressed and event.keycode == KEY_SPACE:
-		if not OS.has_feature("mobile"):
-			print("Manual rotation toggle (testing)")
-			current_orientation = 180 if current_orientation == 0 else 0
-			target_rotation = float(current_orientation)
-			orientation_stable_timer = stability_time # Skip stability wait for testing
+	# if event is InputEventKey and event.pressed and event.keycode == KEY_SPACE:
+		# if not OS.has_feature("mobile"):
+			# Global.dbg("Manual rotation toggle (testing)")
+			# current_orientation = 180 if current_orientation == 0 else 0
+			# target_rotation = float(current_orientation)
+			# orientation_stable_timer = stability_time # Skip stability wait for testing
 
-# Public function to get current orientation (useful for other scripts)
+# Public function to get current orientation (for other scripts)
 func get_current_orientation() -> int:
 	return current_orientation
-
-# Public function to check if rotation is in progress
-func is_rotating() -> bool:
-	return abs(current_rotation - target_rotation) > 0.01
-
-# Helper function to rotate content inside a popup/dialog
-# Call this before showing popups since they can't be rotated themselves
-func rotate_popup_content(popup: Node2D) -> void:
-	var rot_degrees = get_current_orientation()
-	var rotation_radians = deg_to_rad(rot_degrees)
-
-	# # Find all Control children and rotate them
-	# for child in popup.get_children():
-	# 	if child is Control:
-	# 		# var popup_center = popup.size / 2.0
-	# 		# child.pivot_offset = popup_center
-	# 		# child.rotation_degrees = float(rot_degrees)
-	# 		# # Adjust position to keep centered after rotation
-	# 		# if rot_degrees == 180:
-	# 		# 	child.position = Vector2.ZERO
-	# 		# Build transform that rotates around screen center
-	# 		# Order: translate to origin, rotate, translate back
-	var t = Transform2D()
-	t = t.translated(-Global.screen_center) # Move center to origin
-	t = t.rotated(rotation_radians) # Rotate around origin
-	t = t.translated(Global.screen_center) # Move back
-	popup.transform = t
-
-# Helper function: Convert global position accounting for current rotation
-# Use this instead of global_position when positioning nodes
-func get_rotated_global_position(node: Node2D) -> Vector2:
-	if current_orientation == 0:
-		return node.global_position
-	else:
-		# When rotated 180°, flip the position around screen center
-		var offset = node.global_position - Global.screen_center
-		return Global.screen_center - offset
-
-# Helper function: Set global position accounting for current rotation
-func set_rotated_global_position(node: Node2D, pos: Vector2):
-	if current_orientation == 0:
-		node.global_position = pos
-	else:
-		# When rotated 180°, flip the position around screen center
-		var offset = pos - Global.screen_center
-		node.global_position = Global.screen_center - offset
 
 ################################################################################
 
