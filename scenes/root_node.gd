@@ -420,14 +420,14 @@ func find_canvas_layers(node: Node) -> Array:
 	return layers
 
 # Debug function to manually test rotation
-# func _input(event: InputEvent):
+func _input(event: InputEvent):
+	if not (event is InputEventKey and event.pressed and event.keycode == KEY_SPACE): return
+	if OS.has_feature("mobile"): return
 	# For desktop testing: press Space to toggle rotation
-	# if event is InputEventKey and event.pressed and event.keycode == KEY_SPACE:
-		# if not OS.has_feature("mobile"):
-			# Global.dbg("Manual rotation toggle (testing)")
-			# current_orientation = 180 if current_orientation == 0 else 0
-			# target_rotation = float(current_orientation)
-			# orientation_stable_timer = stability_time # Skip stability wait for testing
+	Global.dbg("Manual rotation toggle (testing)")
+	current_orientation = 180 if current_orientation == 0 else 0
+	target_rotation = float(current_orientation)
+	orientation_stable_timer = stability_time # Skip stability wait for testing
 
 # Public function to get current orientation (for other scripts)
 func get_current_orientation() -> int:

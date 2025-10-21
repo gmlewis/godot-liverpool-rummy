@@ -161,7 +161,14 @@ texture = ExtResource("1_elm8r")
 expand_mode = 5
 stretch_mode = 5
 
-[node name="RoundNode" type="Node" parent="."]
+[node name="RoundNode" type="Control" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
 
 [node name="RoundSpawner" type="MultiplayerSpawner" parent="."]
 _spawnable_scenes = PackedStringArray("uid://dd0vu47oxmnsf", "uid://cvjeg10x130y7", "uid://n7ytejdevrjs", "uid://b2lonlathwlqu", "uid://cbr0hcxvpnf7s", "uid://d4f0lutipg6lf", "uid://kyg3e8do065o")
