@@ -394,15 +394,16 @@ flat = true
 [node name="CardBacksNode" type="Node" parent="HUDLayer/Control/NewCardBackButton"]
 script = ExtResource("4_l6opf")
 
-[node name="CustomRulesDialog" type="Panel" parent="HUDLayer/Control"]
+[node name="CustomRulesDialog" type="Node2D" parent="HUDLayer/Control"]
+
+[node name="CustomRulesPanel" type="Panel" parent="HUDLayer/Control/CustomRulesDialog"]
 visible = false
 z_index = 100
-layout_mode = 0
 offset_right = 2800.0
 offset_bottom = 1350.0
 theme_override_styles/panel = SubResource("StyleBoxFlat_pfi7e")
 
-[node name="ScrollContainer" type="ScrollContainer" parent="HUDLayer/Control/CustomRulesDialog"]
+[node name="ScrollContainer" type="ScrollContainer" parent="HUDLayer/Control/CustomRulesDialog/CustomRulesPanel"]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -414,7 +415,7 @@ theme_override_styles/focus = SubResource("StyleBoxFlat_jwwji")
 draw_focus_border = true
 vertical_scroll_mode = 2
 
-[node name="Label" type="Label" parent="HUDLayer/Control/CustomRulesDialog/ScrollContainer"]
+[node name="Label" type="Label" parent="HUDLayer/Control/CustomRulesDialog/CustomRulesPanel/ScrollContainer"]
 layout_mode = 2
 theme_override_fonts/font = ExtResource("4_3twdq")
 theme_override_font_sizes/font_size = 40
@@ -454,7 +455,7 @@ Round | Requirement                                                 | Needed
   can lay down your cards.
 "
 
-[node name="Button" type="Button" parent="HUDLayer/Control/CustomRulesDialog"]
+[node name="Button" type="Button" parent="HUDLayer/Control/CustomRulesDialog/CustomRulesPanel"]
 layout_mode = 1
 anchors_preset = 7
 anchor_left = 0.5
@@ -478,4 +479,4 @@ text = "       OK       "
 [connection signal="pressed" from="TitlePageUI/PanelPositionControl/StartGamePanel/NextIPAddressButton" to="TitlePageUI" method="_on_next_ip_address_button_pressed"]
 [connection signal="pressed" from="HUDLayer/Control/RulesButton" to="." method="_on_rules_button_pressed"]
 [connection signal="pressed" from="HUDLayer/Control/NewCardBackButton" to="HUDLayer/Control/NewCardBackButton/CardBacksNode" method="_on_new_card_back_button_pressed"]
-[connection signal="pressed" from="HUDLayer/Control/CustomRulesDialog/Button" to="." method="_on_custom_rules_dialog_button_pressed"]
+[connection signal="pressed" from="HUDLayer/Control/CustomRulesDialog/CustomRulesPanel/Button" to="." method="_on_custom_rules_dialog_button_pressed"]

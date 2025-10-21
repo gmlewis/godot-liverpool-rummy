@@ -53,10 +53,10 @@ func _ready():
 	Global.connect('animate_winning_confetti_explosion_signal', _on_animate_winning_confetti_explosion_signal)
 
 	player_circle_radius = $AllPlayersControl.size.x * PLAYER_CIRCLE_RADIUS_RATIO
-	$HUDLayer/Control/CustomRulesDialog.size = get_viewport().get_visible_rect().size * Vector2(0.9, 0.9)
+	$HUDLayer/Control/CustomRulesDialog/CustomRulesPanel.size = get_viewport().get_visible_rect().size * Vector2(0.9, 0.9)
 	if Global.LANGUAGE == 'de':
-		$HUDLayer/Control/CustomRulesDialog.title = "Regeln für Liverpool Rummy"
-		$HUDLayer/Control/CustomRulesDialog/ScrollContainer/Label.text = german_rules_text
+		$HUDLayer/Control/CustomRulesDialog.title = "Regeln für Liverpool Rummy" # TODO
+		$HUDLayer/Control/CustomRulesDialog/CustomRulesPanel/ScrollContainer/Label.text = german_rules_text
 
 func _exit_tree():
 	Global.disconnect('change_round_signal', _on_change_round_signal)
@@ -69,15 +69,16 @@ func _exit_tree():
 	Global.disconnect('animate_winning_confetti_explosion_signal', _on_animate_winning_confetti_explosion_signal)
 
 func _on_rules_button_pressed() -> void:
+	var panel = $HUDLayer/Control/CustomRulesDialog/CustomRulesPanel
+	panel.size = Global.screen_size * Vector2(0.9, 0.9)
+	panel.position = Global.screen_center - panel.size / 2.0
 	var dialog = $HUDLayer/Control/CustomRulesDialog
-	dialog.size = Global.screen_size * Vector2(0.9, 0.9)
-	dialog.position = Global.screen_center - dialog.size / 2.0
 	rotate_popup_content(dialog)
-	dialog.show()
+	panel.show()
 
 func _on_custom_rules_dialog_button_pressed() -> void:
-	var dialog = $HUDLayer/Control/CustomRulesDialog
-	dialog.hide()
+	var panel = $HUDLayer/Control/CustomRulesDialog/CustomRulesPanel
+	panel.hide()
 
 func _on_reset_game_signal() -> void:
 	# Global.dbg("root_node:_on_reset_game_signal")
@@ -400,15 +401,14 @@ func rotate_canvas_layers(rot_degrees: float):
 
 		# Only rotate if it has a Control container and no direct Node2D positioning
 		if has_control_child and not has_node2d_child:
-			var screen_center = get_viewport_rect().size / 2.0
 			var rotation_radians = deg_to_rad(rot_degrees)
 
 			# Build transform that rotates around screen center
 			# Order: translate to origin, rotate, translate back
 			var t = Transform2D()
-			t = t.translated(-screen_center) # Move center to origin
+			t = t.translated(-Global.screen_center) # Move center to origin
 			t = t.rotated(rotation_radians) # Rotate around origin
-			t = t.translated(screen_center) # Move back
+			t = t.translated(Global.screen_center) # Move back
 
 			layer.transform = t
 
@@ -441,18 +441,26 @@ func is_rotating() -> bool:
 
 # Helper function to rotate content inside a popup/dialog
 # Call this before showing popups since they can't be rotated themselves
-func rotate_popup_content(popup: Panel) -> void:
-	var rotation_angle = float(get_current_orientation())
+func rotate_popup_content(popup: Node2D) -> void:
+	var rot_degrees = get_current_orientation()
+	var rotation_radians = deg_to_rad(rot_degrees)
 
-	# Find all Control children and rotate them
-	for child in popup.get_children():
-		if child is Control:
-			var popup_center = popup.size / 2.0
-			child.pivot_offset = popup_center
-			child.rotation_degrees = rotation_angle
-			# Adjust position to keep centered after rotation
-			if rotation_angle == 180:
-				child.position = Vector2.ZERO
+	# # Find all Control children and rotate them
+	# for child in popup.get_children():
+	# 	if child is Control:
+	# 		# var popup_center = popup.size / 2.0
+	# 		# child.pivot_offset = popup_center
+	# 		# child.rotation_degrees = float(rot_degrees)
+	# 		# # Adjust position to keep centered after rotation
+	# 		# if rot_degrees == 180:
+	# 		# 	child.position = Vector2.ZERO
+	# 		# Build transform that rotates around screen center
+	# 		# Order: translate to origin, rotate, translate back
+	var t = Transform2D()
+	t = t.translated(-Global.screen_center) # Move center to origin
+	t = t.rotated(rotation_radians) # Rotate around origin
+	t = t.translated(Global.screen_center) # Move back
+	popup.transform = t
 
 # Helper function: Convert global position accounting for current rotation
 # Use this instead of global_position when positioning nodes
@@ -461,9 +469,8 @@ func get_rotated_global_position(node: Node2D) -> Vector2:
 		return node.global_position
 	else:
 		# When rotated 180°, flip the position around screen center
-		var screen_center = get_viewport_rect().size / 2.0
-		var offset = node.global_position - screen_center
-		return screen_center - offset
+		var offset = node.global_position - Global.screen_center
+		return Global.screen_center - offset
 
 # Helper function: Set global position accounting for current rotation
 func set_rotated_global_position(node: Node2D, pos: Vector2):
@@ -471,9 +478,8 @@ func set_rotated_global_position(node: Node2D, pos: Vector2):
 		node.global_position = pos
 	else:
 		# When rotated 180°, flip the position around screen center
-		var screen_center = get_viewport_rect().size / 2.0
-		var offset = pos - screen_center
-		node.global_position = screen_center - offset
+		var offset = pos - Global.screen_center
+		node.global_position = Global.screen_center - offset
 
 ################################################################################
 
