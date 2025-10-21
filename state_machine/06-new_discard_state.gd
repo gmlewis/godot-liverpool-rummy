@@ -30,8 +30,8 @@ func _on_new_card_exposed_on_discard_pile_signal() -> void:
 				Global.dbg("06-new_discard_state: enter: is_my_turn=true, making stock pile untappable before awaiting grace period")
 				Global.stock_pile[0].is_tappable = false
 				Global.dbg("06-new_discard_state: enter: is_my_turn=true, calling await_grace_period before making stock pile tappable")
-				if len(Global.game_state.public_players_info) > 2:
-					# Only do the grace period animation if there are more than 2 players.
+				if len(Global.game_state.public_players_info) > 2 and Global.number_human_players() > 1:
+					# Only do the grace period animation if there are more than 2 players AND more than 1 human player.
 					_start_grace_period_animation()
 					await Global.await_grace_period()
 				Global.stock_pile[0].is_draggable = false

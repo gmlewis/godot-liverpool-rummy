@@ -194,6 +194,13 @@ func is_my_turn() -> bool:
 	# dbg("Global.is_my_turn: private_player_info=%s, game_state=%s" % [str(private_player_info), str(game_state)])
 	return private_player_info.turn_index == game_state.current_player_turn_index
 
+func number_human_players() -> int:
+	var count = 0
+	for pi in game_state.public_players_info:
+		if not pi.is_bot:
+			count += 1
+	return count
+
 func create_game():
 	var current_peer = multiplayer.multiplayer_peer
 	# Close existing connection if it exists
@@ -467,15 +474,6 @@ func emit_meld_areas_states() -> void:
 		return
 	emit_meld_areas_states_pre_meld()
 
-func emit_meld_areas_states_post_meld() -> void:
-	var meld_area_1_keys = private_player_info['meld_area_1_keys']
-	var meld_area_2_keys = private_player_info['meld_area_2_keys']
-	var meld_area_3_keys = private_player_info['meld_area_3_keys']
-	emit_meld_area_state_changed(all_keys_can_publicly_meld_to_idx(meld_area_1_keys, 0), 0)
-	emit_meld_area_state_changed(all_keys_can_publicly_meld_to_idx(meld_area_2_keys, 1), 1)
-	if game_state.current_round_num >= 4:
-		emit_meld_area_state_changed(all_keys_can_publicly_meld_to_idx(meld_area_3_keys, 2), 2)
-
 func emit_meld_areas_states_pre_meld() -> void:
 	var meld_area_1_keys = private_player_info['meld_area_1_keys']
 	var meld_area_2_keys = private_player_info['meld_area_2_keys']
@@ -507,8 +505,107 @@ func emit_meld_areas_states_pre_meld() -> void:
 			emit_meld_area_state_changed(is_valid_run(meld_area_2_keys), 1)
 			emit_meld_area_state_changed(is_valid_run(meld_area_3_keys), 2)
 
-func all_keys_can_publicly_meld_to_idx(card_keys: Array, meld_area_idx: int) -> bool:
-	return false
+func emit_meld_areas_states_post_meld() -> void:
+	var meld_area_1_keys = private_player_info['meld_area_1_keys']
+	var meld_area_2_keys = private_player_info['meld_area_2_keys']
+	var meld_area_3_keys = private_player_info['meld_area_3_keys']
+	var round_num = game_state.current_round_num
+	match round_num:
+		1:
+			var all_public_group_ranks = gen_all_public_group_ranks()
+			emit_meld_area_state_changed(all_keys_can_publicly_meld_to_some_group(meld_area_1_keys, all_public_group_ranks), 0)
+			emit_meld_area_state_changed(all_keys_can_publicly_meld_to_some_group(meld_area_2_keys, all_public_group_ranks), 1)
+		2:
+			var all_public_group_ranks = gen_all_public_group_ranks()
+			emit_meld_area_state_changed(all_keys_can_publicly_meld_to_some_group(meld_area_1_keys, all_public_group_ranks), 0)
+			var all_public_run_suits = gen_all_public_run_suits()
+			emit_meld_area_state_changed(all_keys_can_publicly_meld_to_some_run(meld_area_2_keys, all_public_run_suits), 1)
+		3:
+			var all_public_run_suits = gen_all_public_run_suits()
+			emit_meld_area_state_changed(all_keys_can_publicly_meld_to_some_run(meld_area_1_keys, all_public_run_suits), 0)
+			emit_meld_area_state_changed(all_keys_can_publicly_meld_to_some_run(meld_area_2_keys, all_public_run_suits), 1)
+		4:
+			var all_public_group_ranks = gen_all_public_group_ranks()
+			emit_meld_area_state_changed(all_keys_can_publicly_meld_to_some_group(meld_area_1_keys, all_public_group_ranks), 0)
+			emit_meld_area_state_changed(all_keys_can_publicly_meld_to_some_group(meld_area_2_keys, all_public_group_ranks), 1)
+			emit_meld_area_state_changed(all_keys_can_publicly_meld_to_some_group(meld_area_3_keys, all_public_group_ranks), 2)
+		5:
+			var all_public_group_ranks = gen_all_public_group_ranks()
+			emit_meld_area_state_changed(all_keys_can_publicly_meld_to_some_group(meld_area_1_keys, all_public_group_ranks), 0)
+			emit_meld_area_state_changed(all_keys_can_publicly_meld_to_some_group(meld_area_2_keys, all_public_group_ranks), 1)
+			var all_public_run_suits = gen_all_public_run_suits()
+			emit_meld_area_state_changed(all_keys_can_publicly_meld_to_some_run(meld_area_3_keys, all_public_run_suits), 2)
+		6:
+			var all_public_group_ranks = gen_all_public_group_ranks()
+			emit_meld_area_state_changed(all_keys_can_publicly_meld_to_some_group(meld_area_1_keys, all_public_group_ranks), 0)
+			var all_public_run_suits = gen_all_public_run_suits()
+			emit_meld_area_state_changed(all_keys_can_publicly_meld_to_some_run(meld_area_2_keys, all_public_run_suits), 1)
+			emit_meld_area_state_changed(all_keys_can_publicly_meld_to_some_run(meld_area_3_keys, all_public_run_suits), 2)
+		7:
+			var all_public_run_suits = gen_all_public_run_suits()
+			emit_meld_area_state_changed(all_keys_can_publicly_meld_to_some_run(meld_area_1_keys, all_public_run_suits), 0)
+			emit_meld_area_state_changed(all_keys_can_publicly_meld_to_some_run(meld_area_2_keys, all_public_run_suits), 1)
+			emit_meld_area_state_changed(all_keys_can_publicly_meld_to_some_run(meld_area_3_keys, all_public_run_suits), 2)
+
+func all_keys_can_publicly_meld_to_some_group(card_keys: Array, all_public_group_ranks: Dictionary) -> bool:
+	return card_keys.all(func(card_key):
+		var parts = card_key.split('-')
+		var rank = parts[0]
+		if rank == 'JOKER':
+			return true
+		return all_public_group_ranks.has(rank)
+	)
+
+func all_keys_can_publicly_meld_to_some_run(card_keys: Array, all_public_run_suits: Dictionary) -> bool:
+	return card_keys.all(func(card_key):
+		var parts = card_key.split('-')
+		var rank = parts[0]
+		if rank == 'JOKER':
+			return true
+		var suit = parts[1]
+		var all_runs_by_suit = all_public_run_suits.get(suit, [])
+		return all_runs_by_suit.any(func(run_card_keys):
+			var new_run_card_keys = run_card_keys.duplicate()
+			new_run_card_keys.append(card_key)
+			return is_valid_run(new_run_card_keys)
+		)
+	)
+
+# Dictionary of 'rank': true for fast lookup
+func gen_all_public_group_ranks() -> Dictionary:
+	var ranks = {}
+	for pi in game_state.public_players_info:
+		if not pi.has('played_to_table'): continue
+		for meld in pi.played_to_table:
+			if meld.type != 'group': continue
+			for card_key in meld.cards_keys:
+				var parts = card_key.split('-')
+				var rank = parts[0]
+				if rank == 'JOKER': continue
+				ranks[rank] = true
+	return ranks
+
+# Dictionary of 'suit': [[run_card_keys]] for fast lookup
+func gen_all_public_run_suits() -> Dictionary:
+	var suits = {}
+	for pi in game_state.public_players_info:
+		if not pi.has('played_to_table'): continue
+		for meld in pi.played_to_table:
+			if meld.type != 'run': continue
+			var run_suit = get_run_suit(meld.cards_keys)
+			if run_suit == '': continue
+			if not suits.has(run_suit):
+				suits[run_suit] = []
+			suits[run_suit].append(meld.cards_keys.duplicate())
+	return suits
+
+func get_run_suit(card_keys: Array) -> String:
+	for card_key in card_keys:
+		var parts = card_key.split('-')
+		var rank = parts[0]
+		if rank != 'JOKER':
+			return parts[1]
+	return '' # all jokers?
 
 ################################################################################
 ## Game play, stats, and hand evaluation functions
