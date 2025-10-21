@@ -3,6 +3,29 @@ extends Control
 @export var players_container: Node2D
 @export var player_scene: PackedScene
 
+################################################################################
+## Screen orientation settings
+################################################################################
+
+# Configuration
+@export var rotation_threshold: float = 0.6 # How tilted before triggering rotation
+@export var rotation_speed: float = 10.0 # Speed of smooth rotation (higher = faster)
+@export var stability_time: float = 0.3 # How long orientation must be stable before rotating
+
+# Internal state
+var target_rotation: float = 0.0 # Target rotation in degrees (0 or 180)
+var current_rotation: float = 0.0 # Current smoothed rotation
+var pending_orientation: int = 0 # 0 or 180
+var orientation_stable_timer: float = 0.0
+
+# Track which orientation we're in (0 = normal landscape, 180 = flipped)
+var current_orientation: int = 0
+
+################################################################################
+## End of screen orientation settings
+################################################################################
+
+
 var player_circle_radius: float
 
 const PLAYER_SCENE_PATH = 'res://players/player.tscn'
@@ -18,6 +41,7 @@ func _ready():
 	else:
 		Global.dbg("RootNode: _ready(): screen_aspect_ratio=%f, background_aspect_ratio=%f, setting Background to EXPAND_FIT_HEIGHT_PROPORTIONAL" % [Global.screen_aspect_ratio, background_aspect_ratio])
 		$Background.expand_mode = TextureRect.EXPAND_FIT_HEIGHT_PROPORTIONAL
+	set_up_screen_rotation_detection()
 	Global.dbg("RootNode: _ready(): screen_aspect_ratio=%f, $Background.expand_mode=%s" % [Global.screen_aspect_ratio, str($Background.expand_mode)])
 	Global.connect('change_round_signal', _on_change_round_signal)
 	Global.connect('player_connected_signal', _on_player_connected_signal)
@@ -29,10 +53,10 @@ func _ready():
 	Global.connect('animate_winning_confetti_explosion_signal', _on_animate_winning_confetti_explosion_signal)
 
 	player_circle_radius = $AllPlayersControl.size.x * PLAYER_CIRCLE_RADIUS_RATIO
-	$RulesButton/RulesAcceptDialog.size = get_viewport().get_visible_rect().size * Vector2(0.9, 0.9)
+	$HUDLayer/Control/CustomRulesDialog/CustomRulesPanel.size = get_viewport().get_visible_rect().size * Vector2(0.9, 0.9)
 	if Global.LANGUAGE == 'de':
-		$RulesButton/RulesAcceptDialog.title = "Regeln für Liverpool Rummy"
-		$RulesButton/RulesAcceptDialog/ScrollContainer/Label.text = german_rules_text
+		$HUDLayer/Control/CustomRulesDialog.title = "Regeln für Liverpool Rummy" # TODO
+		$HUDLayer/Control/CustomRulesDialog/CustomRulesPanel/ScrollContainer/Label.text = german_rules_text
 
 func _exit_tree():
 	Global.disconnect('change_round_signal', _on_change_round_signal)
@@ -45,7 +69,14 @@ func _exit_tree():
 	Global.disconnect('animate_winning_confetti_explosion_signal', _on_animate_winning_confetti_explosion_signal)
 
 func _on_rules_button_pressed() -> void:
-	$RulesButton/RulesAcceptDialog.popup_centered()
+	var panel = $HUDLayer/Control/CustomRulesDialog/CustomRulesPanel
+	panel.size = Global.screen_size * Vector2(0.9, 0.9)
+	panel.position = Global.screen_center - panel.size / 2.0
+	panel.show()
+
+func _on_custom_rules_dialog_button_pressed() -> void:
+	var panel = $HUDLayer/Control/CustomRulesDialog/CustomRulesPanel
+	panel.hide()
 
 func _on_reset_game_signal() -> void:
 	# Global.dbg("root_node:_on_reset_game_signal")
@@ -70,7 +101,7 @@ func change_round(scene: PackedScene, ack_sync_name: String) -> void:
 		$RoundNode.add_child(scene.instantiate())
 	if ack_sync_name != '':
 		Global.ack_sync_completed(ack_sync_name)
-	
+
 func _on_player_connected_signal(_id, player_info):
 	#player_info['turn_index'] = len(players_container.get_children())
 	# Global.dbg("root_node:_on_player_connected_signal(%s): %s" % [str(id), str(player_info)])
@@ -279,6 +310,128 @@ func _cleanup_confetti(emitters: Array) -> void:
 			# Wait a bit for particles to fade out, then remove
 			var cleanup_tween = create_tween()
 			cleanup_tween.tween_callback(emitter.queue_free).set_delay(2.0)
+
+################################################################################
+## Handle screen orientation changes
+################################################################################
+
+func set_up_screen_rotation_detection() -> void:
+	# Set pivot to center of screen for proper rotation
+	pivot_offset = size / 2.0
+
+	# Make sure we start at 0 rotation
+	rotation_degrees = 0
+	current_rotation = 0
+	target_rotation = 0
+
+	Global.dbg("Landscape rotation controller initialized")
+	Global.dbg("Control size: %s" % size)
+	Global.dbg("Pivot offset: %s" % pivot_offset)
+	# Accelerometer is automatically enabled on mobile devices in Godot 4
+	Global.dbg("Accelerometer detected: %s" % str(Input.get_accelerometer() != Vector3.ZERO))
+
+func _process(delta: float):
+	# Get accelerometer data
+	var accel: Vector3 = Input.get_accelerometer()
+
+	# Only process accelerometer-based rotation on mobile devices
+	var is_mobile = OS.has_feature("mobile") or accel != Vector3.ZERO
+
+	# Determine desired orientation based on gravity
+	# In landscape mode, we care about the Y axis (vertical when held in landscape)
+	# Positive Y = normal orientation, Negative Y = flipped 180°
+	var desired_orientation: int = current_orientation
+
+	# Only check accelerometer on mobile devices
+	if is_mobile:
+		if accel.y > rotation_threshold:
+			# Device is in normal landscape orientation
+			desired_orientation = 0
+		elif accel.y < -rotation_threshold:
+			# Device is flipped 180 degrees
+			desired_orientation = 180
+
+		# Check if orientation has changed and is stable
+		if desired_orientation != pending_orientation:
+			# New orientation detected, reset stability timer
+			pending_orientation = desired_orientation
+			orientation_stable_timer = 0.0
+		else:
+			# Same orientation, increment stability timer
+			orientation_stable_timer += delta
+
+			# If orientation has been stable long enough, commit to rotation
+			if orientation_stable_timer >= stability_time and desired_orientation != current_orientation:
+				current_orientation = desired_orientation
+				target_rotation = float(current_orientation)
+				# Global.dbg("Rotating to: ", current_orientation, " degrees")
+				# Global.dbg("About to call rotate_canvas_layers with rotation: ", target_rotation)
+
+	# Smoothly interpolate to target rotation
+	if abs(current_rotation - target_rotation) > 0.01:
+		current_rotation = lerp(current_rotation, target_rotation, rotation_speed * delta)
+		rotation_degrees = current_rotation
+		# Update canvas layers DURING animation, not just at the end
+		rotate_canvas_layers(current_rotation)
+	else:
+		# Snap to exact value when very close
+		if current_rotation != target_rotation:
+			current_rotation = target_rotation
+			rotation_degrees = target_rotation
+			rotate_canvas_layers(target_rotation)
+
+# Rotate all CanvasLayer nodes (they don't inherit parent rotation)
+func rotate_canvas_layers(rot_degrees: float):
+	# Find all CanvasLayer nodes in the scene tree
+	var canvas_layers = find_canvas_layers(get_tree().root)
+
+	for layer in canvas_layers:
+		# Only rotate CanvasLayers that have a Control node as their container
+		# Skip ones with Node2D children (like Sprite2D, Label with position)
+		var has_control_child = false
+		var has_node2d_child = false
+
+		for child in layer.get_children():
+			if child is Control:
+				has_control_child = true
+			if child is Node2D or child is Label:
+				has_node2d_child = true
+
+		# Only rotate if it has a Control container and no direct Node2D positioning
+		if has_control_child and not has_node2d_child:
+			var rotation_radians = deg_to_rad(rot_degrees)
+
+			# Build transform that rotates around screen center
+			# Order: translate to origin, rotate, translate back
+			var t = Transform2D()
+			t = t.translated(-Global.screen_center) # Move center to origin
+			t = t.rotated(rotation_radians) # Rotate around origin
+			t = t.translated(Global.screen_center) # Move back
+
+			layer.transform = t
+
+# Recursively find all CanvasLayer nodes
+func find_canvas_layers(node: Node) -> Array:
+	var layers = []
+	if node is CanvasLayer:
+		layers.append(node)
+	for child in node.get_children():
+		layers.append_array(find_canvas_layers(child))
+	return layers
+
+# Debug function to manually test rotation
+# func _input(event: InputEvent):
+	# For desktop testing: press Space to toggle rotation
+	# if event is InputEventKey and event.pressed and event.keycode == KEY_SPACE:
+		# if not OS.has_feature("mobile"):
+			# Global.dbg("Manual rotation toggle (testing)")
+			# current_orientation = 180 if current_orientation == 0 else 0
+			# target_rotation = float(current_orientation)
+			# orientation_stable_timer = stability_time # Skip stability wait for testing
+
+# Public function to get current orientation (for other scripts)
+func get_current_orientation() -> int:
+	return current_orientation
 
 ################################################################################
 

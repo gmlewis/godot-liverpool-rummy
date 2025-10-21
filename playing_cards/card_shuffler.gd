@@ -187,7 +187,7 @@ func _wave_collapse_shuffle():
 	for i in range(cards.size()):
 		var card = cards[i]
 		card.force_face_down()
-		var wave = i / cards_per_wave
+		var wave = int(i / float(cards_per_wave))
 		var wave_progress = float(i % cards_per_wave) / cards_per_wave
 		var start_side = wave % 4
 
@@ -208,7 +208,7 @@ func _wave_collapse_shuffle():
 	for i in range(cards.size()):
 		var card = cards[i]
 		card.flip_duration = DEFAULT_CARD_FLIP_DURATION
-		var wave = i / cards_per_wave
+		var wave = int(i / float(cards_per_wave))
 		var wave_delay = wave * 0.2
 		var card_in_wave = i % cards_per_wave
 		var card_delay = card_in_wave * 0.015
@@ -304,7 +304,7 @@ func _orbital_dance_shuffle():
 
 	for i in range(cards.size()):
 		var card = cards[i]
-		var ring = i / cards_per_ring
+		var ring = int(i / float(cards_per_ring))
 		var card_in_ring = i % cards_per_ring
 		var cards_in_this_ring = min(cards_per_ring, cards.size() - ring * cards_per_ring)
 		var ring_radius = 120 + ring * 70
@@ -324,7 +324,7 @@ func _orbital_dance_shuffle():
 	for i in range(cards.size()):
 		var card = cards[i]
 		card.flip_duration = DEFAULT_CARD_FLIP_DURATION
-		var ring = i / cards_per_ring
+		var ring = int(i / float(cards_per_ring))
 		var card_in_ring = i % cards_per_ring
 		var cards_in_this_ring = min(cards_per_ring, cards.size() - ring * cards_per_ring)
 		var orbit_speed = 1.0 + ring * 0.3
@@ -349,7 +349,7 @@ func _orbital_dance_shuffle():
 # ============================================================================
 
 func _riffle_bridge_shuffle():
-	var half = cards.size() / 2
+	var half = int(cards.size() / 2.0)
 
 	for i in range(cards.size()):
 		var card = cards[i]
@@ -374,7 +374,7 @@ func _riffle_bridge_shuffle():
 		var index_in_half = i if is_left else i - half
 		var delay = index_in_half * 0.015
 
-		var bridge_height = -200 - (abs(index_in_half - half / 2) * 2)
+		var bridge_height = -200 - (abs(index_in_half - half / 2.0) * 2.0)
 		var mid_x = Global.screen_center.x + (50 if is_left else -50)
 		var mid_y = Global.screen_center.y + bridge_height
 
@@ -511,3 +511,6 @@ func _calc_delay_factor(offset: float, phase_duration: float, card_flip_duration
 
 func _ease_in_out(t: float) -> float:
 	return t * t * (3.0 - 2.0 * t)
+
+func lerp(a: float, b: float, t: float) -> float:
+	return a + (b - a) * t
