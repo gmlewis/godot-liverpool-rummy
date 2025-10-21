@@ -548,6 +548,8 @@ func emit_meld_areas_states_post_meld() -> void:
 			emit_meld_area_state_changed(all_keys_can_publicly_meld_to_some_run(meld_area_3_keys, all_public_run_suits), 2)
 
 func all_keys_can_publicly_meld_to_some_group(card_keys: Array, all_public_group_ranks: Dictionary) -> bool:
+	# Special case: if there are no card_keys, then return false.
+	if len(card_keys) == 0: return false
 	return card_keys.all(func(card_key):
 		var parts = card_key.split('-')
 		var rank = parts[0]
@@ -557,6 +559,8 @@ func all_keys_can_publicly_meld_to_some_group(card_keys: Array, all_public_group
 	)
 
 func all_keys_can_publicly_meld_to_some_run(card_keys: Array, all_public_run_suits: Dictionary) -> bool:
+	# Special case: if there are no card_keys, then return false.
+	if len(card_keys) == 0: return false
 	return card_keys.all(func(card_key):
 		var parts = card_key.split('-')
 		var rank = parts[0]
@@ -578,7 +582,7 @@ func gen_all_public_group_ranks() -> Dictionary:
 		if not pi.has('played_to_table'): continue
 		for meld in pi.played_to_table:
 			if meld.type != 'group': continue
-			for card_key in meld.cards_keys:
+			for card_key in meld.card_keys:
 				var parts = card_key.split('-')
 				var rank = parts[0]
 				if rank == 'JOKER': continue
@@ -592,11 +596,11 @@ func gen_all_public_run_suits() -> Dictionary:
 		if not pi.has('played_to_table'): continue
 		for meld in pi.played_to_table:
 			if meld.type != 'run': continue
-			var run_suit = get_run_suit(meld.cards_keys)
+			var run_suit = get_run_suit(meld.card_keys)
 			if run_suit == '': continue
 			if not suits.has(run_suit):
 				suits[run_suit] = []
-			suits[run_suit].append(meld.cards_keys.duplicate())
+			suits[run_suit].append(meld.card_keys.duplicate())
 	return suits
 
 func get_run_suit(card_keys: Array) -> String:
