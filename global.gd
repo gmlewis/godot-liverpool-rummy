@@ -230,7 +230,7 @@ func gen_public_player_info(private_info: Dictionary) -> Dictionary:
 		'name': private_info['name'],
 		'is_bot': private_info['is_bot'],
 		'turn_index': private_info['turn_index'],
-		'played_to_table': private_info['played_to_table'],
+		'played_to_table': private_info['played_to_table'].duplicate(true), # Deep copy to avoid shared references
 		'num_cards': num_cards,
 		'score': private_info['score'],
 	}
@@ -1176,7 +1176,7 @@ func server_personally_meld_hand(player_id: String, hand_evaluation: Dictionary)
 	# Sort cards within runs for proper display order
 	var sorted_melds = []
 	for meld in hand_evaluation['can_be_personally_melded']:
-		var sorted_meld = meld.duplicate()
+		var sorted_meld = meld.duplicate(true)
 		if meld['type'] == 'run':
 			sorted_meld['card_keys'] = sort_run_cards(meld['card_keys'])
 		sorted_melds.append(sorted_meld)
@@ -1222,14 +1222,14 @@ func _personally_meld_group_update_private_player_info(meld_group: Dictionary, p
 	if player_is_me:
 		dbg("_personally_meld_group_update_private_player_info: BEFORE updating meld_group: %s" % [str(meld_group)])
 		dbg("_personally_meld_group_update_private_player_info: BEFORE updating private_player_info.played_to_table (ME): %s" % [str(private_player_info.played_to_table)])
-		private_player_info.played_to_table.append(meld_group)
+		private_player_info.played_to_table.append(meld_group.duplicate(true))
 		dbg("_personally_meld_group_update_private_player_info: AFTER updating private_player_info.played_to_table (ME): %s" % [str(private_player_info.played_to_table)])
 	elif is_server():
 		if player_id in bots_private_player_info:
 			var bot = bots_private_player_info[player_id]
 			dbg("_personally_meld_group_update_private_player_info: BEFORE updating meld_group: %s" % [str(meld_group)])
 			dbg("_personally_meld_group_update_private_player_info: BEFORE updating bots_private_player_info[player_id='%s'].played_to_table (BOT): %s" % [player_id, str(bot.played_to_table)])
-			bot.played_to_table.append(meld_group)
+			bot.played_to_table.append(meld_group.duplicate(true))
 			dbg("_personally_meld_group_update_private_player_info: AFTER updating bots_private_player_info[player_id='%s'].played_to_table (BOT): %s" % [player_id, str(bot.played_to_table)])
 	for card_key in meld_group['card_keys']:
 		_remove_card_from_player_hand(card_key, player_id)
