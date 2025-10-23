@@ -136,7 +136,7 @@ func discover_and_run_test_suite(test_suite_name: String, test_instance: Object)
 
 		var result = callable.call()
 		if result == null or result == false or current_test_failed or Global.error_count > 0:
-			print("GML: test '%s' result: %s - test failed" % [test_name, str(result)])
+			print("GML: test '%s' result: %s - test failed, current_test_failed=%s, error_count=%d" % [test_name, str(result), str(current_test_failed), Global.error_count])
 			return false
 		pass_test()
 

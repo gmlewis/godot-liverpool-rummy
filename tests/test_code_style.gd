@@ -33,7 +33,7 @@ func test_indentation_and_style_consistency():
 			# Auto-fix the file
 			if _write_file(file_path, result["fixed_content"]):
 				print("  ✓ Auto-fixed %s" % file_path)
-				total_issues_found -= result["issues_found"]  # Issues are now fixed
+				total_issues_found -= result["issues_found"] # Issues are now fixed
 			else:
 				print("  ✗ Failed to auto-fix %s" % file_path)
 
@@ -59,13 +59,12 @@ func _check_file_style(file_path):
 
 	for i in range(lines.size()):
 		var line = lines[i]
-		var original_line = line
 		var issues = []
 
 		# Check for trailing whitespace (spaces only, not tabs or newlines)
 		if line.rstrip("\t").ends_with(" "):
 			issues.append("Line %d: Trailing spaces" % (i + 1))
-			line = line.rstrip(" ")  # Remove trailing spaces only
+			line = line.rstrip(" ") # Remove trailing spaces only
 
 		# Check indentation consistency (tabs only, no leading spaces)
 		if line.begins_with(" ") and not line.begins_with("\t"):
@@ -77,7 +76,7 @@ func _check_file_style(file_path):
 					leading_spaces += 1
 				else:
 					break
-			var tabs_needed = leading_spaces / 4
+			var tabs_needed = int(leading_spaces / 4.0)
 			var tab_string = ""
 			for j in range(tabs_needed):
 				tab_string += "\t"

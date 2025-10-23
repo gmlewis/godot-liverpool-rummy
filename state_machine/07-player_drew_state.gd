@@ -123,8 +123,11 @@ func _on_animate_publicly_meld_card_only_signal(_player_id: String, card_key: St
 		return
 	var target_player = players[0] as Node2D
 	var players_by_id = Global.get_players_by_id()
+	# Decrement card count for the player WHO is publicly melding (not the target player)
+	var melding_player_public_info = players_by_id[_player_id]
+	melding_player_public_info['num_cards'] -= 1
+	# Get the target player's meld group (where the card is being added)
 	var player_public_info = players_by_id[target_player_id]
-	player_public_info['num_cards'] -= 1
 	var meld_group = player_public_info['played_to_table'][meld_group_index]
 	var card_idx = len(meld_group['card_keys']) - 1
 	var playing_card = Global.playing_cards.get(card_key) as PlayingCard
