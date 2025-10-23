@@ -57,6 +57,7 @@ func test_game_state_scenario():
 				'turn_index': 0,
 				'played_to_table': [ {
 					'type': 'group',
+					'rank': 'A',
 					'card_keys': ['A-hearts-0', 'A-spades-0', 'A-diamonds-0']
 				}],
 				'num_cards': 10,

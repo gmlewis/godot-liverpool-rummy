@@ -46,6 +46,7 @@ func test_can_publicly_meld_card_to_runs():
 				"played_to_table": [
 					{
 						"type": "run",
+						'suit': 'hearts',
 						"card_keys": ["7-hearts-0", "8-hearts-0", "9-hearts-0", "10-hearts-0"],
 					}
 				]
@@ -89,6 +90,7 @@ func test_can_publicly_meld_card_to_groups():
 				"played_to_table": [
 					{
 						"type": "group",
+						'rank': 'K',
 						"card_keys": ["K-hearts-0", "K-clubs-0", "K-spades-0"]
 					}
 				]
@@ -127,6 +129,7 @@ func test_can_replace_joker_in_run():
 				"played_to_table": [
 					{
 						"type": "run",
+						'suit': 'hearts',
 						"card_keys": ["7-hearts-0", "JOKER-1-0", "9-hearts-0", "10-hearts-0"],
 					}
 				]

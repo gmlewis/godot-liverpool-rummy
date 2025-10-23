@@ -385,7 +385,8 @@ func _evaluate_hand_pre_meld(round_num: int, hand_stats: Dictionary, all_public_
 			melded_groups += 1
 			acc['can_be_personally_melded'].append({
 				'type': 'group',
-				'card_keys': joker_group
+				'rank': '',
+				'card_keys': joker_group,
 			})
 
 	# Then try to meld joker-only runs if we still need runs
@@ -397,7 +398,8 @@ func _evaluate_hand_pre_meld(round_num: int, hand_stats: Dictionary, all_public_
 			melded_runs += 1
 			acc['can_be_personally_melded'].append({
 				'type': 'run',
-				'card_keys': joker_run
+				'suit': '',
+				'card_keys': joker_run,
 			})
 
 	# Then meld regular groups
@@ -416,7 +418,8 @@ func _evaluate_hand_pre_meld(round_num: int, hand_stats: Dictionary, all_public_
 				melded_groups += 1
 				acc['can_be_personally_melded'].append({
 					'type': 'group',
-					'card_keys': available_cards
+					'rank': Global.get_group_rank(available_cards),
+					'card_keys': available_cards,
 				})
 				continue
 			# Optimize group if more than 3 cards
@@ -425,7 +428,8 @@ func _evaluate_hand_pre_meld(round_num: int, hand_stats: Dictionary, all_public_
 			melded_groups += 1
 			acc['can_be_personally_melded'].append({
 				'type': 'group',
-				'card_keys': available_cards
+				'rank': Global.get_group_rank(available_cards),
+				'card_keys': available_cards,
 			})
 
 	# Meld runs second
@@ -441,7 +445,8 @@ func _evaluate_hand_pre_meld(round_num: int, hand_stats: Dictionary, all_public_
 				melded_runs += 1
 				acc['can_be_personally_melded'].append({
 					'type': 'run',
-					'card_keys': available_cards
+					'suit': Global.get_run_suit(available_cards),
+					'card_keys': available_cards,
 				})
 			else:
 				# Try to form a shorter run with available cards
@@ -451,7 +456,8 @@ func _evaluate_hand_pre_meld(round_num: int, hand_stats: Dictionary, all_public_
 					melded_runs += 1
 					acc['can_be_personally_melded'].append({
 						'type': 'run',
-						'card_keys': shorter_run
+						'suit': Global.get_run_suit(shorter_run),
+						'card_keys': shorter_run,
 					})
 
 	# Build additional runs with bitmap algorithm
@@ -465,7 +471,8 @@ func _evaluate_hand_pre_meld(round_num: int, hand_stats: Dictionary, all_public_
 			mark_all_as_used.call(new_run['run'])
 			acc['can_be_personally_melded'].append({
 				'type': 'run',
-				'card_keys': new_run['run']
+				'suit': Global.get_run_suit(new_run['run']),
+				'card_keys': new_run['run'],
 			})
 			melded_runs += 1
 		else:
@@ -484,7 +491,8 @@ func _evaluate_hand_pre_meld(round_num: int, hand_stats: Dictionary, all_public_
 			mark_all_as_used.call(new_run['run'])
 			acc['can_be_personally_melded'].append({
 				'type': 'run',
-				'card_keys': new_run['run']
+				'suit': Global.get_run_suit(new_run['run']),
+				'card_keys': new_run['run'],
 			})
 			melded_runs += 1
 		else:
@@ -507,6 +515,7 @@ func _evaluate_hand_pre_meld(round_num: int, hand_stats: Dictionary, all_public_
 				mark_all_as_used.call(new_run['run'])
 				acc['can_be_personally_melded'].append({
 					'type': 'run',
+					'suit': Global.get_run_suit(new_run['run']),
 					'card_keys': new_run['run']
 				})
 				melded_runs += 1
@@ -528,7 +537,8 @@ func _evaluate_hand_pre_meld(round_num: int, hand_stats: Dictionary, all_public_
 			mark_all_as_used.call(hand)
 			acc['can_be_personally_melded'].append({
 				'type': 'group',
-				'card_keys': hand
+				'rank': Global.get_group_rank(hand),
+				'card_keys': hand,
 			})
 			melded_groups += 1
 
@@ -892,6 +902,7 @@ func _find_groups_can_be_publicly_melded(hand_stats: Dictionary, all_public_meld
 		for meld in pub_melds:
 			if meld['meld_group_type'] == 'group':
 				group_melds.append(meld)
+				Global.dbg("00-bot.md: _find_groups_can_be_publicly_melded: rank='%s', meld=%s" % [rank, str(meld)])
 		if len(group_melds) > 0:
 			possible_group_melds[rank] = group_melds
 	return possible_group_melds
@@ -1004,22 +1015,26 @@ func _find_runs_can_be_publicly_melded(hand_stats: Dictionary, already_used: Dic
 						if pub_meld['meld_group_type'] == 'run':
 							# Check if this card can extend this run
 							if _can_card_extend_run(card_key, pub_meld):
-								possible_run_melds[suit].append({
+								var meld = {
 									'card_key': card_key,
 									'player_id': pub_meld['player_id'],
 									'meld_group_index': pub_meld['meld_group_index'],
 									'can_extend': true,
 									'can_replace_joker': false
-								})
+								}
+								possible_run_melds[suit].append(meld)
+								Global.dbg("00-bot.md: _find_runs_can_be_publicly_melded: suit='%s', meld=%s" % [suit, str(meld)])
 							# Check if this card can replace a joker in this run
 							if _can_card_replace_joker_in_run(card_key, pub_meld):
-								possible_run_melds[suit].append({
+								var meld = {
 									'card_key': card_key,
 									'player_id': pub_meld['player_id'],
 									'meld_group_index': pub_meld['meld_group_index'],
 									'can_extend': false,
 									'can_replace_joker': true
-								})
+								}
+								possible_run_melds[suit].append(meld)
+								Global.dbg("00-bot.md: _find_runs_can_be_publicly_melded: suit='%s', meld=%s" % [suit, str(meld)])
 
 		# Remove suits with no possible melds
 		if len(possible_run_melds[suit]) == 0:

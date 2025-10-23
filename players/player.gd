@@ -3,7 +3,7 @@ extends Node2D
 
 @onready var game_state_machine: Node = $"/root/RootNode/GameStateMachine"
 
-signal _local_player_is_meldable_signal(target_player_id: String, player_is_meldable: bool, melding_player_id: String, melding_card_key: String, melding_group_index: int) # Used locally to communicate with other player nodes.
+signal _local_player_is_meldable_signal(public_meld_possibility: Dictionary) # Used locally to communicate with other player nodes.
 
 var player_id: String
 var player_name: String
@@ -15,10 +15,8 @@ var is_buying_card: bool = false # Used to animate the turn indicator when buyin
 var is_meldable: bool = false # Used to animate the turn indicator when meldable (by current player or any other player).
 var is_winning_player: bool = false # Used to indicate if this player is the winning player in the current round.
 
-# When another player wishes to meld on this player, these variables are set for the upcoming click:
-var is_meldable_player_id: String = ''
-var is_meldable_card_key: String = ''
-var is_meldable_meld_group_index: int = -1
+# When another player wishes to meld on this player, the possibilities are saved here for the upcoming click:
+var local_public_meld_possibilities: Array = []
 
 const TURN_INDICATOR_DRAW_COLOR = Color(1.0, 0.45, 0.17, 1.0) # Orange color
 const TURN_INDICATOR_DISCARD_COLOR = Color(0.8, 0.2, 0.8, 1.0) # Purple color
@@ -36,6 +34,7 @@ func _ready():
 	Global.connect('card_clicked_signal', _on_card_clicked_signal)
 	Global.connect('card_drag_started_signal', _on_card_drag_started_signal)
 	Global.connect('card_moved_signal', _on_card_moved_signal)
+	Global.connect('all_meld_area_states_updated_signal', _on_all_meld_area_states_updated_signal)
 	connect('_local_player_is_meldable_signal', _on_local_player_is_meldable_signal)
 	game_state_machine.connect('gsm_changed_state_signal', _on_gsm_changed_state_signal)
 	$PlayerNameLabel.text = player_name
@@ -52,6 +51,7 @@ func _exit_tree():
 	Global.disconnect('card_clicked_signal', _on_card_clicked_signal)
 	Global.disconnect('card_drag_started_signal', _on_card_drag_started_signal)
 	Global.disconnect('card_moved_signal', _on_card_moved_signal)
+	Global.disconnect('all_meld_area_states_updated_signal', _on_all_meld_area_states_updated_signal)
 	disconnect('_local_player_is_meldable_signal', _on_local_player_is_meldable_signal)
 	game_state_machine.disconnect('gsm_changed_state_signal', _on_gsm_changed_state_signal)
 
@@ -141,6 +141,7 @@ func _update_hand_meldability() -> void:
 	var players_by_id = Global.get_players_by_id()
 	var public_player_info = players_by_id[player_id]
 	var already_melded = len(public_player_info['played_to_table']) > 0
+	if already_melded: return # This method now is only used for pre-meld evaluation.
 	# Now see if the player can meld (more of) their hand.
 	# var card_keys_in_hand = ['card_keys_in_hand']
 	var current_hand_stats = gen_player_hand_stats(Global.private_player_info)
@@ -148,63 +149,53 @@ func _update_hand_meldability() -> void:
 	last_hand_evaluation = evaluate_player_hand(current_hand_stats)
 	is_meldable = false
 	$MeldIndicatorSprite2D.hide()
-	if not already_melded and len(last_hand_evaluation['can_be_personally_melded']) > 0:
-		if hack_hide_meld_indicator_next_frame:
-			# Prevent meld flash right after discard
-			hack_hide_meld_indicator_next_frame = false
-			Global.dbg("Player('%s'): hack_hide_meld_indicator_next_frame is true, SKIPPING meld indicator SHOW" % [player_id])
-			return
-		var round_num = Global.game_state.current_round_num
-		if round_num < 7 or (round_num >= 7 and last_hand_evaluation['is_winning_hand']): # suppress round 7 meld flash
-			Global.dbg("Player('%s'): already_melded=false, setting is_meldable=true, can_be_personally_melded=%s SHOW MELD INDICATOR" % [player_id, str(last_hand_evaluation['can_be_personally_melded'])])
-			$TurnIndicatorRect.color = TURN_INDICATOR_MELD_COLOR # Set color to meld color
-			is_meldable = true
-			$MeldIndicatorSprite2D.show() # Show meld indicator
-	elif already_melded and len(last_hand_evaluation['can_be_publicly_melded']) > 0:
-		$TurnIndicatorRect.color = TURN_INDICATOR_MELD_COLOR # Set color to meld color
-		Global.dbg("Player('%s'): found %d possibilities to meld publicly" % [player_id, len(last_hand_evaluation['can_be_publicly_melded'])])
-		for possibility in last_hand_evaluation['can_be_publicly_melded']:
-			var target_player_id = possibility['target_player_id']
-			var card_key = possibility['card_key']
-			var meld_group_index = possibility['meld_group_index']
-			Global.dbg("Player('%s'): calling _local_player_is_meldable_signal.emit('%s', true, '%s', '%s', %d)" % [player_id, target_player_id, player_id, card_key, meld_group_index])
-			_local_player_is_meldable_signal.emit(target_player_id, true, player_id, card_key, meld_group_index)
-
-func _on_local_player_is_meldable_signal(target_player_id: String, player_is_meldable: bool, melding_player_id: String, melding_card_key: String, melding_group_index: int) -> void:
-	if target_player_id != player_id:
-		Global.dbg("Player('%s'): IGNORING _on_local_player_is_meldable_signal.emit('%s', true, '%s', '%s', %d)" % [player_id, target_player_id, melding_player_id, melding_card_key, melding_group_index])
+	if len(last_hand_evaluation['can_be_personally_melded']) == 0: return
+	if hack_hide_meld_indicator_next_frame:
+		# Prevent meld flash right after discard
+		hack_hide_meld_indicator_next_frame = false
+		Global.dbg("Player('%s'): hack_hide_meld_indicator_next_frame is true, SKIPPING meld indicator SHOW" % [player_id])
 		return
-	Global.dbg("Player('%s'): _on_local_player_is_meldable_signal: player_is_meldable=%s, melding_player_id=%s, melding_card_key=%s, melding_group_index=%d SHOW MELD INDICATOR" % [player_id, str(player_is_meldable), melding_player_id, melding_card_key, melding_group_index])
-	is_meldable = player_is_meldable
-	if is_meldable:
-		is_meldable_player_id = melding_player_id
-		is_meldable_card_key = melding_card_key
-		is_meldable_meld_group_index = melding_group_index
+	var round_num = Global.game_state.current_round_num
+	if round_num < 7 or (round_num >= 7 and last_hand_evaluation['is_winning_hand']): # suppress round 7 meld flash
+		Global.dbg("Player('%s'): already_melded=false, setting is_meldable=true, can_be_personally_melded=%s SHOW MELD INDICATOR" % [player_id, str(last_hand_evaluation['can_be_personally_melded'])])
+		$TurnIndicatorRect.color = TURN_INDICATOR_MELD_COLOR # Set color to meld color
+		is_meldable = true
 		$MeldIndicatorSprite2D.show() # Show meld indicator
-	else:
-		is_meldable_player_id = ''
-		is_meldable_card_key = ''
-		is_meldable_meld_group_index = -1
-		$MeldIndicatorSprite2D.hide() # Hide meld indicator
+
+	# elif already_melded and len(last_hand_evaluation['can_be_publicly_melded']) > 0:
+	# 	$TurnIndicatorRect.color = TURN_INDICATOR_MELD_COLOR # Set color to meld color
+	# 	Global.dbg("Player('%s'): found %d possibilities to meld publicly" % [player_id, len(last_hand_evaluation['can_be_publicly_melded'])])
+	# 	local_public_meld_possibilities.clear()
+	# 	for possibility in last_hand_evaluation['can_be_publicly_melded']:
+	# 		Global.dbg("Player('%s'): calling _local_player_is_meldable_signal.emit(%s)" % [player_id, str(possibility)])
+	# 		_local_player_is_meldable_signal.emit(possibility)
+
+func _on_local_player_is_meldable_signal(possibility: Dictionary) -> void:
+	if possibility.target_player_id != player_id:
+		return
+	Global.dbg("Player('%s'): _on_local_player_is_meldable_signal: possibility=%s SHOW MELD INDICATOR" % [player_id, str(possibility)])
+	is_meldable = true
+	local_public_meld_possibilities.append(possibility)
+	$MeldIndicatorSprite2D.show() # Show meld indicator
 
 func _update_turn_indicator_color(current_state_name: String, already_melded: bool) -> void:
 	if current_state_name == 'PlayerDrewState':
-		Global.dbg("current_state_name='%s': Setting player '%s' turn indicator to DISCARD color: %s" % [current_state_name, player_name, str(TURN_INDICATOR_DISCARD_COLOR)])
+		Global.dbg("Player('%s'): current_state_name='%s': Setting player '%s' turn indicator to DISCARD color: %s" % [player_id, current_state_name, player_name, str(TURN_INDICATOR_DISCARD_COLOR)])
 		$TurnIndicatorRect.color = TURN_INDICATOR_DISCARD_COLOR # Set color to discard color
 	elif already_melded:
-		Global.dbg("current_state_name='%s': Setting player '%s' turn indicator to MELD color: %s" % [current_state_name, player_name, str(TURN_INDICATOR_MELD_COLOR)])
+		Global.dbg("Player('%s'): current_state_name='%s': Setting player '%s' turn indicator to MELD color: %s" % [player_id, current_state_name, player_name, str(TURN_INDICATOR_MELD_COLOR)])
 		$TurnIndicatorRect.color = TURN_INDICATOR_MELD_COLOR # Set color to meld color
 	else:
-		Global.dbg("current_state_name='%s': Setting player '%s' turn indicator to DRAW color: %s" % [current_state_name, player_name, str(TURN_INDICATOR_DRAW_COLOR)])
+		Global.dbg("Player('%s'): current_state_name='%s': Setting player '%s' turn indicator to DRAW color: %s" % [player_id, current_state_name, player_name, str(TURN_INDICATOR_DRAW_COLOR)])
 		$TurnIndicatorRect.color = TURN_INDICATOR_DRAW_COLOR # Set color to draw color
 
 func is_mouse_over_player(mouse_pos: Vector2) -> bool:
 	var sprite = $CardBackSprite2D
 	if not sprite:
-		Global.dbg("PROGRAMMING ERROR: player.gd: is_mouse_over_player(%s): No Sprite2D found!" % str(mouse_pos))
+		Global.error("Player('%s'): PROGRAMMING ERROR: player.gd: is_mouse_over_player(%s): No Sprite2D found!" % [player_id, str(mouse_pos)])
 		return false
 	if not sprite.texture:
-		Global.dbg("PROGRAMMING ERROR: player.gd: is_mouse_over_player(%s): Sprite2D has no texture!" % str(mouse_pos))
+		Global.error("Player('%s'): PROGRAMMING ERROR: player.gd: is_mouse_over_player(%s): Sprite2D has no texture!" % [player_id, str(mouse_pos)])
 		return false
 	var texture_size = sprite.texture.get_size() * self.scale # NOT: sprite.scale!
 	var sprite_pos = global_position + sprite.position
@@ -213,7 +204,7 @@ func is_mouse_over_player(mouse_pos: Vector2) -> bool:
 		texture_size # Size
 	)
 	var is_over = player_rect.has_point(mouse_pos)
-	# Global.dbg("player.gd: is_mouse_over_player(%s): player rect: %s, is_over=%s" % [str(mouse_pos), str(player_rect), str(is_over)])
+	# Global.dbg("Player('%s'): is_mouse_over_player(%s): player rect: %s, is_over=%s" % [player_id, str(mouse_pos), str(player_rect), str(is_over)])
 	return is_over
 
 ################################################################################
@@ -278,7 +269,7 @@ func _on_card_clicked_signal(playing_card, _global_position):
 			Global.dbg("Player('%s'): _on_card_clicked_signal: Ignoring click on meldable hand card '%s' for player %s" % [player_id, playing_card.key, player_id])
 			return
 		var player_won = len(Global.private_player_info['card_keys_in_hand']) == 1
-		Global.dbg("GML: Player('%s'): _on_card_clicked_signal: hiding meld indicator" % [player_id])
+		Global.dbg("Player('%s'): _on_card_clicked_signal: hiding meld indicator" % [player_id])
 		$MeldIndicatorSprite2D.hide() # hack to stop meld indicator showing after discard
 		hack_hide_meld_indicator_next_frame = true
 		Global.discard_card(player_id, playing_card.key, player_won)
@@ -292,6 +283,12 @@ func _on_card_drag_started_signal(_playing_card, _from_position):
 
 func _on_card_moved_signal(playing_card, _from_position, _global_position):
 	hack_hide_meld_indicator_next_frame = false
+	Global.dbg("Player('%s'): _on_card_moved_signal: playing_card=%s, is_my_turn=%s, Global.is_my_turn=%s, has_melded=%s" % [
+		player_id, playing_card.key, str(is_my_turn), str(Global.is_my_turn()), str(Global.player_has_melded(Global.private_player_info['id']))])
+	# if Global.is_my_turn() and Global.player_has_melded(Global.private_player_info['id']):
+	# 	_update_hand_meldability()
+	# 	return
+
 	var player_is_me = Global.private_player_info.id == player_id
 	if not player_is_me: return # bots do not click or drag cards.
 
@@ -400,17 +397,24 @@ func _input(event):
 		Global.dbg("Player('%s'): _input: is_meldable=%s, PERSONALLY MELD!" % [player_id, is_meldable])
 		Global.personally_meld_hand(player_id, last_hand_evaluation)
 		# Clear the meldable area sparklers
-		Global.emit_meld_area_state_changed(false, 0)
-		Global.emit_meld_area_state_changed(false, 1)
-		Global.emit_meld_area_state_changed(false, 2)
+		Global.emit_meld_area_state_changed_signal(false, 0)
+		Global.emit_meld_area_state_changed_signal(false, 1)
+		Global.emit_meld_area_state_changed_signal(false, 2)
 		# Don't allow any other nodes to also handle this event.
 		get_viewport().set_input_as_handled()
 		return
 	if is_meldable: # current player wishes to meld publicly on this player.
-		Global.dbg("Player('%s'): _input: is_meldable=%s, PUBLICLY MELD ON ME!" % [player_id, is_meldable])
-		Global.meld_card_to_public_meld(is_meldable_player_id, is_meldable_card_key, player_id, is_meldable_meld_group_index)
 		# Don't allow any other nodes to also handle this event.
 		get_viewport().set_input_as_handled()
+		Global.dbg("Player('%s'): _input: is_meldable=%s, PUBLICLY MELD ON ME!" % [player_id, is_meldable])
+		for possibility in local_public_meld_possibilities:
+			var is_meldable_player_id = possibility.target_player_id
+			var is_meldable_card_key = possibility.card_key
+			var is_meldable_meld_group_index = possibility.meld_group_index
+			Global.meld_card_to_public_meld(is_meldable_player_id, is_meldable_card_key, player_id, is_meldable_meld_group_index)
+			# wait 0.1 seconds between melds to allow for animation
+			await get_tree().create_timer(0.1).timeout
+		local_public_meld_possibilities.clear()
 		return
 	if not is_my_turn and is_buying_card:
 		var current_player_id = Global.private_player_info.id
@@ -509,106 +513,124 @@ func gen_player_hand_stats(stats_private_player_info: Dictionary) -> Dictionary:
 
 func evaluate_player_hand(hand_stats: Dictionary) -> Dictionary:
 	var pre_meld = not Global.player_has_melded(player_id)
-	var evaluation = null
+	var evaluation = {}
 	if pre_meld:
 		evaluation = _evaluate_player_hand_pre_meld(hand_stats)
-		Global.dbg("LEAVE _evaluate_player_hand_pre_meld: round_num=%d, player_id='%s', evaluation=%s" % [Global.game_state.current_round_num, player_id, str(evaluation)])
-	else:
-		evaluation = _evaluate_player_hand_post_meld(hand_stats)
-		Global.dbg("LEAVE _evaluate_player_hand_post_meld: round_num=%d, player_id='%s', evaluation=%s" % [Global.game_state.current_round_num, player_id, str(evaluation)])
+		Global.dbg("Player('%s'): LEAVE _evaluate_player_hand_pre_meld: round_num=%d, evaluation=%s" % [player_id, Global.game_state.current_round_num, str(evaluation)])
+	# else:
+	# 	evaluation = _evaluate_player_hand_post_meld(hand_stats)
+	# 	Global.dbg("Player('%s'): LEAVE _evaluate_player_hand_post_meld: round_num=%d, evaluation=%s" % [player_id, Global.game_state.current_round_num, str(evaluation)])
 	return evaluation
+
+func _basic_evaluation() -> Dictionary:
+	var acc = Global.empty_evaluation()
+	acc['meld_area_1_keys'] = Global.private_player_info['meld_area_1_keys']
+	acc['meld_area_2_keys'] = Global.private_player_info['meld_area_2_keys']
+	acc['meld_area_3_keys'] = Global.private_player_info['meld_area_3_keys']
+	var already_seen = {}
+	for card_key in acc.meld_area_1_keys:
+		already_seen[card_key] = true
+	for card_key in acc.meld_area_2_keys:
+		already_seen[card_key] = true
+	for card_key in acc.meld_area_3_keys:
+		already_seen[card_key] = true
+	for card_key in Global.private_player_info['card_keys_in_hand']:
+		if not already_seen.has(card_key):
+			acc.recommended_discards.append(card_key)
+	return acc
+
+func gen_group(card_keys: Array) -> Dictionary:
+	var rank = Global.get_group_rank(card_keys)
+	var group = {
+		'type': 'group',
+		'rank': rank,
+		'card_keys': card_keys.duplicate(),
+	}
+	return group
+
+func gen_run(card_keys: Array) -> Dictionary:
+	var suit = Global.get_run_suit(card_keys)
+	var run = {
+		'type': 'run',
+		'suit': suit,
+		'card_keys': card_keys.duplicate(),
+	}
+	return run
 
 func _evaluate_player_hand_pre_meld(hand_stats: Dictionary) -> Dictionary:
 	var round_num = Global.game_state.current_round_num
-	Global.dbg("ENTER _evaluate_player_hand_pre_meld: round_num=%d, player_id='%s', hand_stats=%s" % [round_num, player_id, str(hand_stats)])
+	Global.dbg("Player('%s'): ENTER _evaluate_player_hand_pre_meld: round_num=%d, hand_stats=%s" % [player_id, round_num, str(hand_stats)])
 
-	var acc = Global.empty_evaluation()
-
-	var card_keys_in_hand = Global.private_player_info['card_keys_in_hand']
-	var meld_area_1_keys = Global.private_player_info['meld_area_1_keys']
-	var meld_area_2_keys = Global.private_player_info['meld_area_2_keys']
-	var meld_area_3_keys = Global.private_player_info['meld_area_3_keys']
+	var acc = _basic_evaluation()
 	var meld_area_1_is_complete = false
 	var meld_area_2_is_complete = false
 	var meld_area_3_is_complete = false
 	var can_be_personally_melded = []
-	var recommended_discards = []
-	var already_seen = {}
-	for card_key in meld_area_1_keys:
-		already_seen[card_key] = true
-	for card_key in meld_area_2_keys:
-		already_seen[card_key] = true
-	for card_key in meld_area_3_keys:
-		already_seen[card_key] = true
-	for card_key in card_keys_in_hand:
-		if not already_seen.has(card_key):
-			recommended_discards.append(card_key)
 	var have_sufficient_discards = false
 	var is_winning_hand = false
 
 	match round_num:
 		1:
-			meld_area_1_is_complete = Global.is_valid_group(meld_area_1_keys)
-			can_be_personally_melded.append({'type': 'group', 'card_keys': meld_area_1_keys.duplicate()})
-			meld_area_2_is_complete = Global.is_valid_group(meld_area_2_keys)
-			can_be_personally_melded.append({'type': 'group', 'card_keys': meld_area_2_keys.duplicate()})
+			meld_area_1_is_complete = Global.is_valid_group(acc.meld_area_1_keys)
+			can_be_personally_melded.append(gen_group(acc.meld_area_1_keys))
+			meld_area_2_is_complete = Global.is_valid_group(acc.meld_area_2_keys)
+			can_be_personally_melded.append(gen_group(acc.meld_area_2_keys))
 			meld_area_3_is_complete = true
-			have_sufficient_discards = len(recommended_discards) >= 1
-			is_winning_hand = len(recommended_discards) == 1
+			have_sufficient_discards = len(acc.recommended_discards) >= 1
+			is_winning_hand = len(acc.recommended_discards) == 1
 		2:
-			meld_area_1_is_complete = Global.is_valid_group(meld_area_1_keys)
-			can_be_personally_melded.append({'type': 'group', 'card_keys': meld_area_1_keys.duplicate()})
-			meld_area_2_is_complete = Global.is_valid_run(meld_area_2_keys)
-			can_be_personally_melded.append({'type': 'run', 'card_keys': meld_area_2_keys.duplicate()})
+			meld_area_1_is_complete = Global.is_valid_group(acc.meld_area_1_keys)
+			can_be_personally_melded.append(gen_group(acc.meld_area_1_keys))
+			meld_area_2_is_complete = Global.is_valid_run(acc.meld_area_2_keys)
+			can_be_personally_melded.append(gen_run(acc.meld_area_2_keys))
 			meld_area_3_is_complete = true
-			have_sufficient_discards = len(recommended_discards) >= 1
-			is_winning_hand = len(recommended_discards) == 1
+			have_sufficient_discards = len(acc.recommended_discards) >= 1
+			is_winning_hand = len(acc.recommended_discards) == 1
 		3:
-			meld_area_1_is_complete = Global.is_valid_run(meld_area_1_keys)
-			can_be_personally_melded.append({'type': 'run', 'card_keys': meld_area_1_keys.duplicate()})
-			meld_area_2_is_complete = Global.is_valid_run(meld_area_2_keys)
-			can_be_personally_melded.append({'type': 'run', 'card_keys': meld_area_2_keys.duplicate()})
+			meld_area_1_is_complete = Global.is_valid_run(acc.meld_area_1_keys)
+			can_be_personally_melded.append(gen_run(acc.meld_area_1_keys))
+			meld_area_2_is_complete = Global.is_valid_run(acc.meld_area_2_keys)
+			can_be_personally_melded.append(gen_run(acc.meld_area_2_keys))
 			meld_area_3_is_complete = true
-			have_sufficient_discards = len(recommended_discards) >= 1
-			is_winning_hand = len(recommended_discards) == 1
+			have_sufficient_discards = len(acc.recommended_discards) >= 1
+			is_winning_hand = len(acc.recommended_discards) == 1
 		4:
-			meld_area_1_is_complete = Global.is_valid_group(meld_area_1_keys)
-			can_be_personally_melded.append({'type': 'group', 'card_keys': meld_area_1_keys.duplicate()})
-			meld_area_2_is_complete = Global.is_valid_group(meld_area_2_keys)
-			can_be_personally_melded.append({'type': 'group', 'card_keys': meld_area_2_keys.duplicate()})
-			meld_area_3_is_complete = Global.is_valid_group(meld_area_3_keys)
-			can_be_personally_melded.append({'type': 'group', 'card_keys': meld_area_3_keys.duplicate()})
-			have_sufficient_discards = len(recommended_discards) >= 1
-			is_winning_hand = len(recommended_discards) == 1
+			meld_area_1_is_complete = Global.is_valid_group(acc.meld_area_1_keys)
+			can_be_personally_melded.append(gen_group(acc.meld_area_1_keys))
+			meld_area_2_is_complete = Global.is_valid_group(acc.meld_area_2_keys)
+			can_be_personally_melded.append(gen_group(acc.meld_area_2_keys))
+			meld_area_3_is_complete = Global.is_valid_group(acc.meld_area_3_keys)
+			can_be_personally_melded.append(gen_group(acc.meld_area_3_keys))
+			have_sufficient_discards = len(acc.recommended_discards) >= 1
+			is_winning_hand = len(acc.recommended_discards) == 1
 		5:
-			meld_area_1_is_complete = Global.is_valid_group(meld_area_1_keys)
-			can_be_personally_melded.append({'type': 'group', 'card_keys': meld_area_1_keys.duplicate()})
-			meld_area_2_is_complete = Global.is_valid_group(meld_area_2_keys)
-			can_be_personally_melded.append({'type': 'group', 'card_keys': meld_area_2_keys.duplicate()})
-			meld_area_3_is_complete = Global.is_valid_run(meld_area_3_keys)
-			can_be_personally_melded.append({'type': 'run', 'card_keys': meld_area_3_keys.duplicate()})
-			have_sufficient_discards = len(recommended_discards) >= 1
-			is_winning_hand = len(recommended_discards) == 1
+			meld_area_1_is_complete = Global.is_valid_group(acc.meld_area_1_keys)
+			can_be_personally_melded.append(gen_group(acc.meld_area_1_keys))
+			meld_area_2_is_complete = Global.is_valid_group(acc.meld_area_2_keys)
+			can_be_personally_melded.append(gen_group(acc.meld_area_2_keys))
+			meld_area_3_is_complete = Global.is_valid_run(acc.meld_area_3_keys)
+			can_be_personally_melded.append(gen_run(acc.meld_area_3_keys))
+			have_sufficient_discards = len(acc.recommended_discards) >= 1
+			is_winning_hand = len(acc.recommended_discards) == 1
 		6:
-			meld_area_1_is_complete = Global.is_valid_group(meld_area_1_keys)
-			can_be_personally_melded.append({'type': 'group', 'card_keys': meld_area_1_keys.duplicate()})
-			meld_area_2_is_complete = Global.is_valid_run(meld_area_2_keys)
-			can_be_personally_melded.append({'type': 'run', 'card_keys': meld_area_2_keys.duplicate()})
-			meld_area_3_is_complete = Global.is_valid_run(meld_area_3_keys)
-			can_be_personally_melded.append({'type': 'run', 'card_keys': meld_area_3_keys.duplicate()})
-			have_sufficient_discards = len(recommended_discards) >= 1
-			is_winning_hand = len(recommended_discards) == 1
+			meld_area_1_is_complete = Global.is_valid_group(acc.meld_area_1_keys)
+			can_be_personally_melded.append(gen_group(acc.meld_area_1_keys))
+			meld_area_2_is_complete = Global.is_valid_run(acc.meld_area_2_keys)
+			can_be_personally_melded.append(gen_run(acc.meld_area_2_keys))
+			meld_area_3_is_complete = Global.is_valid_run(acc.meld_area_3_keys)
+			can_be_personally_melded.append(gen_run(acc.meld_area_3_keys))
+			have_sufficient_discards = len(acc.recommended_discards) >= 1
+			is_winning_hand = len(acc.recommended_discards) == 1
 		7:
-			meld_area_1_is_complete = Global.is_valid_run(meld_area_1_keys)
-			can_be_personally_melded.append({'type': 'run', 'card_keys': meld_area_1_keys.duplicate()})
-			meld_area_2_is_complete = Global.is_valid_run(meld_area_2_keys)
-			can_be_personally_melded.append({'type': 'run', 'card_keys': meld_area_2_keys.duplicate()})
-			meld_area_3_is_complete = Global.is_valid_run(meld_area_3_keys)
-			can_be_personally_melded.append({'type': 'run', 'card_keys': meld_area_3_keys.duplicate()})
-			have_sufficient_discards = len(recommended_discards) == 0
-			is_winning_hand = len(recommended_discards) == 0
+			meld_area_1_is_complete = Global.is_valid_run(acc.meld_area_1_keys)
+			can_be_personally_melded.append(gen_run(acc.meld_area_1_keys))
+			meld_area_2_is_complete = Global.is_valid_run(acc.meld_area_2_keys)
+			can_be_personally_melded.append(gen_run(acc.meld_area_2_keys))
+			meld_area_3_is_complete = Global.is_valid_run(acc.meld_area_3_keys)
+			can_be_personally_melded.append(gen_run(acc.meld_area_3_keys))
+			have_sufficient_discards = len(acc.recommended_discards) == 0
+			is_winning_hand = len(acc.recommended_discards) == 0
 
-	acc['recommended_discards'] = recommended_discards
 	if meld_area_1_is_complete and meld_area_2_is_complete and meld_area_3_is_complete && have_sufficient_discards:
 		acc['can_be_personally_melded'] = can_be_personally_melded
 		acc['is_winning_hand'] = is_winning_hand
@@ -616,8 +638,127 @@ func _evaluate_player_hand_pre_meld(hand_stats: Dictionary) -> Dictionary:
 
 func _evaluate_player_hand_post_meld(hand_stats: Dictionary) -> Dictionary:
 	var round_num = Global.game_state.current_round_num
-	Global.dbg("ENTER _evaluate_player_handpost_meld: round_num=%d, player_id='%s', hand_stats=%s" % [round_num, player_id, str(hand_stats)])
+	Global.dbg("Player('%s'): ENTER _evaluate_player_hand_post_meld: round_num=%d, hand_stats=%s" % [player_id, round_num, str(hand_stats)])
 
-	var acc = Global.empty_evaluation()
-	# TODO
+	var acc = _basic_evaluation()
+	if round_num < 7 and len(acc.recommended_discards) == 0: return acc
+	if round_num >= 7 and len(acc.recommended_discards) != 0: return acc
+	match round_num:
+		1:
+			var all_public_group_ranks = Global.gen_all_public_group_ranks()
+			add_public_group_meld_possibilities(acc, acc.meld_area_1_keys, all_public_group_ranks)
+			add_public_group_meld_possibilities(acc, acc.meld_area_2_keys, all_public_group_ranks)
+		2:
+			var all_public_group_ranks = Global.gen_all_public_group_ranks()
+			add_public_group_meld_possibilities(acc, acc.meld_area_1_keys, all_public_group_ranks)
+			var all_public_run_suits = Global.gen_all_public_run_suits()
+			add_public_run_meld_possibilities(acc, acc.meld_area_2_keys, all_public_run_suits)
+		3:
+			var all_public_run_suits = Global.gen_all_public_run_suits()
+			add_public_run_meld_possibilities(acc, acc.meld_area_1_keys, all_public_run_suits)
+			add_public_run_meld_possibilities(acc, acc.meld_area_2_keys, all_public_run_suits)
+		4:
+			var all_public_group_ranks = Global.gen_all_public_group_ranks()
+			add_public_group_meld_possibilities(acc, acc.meld_area_1_keys, all_public_group_ranks)
+			add_public_group_meld_possibilities(acc, acc.meld_area_2_keys, all_public_group_ranks)
+			add_public_group_meld_possibilities(acc, acc.meld_area_3_keys, all_public_group_ranks)
+		5:
+			var all_public_group_ranks = Global.gen_all_public_group_ranks()
+			add_public_group_meld_possibilities(acc, acc.meld_area_1_keys, all_public_group_ranks)
+			add_public_group_meld_possibilities(acc, acc.meld_area_2_keys, all_public_group_ranks)
+			var all_public_run_suits = Global.gen_all_public_run_suits()
+			add_public_run_meld_possibilities(acc, acc.meld_area_3_keys, all_public_run_suits)
+		6:
+			var all_public_group_ranks = Global.gen_all_public_group_ranks()
+			add_public_group_meld_possibilities(acc, acc.meld_area_1_keys, all_public_group_ranks)
+			var all_public_run_suits = Global.gen_all_public_run_suits()
+			add_public_run_meld_possibilities(acc, acc.meld_area_2_keys, all_public_run_suits)
+			add_public_run_meld_possibilities(acc, acc.meld_area_3_keys, all_public_run_suits)
+		7:
+			var all_public_run_suits = Global.gen_all_public_run_suits()
+			add_public_run_meld_possibilities(acc, acc.meld_area_1_keys, all_public_run_suits)
+			add_public_run_meld_possibilities(acc, acc.meld_area_2_keys, all_public_run_suits)
+			add_public_run_meld_possibilities(acc, acc.meld_area_3_keys, all_public_run_suits)
+
 	return acc
+
+func add_public_group_meld_possibilities(acc: Dictionary, meld_area_keys: Array, all_public_group_ranks: Dictionary) -> void:
+	if len(meld_area_keys) == 0:
+		Global.dbg("Player('%s'): add_public_group_meld_possibilities: NO meld_area_keys, returning" % player_id)
+		return
+	for card_key in meld_area_keys:
+		var parts = card_key.split('_')
+		var rank = parts[0]
+		Global.dbg("Player('%s'): add_public_group_meld_possibilities: looking at card_key=%s, rank=%s" % [player_id, card_key, rank])
+		if rank == 'JOKER':
+			add_joker_to_every_public_group_possibility(acc, card_key, all_public_group_ranks)
+			continue
+		if not all_public_group_ranks.has(rank):
+			Global.dbg("Player('%s'): add_public_group_meld_possibilities: card_key=%s, No public groups for rank='%s'" % [player_id, card_key, rank])
+			continue
+		for possibility in all_public_group_ranks[rank]:
+			possibility.card_key = card_key
+			acc.can_be_publicly_melded.append(possibility)
+			Global.dbg("Player('%s'): add_public_group_meld_possibilities: card_key=%s, possibility=%s" % [player_id, card_key, str(possibility)])
+
+func add_joker_to_every_public_group_possibility(acc: Dictionary, card_key, all_public_group_ranks: Dictionary) -> void:
+	for rank in all_public_group_ranks.keys():
+		for possibility in all_public_group_ranks[rank]:
+			possibility.card_key = card_key
+			acc.can_be_publicly_melded.append(possibility)
+			Global.dbg("Player('%s'): add_joker_to_every_public_group_possibility: rank=%s, possibility=%s" % [player_id, rank, str(possibility)])
+
+func add_public_run_meld_possibilities(acc: Dictionary, meld_area_keys: Array, all_public_run_suits: Dictionary) -> void:
+	if len(meld_area_keys) == 0: return
+	for card_key in meld_area_keys:
+		var parts = card_key.split('-')
+		var rank = parts[0]
+		if rank == 'JOKER':
+			add_joker_to_every_public_run_possibility(acc, card_key, all_public_run_suits)
+			continue
+		var suit = parts[1]
+		if not all_public_run_suits.has(suit): continue
+		for possibility in all_public_run_suits[suit]:
+			var new_run_card_keys = possibility.card_keys.duplicate()
+			new_run_card_keys.append(card_key)
+			if not Global.is_valid_run(new_run_card_keys): continue
+			# Now determine if the newly-added card replaced a JOKER in the run
+			new_run_card_keys = Global.sort_run_cards(new_run_card_keys)
+			var card_key_idx = new_run_card_keys.find(card_key)
+			if card_key_idx == -1:
+				Global.error("Player('%s'): PROGRAMMING ERROR: add_public_run_meld_possibilities: Could not find newly added card_key '%s' in new_run_card_keys=%s" % [player_id, card_key, str(new_run_card_keys)])
+				continue
+			if card_key_idx > len(possibility.card_keys):
+				# Added card is beyond the original run cards, so it did not replace a JOKER
+				acc.can_be_publicly_melded.append(possibility)
+				Global.dbg("Player('%s'): add_public_run_meld_possibilities: possibility=%s" % [player_id, str(possibility)])
+				continue
+			var original_card_key = possibility.card_keys[card_key_idx]
+			parts = original_card_key.split('-')
+			var original_rank = parts[0]
+			if original_rank == 'JOKER':
+				# Valid run with the new card replacing a JOKER
+				possibility['return_joker_to_players_hand'] = original_card_key
+			acc.can_be_publicly_melded.append(possibility)
+			Global.dbg("Player('%s'): add_public_run_meld_possibilities: possibility=%s" % [player_id, str(possibility)])
+
+func add_joker_to_every_public_run_possibility(acc: Dictionary, card_key: String, all_public_run_suits: Dictionary) -> void:
+	for suit in all_public_run_suits.keys():
+		for possibility in all_public_run_suits[suit]:
+			possibility.card_key = card_key
+			acc.can_be_publicly_melded.append(possibility)
+			Global.dbg("Player('%s'): add_joker_to_every_public_run_possibility: possibility=%s" % [player_id, str(possibility)])
+
+func _on_all_meld_area_states_updated_signal(post_meld_data: Dictionary) -> void:
+	# If it is the current player's turn and they are in PlayerDrewState and they have already melded,
+	# update the "Meld!" indicators on _ALL_ players.
+	# Note that this signal is handled _ONLY_ by the Player node representing the current player
+	# which calculates all meld possibilities, then fires a second "local" signal to all Player nodes
+	# to update their "Meld!" indicators accordingly.
+	var player_is_me = Global.private_player_info.id == player_id
+	if not player_is_me: return
+	if not Global.is_my_turn(): return
+	var current_state_name = game_state_machine.get_current_state_name()
+	if current_state_name != 'PlayerDrewState': return
+	if not Global.player_has_melded(Global.private_player_info['id']): return
+	Global.dbg("Player('%s'): _on_all_meld_area_states_updated_signal: updating _ALL_ Meld! indicators by alerting all Player nodes... post_meld_data=%s" % [player_id, str(post_meld_data)])

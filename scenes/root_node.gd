@@ -55,7 +55,7 @@ func _ready():
 	player_circle_radius = $AllPlayersControl.size.x * PLAYER_CIRCLE_RADIUS_RATIO
 	$HUDLayer/Control/CustomRulesDialog/CustomRulesPanel.size = get_viewport().get_visible_rect().size * Vector2(0.9, 0.9)
 	if Global.LANGUAGE == 'de':
-		$HUDLayer/Control/CustomRulesDialog.title = "Regeln für Liverpool Rummy" # TODO
+		$HUDLayer/Control/CustomRulesDialog/Title.text = "Regeln für Liverpool Rummy"
 		$HUDLayer/Control/CustomRulesDialog/CustomRulesPanel/ScrollContainer/Label.text = german_rules_text
 
 func _exit_tree():

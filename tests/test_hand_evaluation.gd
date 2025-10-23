@@ -38,6 +38,7 @@ func setup_mock_data():
 				'turn_index': 1,
 				'played_to_table': [ {
 					'type': 'group',
+					'rank': 'A',
 					'card_keys': ['A-hearts-0', 'A-diamonds-0', 'A-clubs-0']
 				}],
 				'score': 0,

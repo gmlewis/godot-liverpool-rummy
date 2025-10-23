@@ -5,5 +5,5 @@
 /android/
 /ios/
 /reports/
-/scripts/
+/scripts/*.sh
 /web/

@@ -39,6 +39,7 @@ func setup_mock_data():
 				'turn_index': 1,
 				'played_to_table': [ {
 					'type': 'group',
+					'rank': 'A',
 					'card_keys': ['A-hearts-0', 'A-diamonds-0', 'A-clubs-0']
 				}],
 				'score': 0,
@@ -488,8 +489,8 @@ var bot_test_scenarios = [
 		'cards': ["A-hearts-0", "A-spades-0", "A-diamonds-0", "K-hearts-0", "K-spades-0", "K-diamonds-0", "2-clubs-0"],
 		'want_evaluation': {
 			'can_be_personally_melded': [
-				{"type": "group", "card_keys": ["A-hearts-0", "A-spades-0", "A-diamonds-0"]},
-				{"type": "group", "card_keys": ["K-hearts-0", "K-spades-0", "K-diamonds-0"]},
+				{"type": "group", 'rank': 'A', "card_keys": ["A-hearts-0", "A-spades-0", "A-diamonds-0"]},
+				{"type": "group", 'rank': 'K', "card_keys": ["K-hearts-0", "K-spades-0", "K-diamonds-0"]},
 			],
 			'can_be_publicly_melded': [],
 			'is_winning_hand': true,
@@ -502,8 +503,8 @@ var bot_test_scenarios = [
 		'cards': ["JOKER-1-0", "JOKER-2-0", "JOKER-1-1", "JOKER-2-1", "JOKER-1-2", "JOKER-2-2", "JOKER-1-3"],
 		'want_evaluation': {
 			'can_be_personally_melded': [
-				{"type": "group", "card_keys": ["JOKER-1-0", "JOKER-2-0", "JOKER-1-1"]},
-				{"type": "group", "card_keys": ["JOKER-2-1", "JOKER-1-2", "JOKER-2-2"]},
+				{"type": "group", 'rank': '', "card_keys": ["JOKER-1-0", "JOKER-2-0", "JOKER-1-1"]},
+				{"type": "group", 'rank': '', "card_keys": ["JOKER-2-1", "JOKER-1-2", "JOKER-2-2"]},
 			],
 			'can_be_publicly_melded': [],
 			'is_winning_hand': true,
@@ -516,8 +517,8 @@ var bot_test_scenarios = [
 		'cards': ["A-hearts-0", "A-spades-0", "A-diamonds-0", "4-hearts-0", "5-hearts-0", "6-hearts-0", "7-hearts-0", "2-clubs-0"],
 		'want_evaluation': {
 			'can_be_personally_melded': [
-				{"type": "group", "card_keys": ["A-hearts-0", "A-spades-0", "A-diamonds-0"]},
-				{"type": "run", "card_keys": ["4-hearts-0", "5-hearts-0", "6-hearts-0", "7-hearts-0"]},
+				{"type": "group", 'rank': 'A', "card_keys": ["A-hearts-0", "A-spades-0", "A-diamonds-0"]},
+				{"type": "run", 'suit': 'hearts', "card_keys": ["4-hearts-0", "5-hearts-0", "6-hearts-0", "7-hearts-0"]},
 			],
 			'can_be_publicly_melded': [],
 			'is_winning_hand': true,
@@ -530,8 +531,8 @@ var bot_test_scenarios = [
 		'cards': ["JOKER-1-0", "JOKER-2-0", "JOKER-1-1", "JOKER-2-1", "JOKER-1-2", "JOKER-2-2", "JOKER-1-3", "JOKER-2-3"],
 		'want_evaluation': {
 			'can_be_personally_melded': [
-				{"type": "group", "card_keys": ["JOKER-1-0", "JOKER-2-0", "JOKER-1-1"]},
-				{"type": "run", "card_keys": ["JOKER-2-1", "JOKER-1-2", "JOKER-2-2", "JOKER-1-3"]},
+				{"type": "group", 'rank': '', "card_keys": ["JOKER-1-0", "JOKER-2-0", "JOKER-1-1"]},
+				{"type": "run", 'suit': '', "card_keys": ["JOKER-2-1", "JOKER-1-2", "JOKER-2-2", "JOKER-1-3"]},
 			],
 			'can_be_publicly_melded': [],
 			'is_winning_hand': true,
@@ -544,8 +545,8 @@ var bot_test_scenarios = [
 		'cards': ["A-clubs-0", "2-clubs-0", "3-clubs-0", "4-clubs-0", "4-hearts-0", "5-hearts-0", "6-hearts-0", "7-hearts-0", "2-spades-0"],
 		'want_evaluation': {
 			'can_be_personally_melded': [
-				{"type": "run", "card_keys": ["A-clubs-0", "2-clubs-0", "3-clubs-0", "4-clubs-0"]},
-				{"type": "run", "card_keys": ["4-hearts-0", "5-hearts-0", "6-hearts-0", "7-hearts-0"]},
+				{"type": "run", 'suit': 'clubs', "card_keys": ["A-clubs-0", "2-clubs-0", "3-clubs-0", "4-clubs-0"]},
+				{"type": "run", 'suit': 'hearts', "card_keys": ["4-hearts-0", "5-hearts-0", "6-hearts-0", "7-hearts-0"]},
 			],
 			'can_be_publicly_melded': [],
 			'is_winning_hand': true,
@@ -558,8 +559,8 @@ var bot_test_scenarios = [
 		'cards': ["JOKER-1-0", "JOKER-2-0", "JOKER-1-1", "JOKER-2-1", "JOKER-1-2", "JOKER-2-2", "JOKER-1-3", "JOKER-2-3", "JOKER-1-4"],
 		'want_evaluation': {
 			'can_be_personally_melded': [
-				{"type": "run", "card_keys": ["JOKER-1-0", "JOKER-2-0", "JOKER-1-1", "JOKER-2-1"]},
-				{"type": "run", "card_keys": ["JOKER-1-2", "JOKER-2-2", "JOKER-1-3", "JOKER-2-3"]},
+				{"type": "run", 'suit': '', "card_keys": ["JOKER-1-0", "JOKER-2-0", "JOKER-1-1", "JOKER-2-1"]},
+				{"type": "run", 'suit': '', "card_keys": ["JOKER-1-2", "JOKER-2-2", "JOKER-1-3", "JOKER-2-3"]},
 			],
 			'can_be_publicly_melded': [],
 			'is_winning_hand': true,
@@ -572,9 +573,9 @@ var bot_test_scenarios = [
 		'cards': ["A-hearts-0", "A-spades-0", "A-diamonds-0", "K-hearts-0", "K-spades-0", "K-diamonds-0", "7-hearts-0", "7-spades-0", "7-diamonds-0", "2-clubs-0"],
 		'want_evaluation': {
 			'can_be_personally_melded': [
-				{"type": "group", "card_keys": ["A-hearts-0", "A-spades-0", "A-diamonds-0"]},
-				{"type": "group", "card_keys": ["K-hearts-0", "K-spades-0", "K-diamonds-0"]},
-				{"type": "group", "card_keys": ["7-hearts-0", "7-spades-0", "7-diamonds-0"]},
+				{"type": "group", 'rank': 'A', "card_keys": ["A-hearts-0", "A-spades-0", "A-diamonds-0"]},
+				{"type": "group", 'rank': 'K', "card_keys": ["K-hearts-0", "K-spades-0", "K-diamonds-0"]},
+				{"type": "group", 'rank': '7', "card_keys": ["7-hearts-0", "7-spades-0", "7-diamonds-0"]},
 			],
 			'can_be_publicly_melded': [],
 			'is_winning_hand': true,
@@ -587,9 +588,9 @@ var bot_test_scenarios = [
 		'cards': ["JOKER-1-0", "JOKER-2-0", "JOKER-1-1", "JOKER-2-1", "JOKER-1-2", "JOKER-2-2", "JOKER-1-3", "JOKER-2-3", "JOKER-1-4", "JOKER-2-4"],
 		'want_evaluation': {
 			'can_be_personally_melded': [
-				{"type": "group", "card_keys": ["JOKER-1-0", "JOKER-2-0", "JOKER-1-1"]},
-				{"type": "group", "card_keys": ["JOKER-2-1", "JOKER-1-2", "JOKER-2-2"]},
-				{"type": "group", "card_keys": ["JOKER-1-3", "JOKER-2-3", "JOKER-1-4"]},
+				{"type": "group", 'rank': '', "card_keys": ["JOKER-1-0", "JOKER-2-0", "JOKER-1-1"]},
+				{"type": "group", 'rank': '', "card_keys": ["JOKER-2-1", "JOKER-1-2", "JOKER-2-2"]},
+				{"type": "group", 'rank': '', "card_keys": ["JOKER-1-3", "JOKER-2-3", "JOKER-1-4"]},
 			],
 			'can_be_publicly_melded': [],
 			'is_winning_hand': true,
@@ -602,9 +603,9 @@ var bot_test_scenarios = [
 		'cards': ["A-hearts-0", "A-spades-0", "A-diamonds-0", "K-hearts-0", "K-spades-0", "K-diamonds-0", "4-hearts-0", "5-hearts-0", "6-hearts-0", "7-hearts-0", "2-spades-0"],
 		'want_evaluation': {
 			'can_be_personally_melded': [
-				{"type": "group", "card_keys": ["A-hearts-0", "A-spades-0", "A-diamonds-0"]},
-				{"type": "group", "card_keys": ["K-hearts-0", "K-spades-0", "K-diamonds-0"]},
-				{"type": "run", "card_keys": ["4-hearts-0", "5-hearts-0", "6-hearts-0", "7-hearts-0"]},
+				{"type": "group", 'rank': 'A', "card_keys": ["A-hearts-0", "A-spades-0", "A-diamonds-0"]},
+				{"type": "group", 'rank': 'K', "card_keys": ["K-hearts-0", "K-spades-0", "K-diamonds-0"]},
+				{"type": "run", 'suit': 'hearts', "card_keys": ["4-hearts-0", "5-hearts-0", "6-hearts-0", "7-hearts-0"]},
 			],
 			'can_be_publicly_melded': [],
 			'is_winning_hand': true,
@@ -617,9 +618,9 @@ var bot_test_scenarios = [
 		'cards': ["JOKER-1-0", "JOKER-2-0", "JOKER-1-1", "JOKER-2-1", "JOKER-1-2", "JOKER-2-2", "JOKER-1-3", "JOKER-2-3", "JOKER-1-4", "JOKER-2-4", "JOKER-1-5"],
 		'want_evaluation': {
 			'can_be_personally_melded': [
-				{"type": "group", "card_keys": ["JOKER-1-0", "JOKER-2-0", "JOKER-1-1"]},
-				{"type": "group", "card_keys": ["JOKER-2-1", "JOKER-1-2", "JOKER-2-2"]},
-				{"type": "run", "card_keys": ["JOKER-1-3", "JOKER-2-3", "JOKER-1-4", "JOKER-2-4"]},
+				{"type": "group", 'rank': '', "card_keys": ["JOKER-1-0", "JOKER-2-0", "JOKER-1-1"]},
+				{"type": "group", 'rank': '', "card_keys": ["JOKER-2-1", "JOKER-1-2", "JOKER-2-2"]},
+				{"type": "run", 'suit': '', "card_keys": ["JOKER-1-3", "JOKER-2-3", "JOKER-1-4", "JOKER-2-4"]},
 			],
 			'can_be_publicly_melded': [],
 			'is_winning_hand': true,
@@ -632,9 +633,9 @@ var bot_test_scenarios = [
 		'cards': ["A-hearts-0", "A-spades-0", "A-diamonds-0", "4-hearts-0", "5-hearts-0", "6-hearts-0", "7-hearts-0", "4-clubs-0", "5-clubs-0", "6-clubs-0", "7-clubs-0", "2-spades-0"],
 		'want_evaluation': {
 			'can_be_personally_melded': [
-				{"type": "group", "card_keys": ["A-hearts-0", "A-spades-0", "A-diamonds-0"]},
-				{"type": "run", "card_keys": ["4-clubs-0", "5-clubs-0", "6-clubs-0", "7-clubs-0"]},
-				{"type": "run", "card_keys": ["4-hearts-0", "5-hearts-0", "6-hearts-0", "7-hearts-0"]},
+				{"type": "group", 'rank': 'A', "card_keys": ["A-hearts-0", "A-spades-0", "A-diamonds-0"]},
+				{"type": "run", 'suit': 'clubs', "card_keys": ["4-clubs-0", "5-clubs-0", "6-clubs-0", "7-clubs-0"]},
+				{"type": "run", 'suit': 'hearts', "card_keys": ["4-hearts-0", "5-hearts-0", "6-hearts-0", "7-hearts-0"]},
 			],
 			'can_be_publicly_melded': [],
 			'is_winning_hand': true,
@@ -647,9 +648,9 @@ var bot_test_scenarios = [
 		'cards': ["JOKER-1-0", "JOKER-2-0", "JOKER-1-1", "JOKER-2-1", "JOKER-1-2", "JOKER-2-2", "JOKER-1-3", "JOKER-2-3", "JOKER-1-4", "JOKER-2-4", "JOKER-1-5", "JOKER-2-5"],
 		'want_evaluation': {
 			'can_be_personally_melded': [
-				{"type": "group", "card_keys": ["JOKER-1-0", "JOKER-2-0", "JOKER-1-1"]},
-				{"type": "run", "card_keys": ["JOKER-2-1", "JOKER-1-2", "JOKER-2-2", "JOKER-1-3"]},
-				{"type": "run", "card_keys": ["JOKER-2-3", "JOKER-1-4", "JOKER-2-4", "JOKER-1-5"]},
+				{"type": "group", 'rank': '', "card_keys": ["JOKER-1-0", "JOKER-2-0", "JOKER-1-1"]},
+				{"type": "run", 'suit': '', "card_keys": ["JOKER-2-1", "JOKER-1-2", "JOKER-2-2", "JOKER-1-3"]},
+				{"type": "run", 'suit': '', "card_keys": ["JOKER-2-3", "JOKER-1-4", "JOKER-2-4", "JOKER-1-5"]},
 			],
 			'can_be_publicly_melded': [],
 			'is_winning_hand': true,
@@ -662,9 +663,9 @@ var bot_test_scenarios = [
 		'cards': ["4-hearts-0", "5-hearts-0", "6-hearts-0", "7-hearts-0", "4-clubs-0", "5-clubs-0", "6-clubs-0", "7-clubs-0", "4-spades-0", "5-spades-0", "6-spades-0", "7-spades-0"],
 		'want_evaluation': {
 			'can_be_personally_melded': [
-				{"type": "run", "card_keys": ["4-clubs-0", "5-clubs-0", "6-clubs-0", "7-clubs-0"]},
-				{"type": "run", "card_keys": ["4-hearts-0", "5-hearts-0", "6-hearts-0", "7-hearts-0"]},
-				{"type": "run", "card_keys": ["4-spades-0", "5-spades-0", "6-spades-0", "7-spades-0"]},
+				{"type": "run", 'suit': 'clubs', "card_keys": ["4-clubs-0", "5-clubs-0", "6-clubs-0", "7-clubs-0"]},
+				{"type": "run", 'suit': 'hearts', "card_keys": ["4-hearts-0", "5-hearts-0", "6-hearts-0", "7-hearts-0"]},
+				{"type": "run", 'suit': 'spades', "card_keys": ["4-spades-0", "5-spades-0", "6-spades-0", "7-spades-0"]},
 			],
 			'can_be_publicly_melded': [],
 			'is_winning_hand': true,
@@ -677,9 +678,9 @@ var bot_test_scenarios = [
 		'cards': ["JOKER-1-0", "JOKER-2-0", "JOKER-1-1", "JOKER-2-1", "JOKER-1-2", "JOKER-2-2", "JOKER-1-3", "JOKER-2-3", "JOKER-1-4", "JOKER-2-4", "JOKER-1-5", "JOKER-2-5", "JOKER-1-6"],
 		'want_evaluation': {
 			'can_be_personally_melded': [
-				{"type": "run", "card_keys": ["JOKER-1-6", "JOKER-1-0", "JOKER-2-0", "JOKER-1-1", "JOKER-2-1"]},
-				{"type": "run", "card_keys": ["JOKER-1-2", "JOKER-2-2", "JOKER-1-3", "JOKER-2-3"]},
-				{"type": "run", "card_keys": ["JOKER-1-4", "JOKER-2-4", "JOKER-1-5", "JOKER-2-5"]},
+				{"type": "run", 'suit': '', "card_keys": ["JOKER-1-6", "JOKER-1-0", "JOKER-2-0", "JOKER-1-1", "JOKER-2-1"]},
+				{"type": "run", 'suit': '', "card_keys": ["JOKER-1-2", "JOKER-2-2", "JOKER-1-3", "JOKER-2-3"]},
+				{"type": "run", 'suit': '', "card_keys": ["JOKER-1-4", "JOKER-2-4", "JOKER-1-5", "JOKER-2-5"]},
 			],
 			'can_be_publicly_melded': [],
 			'is_winning_hand': true,
@@ -692,8 +693,8 @@ var bot_test_scenarios = [
 		'round': 2,
 		'cards': ['3-spades-0'],
 		'played_to_table': [
-			{'type': 'group', 'card_keys': ['7-hearts-0', '7-spades-0', '7-clubs-0']},
-			{'type': 'run', 'card_keys': ['2-hearts-0', '3-hearts-0', 'JOKER-1-0', '5-hearts-0']}
+			{'type': 'group', 'rank': '7', 'card_keys': ['7-hearts-0', '7-spades-0', '7-clubs-0']},
+			{'type': 'run', 'suit': 'hearts', 'card_keys': ['2-hearts-0', '3-hearts-0', 'JOKER-1-0', '5-hearts-0']}
 		],
 		'want_evaluation': {
 			'can_be_personally_melded': [],
@@ -707,8 +708,8 @@ var bot_test_scenarios = [
 		'round': 2,
 		'cards': ['4-hearts-0'],
 		'played_to_table': [
-			{'type': 'group', 'card_keys': ['7-hearts-0', '7-spades-0', '7-clubs-0']},
-			{'type': 'run', 'card_keys': ['2-hearts-0', '3-hearts-0', 'JOKER-1-0', '5-hearts-0']}
+			{'type': 'group', 'rank': '7', 'card_keys': ['7-hearts-0', '7-spades-0', '7-clubs-0']},
+			{'type': 'run', 'suit': 'hearts', 'card_keys': ['2-hearts-0', '3-hearts-0', 'JOKER-1-0', '5-hearts-0']}
 		],
 		'want_evaluation': {
 			'can_be_personally_melded': [],
@@ -722,8 +723,8 @@ var bot_test_scenarios = [
 		'round': 2,
 		'cards': ['3-spades-0', '4-hearts-0'],
 		'played_to_table': [
-			{'type': 'group', 'card_keys': ['7-hearts-0', '7-spades-0', '7-clubs-0']},
-			{'type': 'run', 'card_keys': ['2-hearts-0', '3-hearts-0', 'JOKER-1-0', '5-hearts-0']}
+			{'type': 'group', 'rank': '7', 'card_keys': ['7-hearts-0', '7-spades-0', '7-clubs-0']},
+			{'type': 'run', 'suit': 'hearts', 'card_keys': ['2-hearts-0', '3-hearts-0', 'JOKER-1-0', '5-hearts-0']}
 		],
 		'want_evaluation': {
 			'can_be_personally_melded': [],

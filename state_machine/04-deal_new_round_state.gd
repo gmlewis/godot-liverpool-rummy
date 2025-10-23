@@ -50,7 +50,7 @@ func deal_cards_to_players(round_num: int, cards_per_player: int) -> void:
 		Global.dbg("FATAL: Mismatch in stock pile size: %d vs %d" % [num_cards_in_stock_pile, len(Global.stock_pile)])
 		return
 	# DEVELOPMENT3: Force way more cards to be dealt so that melding can be tested easily:
-	# total_cards = min(total_cards + 50, num_cards_in_stock_pile) # ONLY FOR TESTING!!!
+	total_cards = min(total_cards + 50, num_cards_in_stock_pile) # ONLY FOR TESTING!!!
 
 	if total_cards > num_cards_in_stock_pile:
 		# TODO: Handle this case more gracefully, e.g. by reshuffling the discard pile
