@@ -99,14 +99,19 @@ func _on_game_state_updated_signal():
 	$MeldIndicatorSprite2D.hide() # Hide meld indicator
 
 	var current_state_name = game_state_machine.get_current_state_name()
-	is_winning_player = current_state_name == 'PlayerWonRoundState' and public_player_info['num_cards'] == 0
+	var num_cards = public_player_info['num_cards']
+	is_winning_player = current_state_name == 'PlayerWonRoundState' and num_cards == 0
+	Global.dbg("Player('%s'): _on_game_state_updated_signal: current_state='%s', num_cards=%d, is_winning_player=%s" % [player_id, current_state_name, num_cards, str(is_winning_player)])
 	if is_winning_player:
+		Global.dbg("Player('%s'): *** WINNING PLAYER ANIMATION TRIGGERED ***" % [player_id])
 		$TurnIndicatorRect.color = Color(0.8, 0.8, 0.2, 1.0) # Set color to yellow for winning player
 		$TurnIndicatorRect.scale = Vector2(1.2, 1.2) # Show turn indicator
 		Global.make_discard_pile_tappable(false)
 		Global.make_stock_pile_tappable(false)
 		return
 	else:
+		if current_state_name == 'PlayerWonRoundState' and num_cards != 0:
+			Global.dbg("Player('%s'): *** WARNING: PlayerWonRoundState but num_cards=%d (expected 0) - animation NOT triggered ***" % [player_id, num_cards])
 		$TurnIndicatorRect.color = TURN_INDICATOR_DRAW_COLOR # reset
 		$TurnIndicatorRect.rotation = 0.0
 

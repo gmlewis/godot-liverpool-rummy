@@ -932,7 +932,7 @@ func server_allow_outstanding_buy_request(player_id: String) -> void:
 ################################################################################
 
 func discard_card(player_id: String, card_key: String, player_won: bool) -> void:
-	dbg("discard_card(player_id='%s', card_key='%s', player_won=%s)" % [player_id, card_key, player_won])
+	dbg("discard_card(player_id='%s', card_key='%s', player_won=%s) *** %s ***" % [player_id, card_key, player_won, "WINNING DISCARD" if player_won else "regular discard"])
 	if is_server(): server_discard_card(player_id, card_key, player_won)
 	else: _rpc_request_server_discard_card.rpc_id(1, player_id, card_key, player_won)
 
@@ -948,17 +948,19 @@ func server_discard_card(player_id: String, card_key: String, player_won: bool) 
 	if not player_info:
 		error("server_discard_card: player_id='%s' is not the current player" % [player_id])
 		return
-	dbg("server_discard_card: player_id='%s' discarding card_key='%s', player_won=%s" % [player_id, card_key, player_won])
+	dbg("server_discard_card: player_id='%s' discarding card_key='%s', player_won=%s *** %s ***" % [player_id, card_key, player_won, "WINNING DISCARD - will transition to PlayerWonRoundState" if player_won else "regular discard"])
 	var sync_args = {
 		'next_state': 'NewDiscardState',
 		'advance_player_turn': true,
 	} if not player_won else {
 		'next_state': 'PlayerWonRoundState',
 	}
+	dbg("server_discard_card: sync_args=%s" % [str(sync_args)])
 	if card_key != '':
 		register_ack_sync_state('_rpc_move_player_card_to_discard_pile', sync_args)
 		_rpc_move_player_card_to_discard_pile.rpc(player_id, card_key, player_won)
 	else:
+		dbg("server_discard_card: card_key is empty, emitting transition to PlayerWonRoundState")
 		transition_all_clients_state_to_signal.emit('PlayerWonRoundState')
 
 ################################################################################
@@ -1107,7 +1109,7 @@ func _rpc_give_top_stock_pile_card_to_player(player_id: String) -> void:
 
 @rpc('authority', 'call_local', 'reliable')
 func _rpc_move_player_card_to_discard_pile(player_id: String, card_key: String, player_won: bool) -> void:
-	dbg("received RPC _rpc_move_player_card_to_discard_pile: player_id='%s', card_key='%s', player_won=%s" % [player_id, card_key, player_won])
+	dbg("received RPC _rpc_move_player_card_to_discard_pile: player_id='%s', card_key='%s', player_won=%s *** %s ***" % [player_id, card_key, player_won, "WINNING DISCARD" if player_won else "regular discard"])
 	var top_card = playing_cards.get(card_key) as PlayingCard
 	if not top_card:
 		error("_rpc_move_player_card_to_discard_pile: unable to find card_key='%s' in playing_cards" % [card_key])
@@ -1125,7 +1127,7 @@ func _rpc_move_player_card_to_discard_pile(player_id: String, card_key: String, 
 		if player_id in bots_private_player_info:
 			var bot = bots_private_player_info[player_id]
 			bot.card_keys_in_hand.erase(top_card.key)
-	dbg("_rpc_move_player_card_to_discard_pile: player_id='%s' moving card from discard pile: '%s', player_won=%s" % [player_id, top_card.key, player_won])
+	dbg("_rpc_move_player_card_to_discard_pile: player_id='%s' moving card from discard pile: '%s', player_won=%s, emitting animate signal" % [player_id, top_card.key, player_won])
 	animate_move_card_from_player_to_discard_pile_signal.emit(top_card, player_id, player_won, '_rpc_move_player_card_to_discard_pile')
 
 func allow_player_to_buy_card_from_discard_pile(buying_player_id: String) -> void:

@@ -51,6 +51,7 @@ func _on_card_moved_signal(_playing_card, _from_position, _global_position):
 
 
 func _on_animate_move_card_from_player_to_discard_pile_signal(playing_card: PlayingCard, player_id: String, player_won: bool, ack_sync_name: String) -> void:
+	Global.dbg("07-player_drew_state: _on_animate_move_card_from_player_to_discard_pile_signal: player_id='%s', card='%s', player_won=%s" % [player_id, playing_card.key, player_won])
 	var players = players_container.get_children().filter(func(node): return node.player_id == player_id)
 	if len(players) != 1:
 		push_error("Player node not found for player_id: %s" % player_id)
@@ -58,7 +59,9 @@ func _on_animate_move_card_from_player_to_discard_pile_signal(playing_card: Play
 	var player = players[0] as Node2D
 	var players_by_id = Global.get_players_by_id()
 	var player_public_info = players_by_id[player_id]
+	Global.dbg("07-player_drew_state: BEFORE decrement: player_id='%s', num_cards=%d" % [player_id, player_public_info['num_cards']])
 	player_public_info['num_cards'] -= 1
+	Global.dbg("07-player_drew_state: AFTER decrement: player_id='%s', num_cards=%d, player_won=%s" % [player_id, player_public_info['num_cards'], player_won])
 	player._on_game_state_updated_signal() # Update the player's UI
 	if not playing_card.is_face_up and not player_won:
 		playing_card.flip_card() # Flip the card to face-up for the local player so it can be seen while animating
@@ -69,6 +72,7 @@ func _on_animate_move_card_from_player_to_discard_pile_signal(playing_card: Play
 	card_tween.set_parallel(true)
 	tween_card_to_discard_pile(player, player_id, card_tween, playing_card, player_won)
 	await card_tween.finished
+	Global.dbg("07-player_drew_state: animation finished, ack_sync_name='%s'" % [ack_sync_name])
 	if ack_sync_name:
 		Global.ack_sync_completed(ack_sync_name)
 

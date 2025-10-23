@@ -98,16 +98,18 @@ func _on_player_drew_state_entered() -> void:
 
 func _smart_discard_card(current_hand_evaluation: Dictionary) -> void:
 	Global.dbg("BOT('%s'): ENTER _smart_discard_card(), last_drawn_card_key_from_discard_pile='%s'" % [get_bot_name(), last_drawn_card_key_from_discard_pile])
+	Global.dbg("BOT('%s'): _smart_discard_card: current_hand_evaluation=%s" % [get_bot_name(), str(current_hand_evaluation)])
 	var recommended_discards = current_hand_evaluation['recommended_discards']
 	var discard_card_key = recommended_discards[0] if len(recommended_discards) > 0 else ''
 	var can_be_publicly_melded = current_hand_evaluation['can_be_publicly_melded']
 	if discard_card_key == '' and len(can_be_publicly_melded) > 0:
 		discard_card_key = can_be_publicly_melded[0]['card_key']
+	Global.dbg("BOT('%s'): _smart_discard_card: recommended_discards=%s, discard_card_key='%s', is_winning_hand=%s" % [get_bot_name(), str(recommended_discards), discard_card_key, str(current_hand_evaluation['is_winning_hand'])])
 	# Round 7 still calls Global.discard_card() but with an empty discard_card_key.
 	if current_hand_evaluation['is_winning_hand']:
-		Global.dbg("BOT('%s'): _smart_discard_card: is_winning_hand=true, discarding card_key=%s" % [get_bot_name(), discard_card_key])
+		Global.dbg("BOT('%s'): _smart_discard_card: *** WINNING HAND DETECTED *** calling Global.discard_card(player_id='%s', card_key='%s', player_won=true)" % [get_bot_name(), bot_id, discard_card_key])
 		Global.discard_card(bot_id, discard_card_key, true) # true means this is a winning hand.
-		Global.dbg("BOT('%s'): LEAVE1 _smart_discard_card()" % get_bot_name())
+		Global.dbg("BOT('%s'): LEAVE1 _smart_discard_card() after winning discard" % get_bot_name())
 		return
 	if discard_card_key == '' or discard_card_key == last_drawn_card_key_from_discard_pile:
 		discard_random_card(last_drawn_card_key_from_discard_pile)
@@ -184,6 +186,7 @@ func _on_server_ack_sync_completed_signal(_peer_id: int, operation_name: String,
 	Global.dbg("BOT('%s'): ENTER _on_server_ack_sync_completed_signal(operation_name='%s')" % [get_bot_name(), operation_name])
 	var bot_private_player_info = Global.bots_private_player_info[bot_id]
 	var card_keys_in_hand = bot_private_player_info.card_keys_in_hand
+	Global.dbg("BOT('%s'): _on_server_ack_sync_completed_signal: card_keys_in_hand=%s, num_cards=%d" % [get_bot_name(), str(card_keys_in_hand), len(card_keys_in_hand)])
 	var current_hand_stats = gen_bot_hand_stats(card_keys_in_hand)
 	var current_hand_evaluation = evaluate_bot_hand(current_hand_stats, bot_id)
 	# TODO: allow bot to manipulate the publicly melded cards (e.g. move jokers, etc.) - one sync'd operation at a time.
@@ -192,6 +195,7 @@ func _on_server_ack_sync_completed_signal(_peer_id: int, operation_name: String,
 		# Check to see if this bot can meld cards onto other players' melds (one at a time).
 		Global.dbg("BOT('%s'): _on_server_ack_sync_completed_signal(operation_name='%s'): current_hand_evaluation=%s" % [get_bot_name(), operation_name, str(current_hand_evaluation)])
 		var can_be_publicly_melded = current_hand_evaluation['can_be_publicly_melded']
+		Global.dbg("BOT('%s'): _on_server_ack_sync_completed_signal: can_be_publicly_melded.size()=%d, min_cards_to_discard=%d, is_winning_hand=%s" % [get_bot_name(), can_be_publicly_melded.size(), min_cards_to_discard, str(current_hand_evaluation['is_winning_hand'])])
 		if can_be_publicly_melded.size() > min_cards_to_discard:
 			Global.dbg("BOT('%s'): _on_server_ack_sync_completed_signal(operation_name='%s'): can_be_publicly_melded=%s, requesting to meld next (one) card onto other players' melds" % [get_bot_name(), operation_name, str(can_be_publicly_melded)])
 			var next_meld_operation = can_be_publicly_melded[0]
@@ -200,7 +204,7 @@ func _on_server_ack_sync_completed_signal(_peer_id: int, operation_name: String,
 			var meld_group_index = next_meld_operation['meld_group_index']
 			Global.meld_card_to_public_meld(bot_id, card_key, target_player_id, meld_group_index)
 		else:
-			Global.dbg("BOT('%s'): _on_server_ack_sync_completed_signal(operation_name='%s'): cannot meld cards onto other players' melds, discarding." % [get_bot_name(), operation_name])
+			Global.dbg("BOT('%s'): _on_server_ack_sync_completed_signal(operation_name='%s'): cannot meld cards onto other players' melds (size %d <= %d), calling _smart_discard_card()" % [get_bot_name(), operation_name, can_be_publicly_melded.size(), min_cards_to_discard])
 			_smart_discard_card(current_hand_evaluation)
 	Global.dbg("BOT('%s'): LEAVE _on_server_ack_sync_completed_signal(operation_name='%s')" % [get_bot_name(), operation_name])
 
@@ -644,6 +648,7 @@ func _evaluate_hand_post_meld(round_num: int, hand_stats: Dictionary, all_public
 	var available_jokers = hand_stats['jokers'].duplicate()
 	var penalty_cards = []
 
+	Global.dbg("00-bot: _evaluate_hand_post_meld: round_num=%d, num_cards=%d" % [round_num, hand_stats['num_cards']])
 	# Optimization: If we have only 1 card left and round < 7, immediately discard to win
 	if hand_stats['num_cards'] == 1 and round_num < 7:
 		var single_card = null
@@ -656,6 +661,7 @@ func _evaluate_hand_post_meld(round_num: int, hand_stats: Dictionary, all_public
 				single_card = cards[0]
 
 		if single_card != null:
+			Global.dbg("00-bot: _evaluate_hand_post_meld: *** 1 CARD LEFT - WINNING HAND ***: card='%s'" % [single_card])
 			acc['recommended_discards'] = [single_card]
 			acc['is_winning_hand'] = true
 			acc['eval_score'] = 1000 # Winning bonus
