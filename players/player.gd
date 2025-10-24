@@ -34,6 +34,7 @@ func _ready():
 	Global.connect('card_moved_signal', _on_card_moved_signal)
 	Global.connect('all_meld_area_states_updated_signal', _on_all_meld_area_states_updated_signal)
 	Global.connect('player_is_meldable_signal', _on_player_is_meldable_signal)
+	Global.connect('clear_all_player_meldable_indicators_signal', clear_meldability_indicator)
 	game_state_machine.connect('gsm_changed_state_signal', _on_gsm_changed_state_signal)
 	$PlayerNameLabel.text = player_name
 	$TurnIndicatorRect.scale = Vector2(0.1, 0.1) # Hide turn indicator at start
@@ -51,6 +52,7 @@ func _exit_tree():
 	Global.disconnect('card_moved_signal', _on_card_moved_signal)
 	Global.disconnect('all_meld_area_states_updated_signal', _on_all_meld_area_states_updated_signal)
 	Global.disconnect('player_is_meldable_signal', _on_player_is_meldable_signal)
+	Global.disconnect('clear_all_player_meldable_indicators_signal', clear_meldability_indicator)
 	game_state_machine.disconnect('gsm_changed_state_signal', _on_gsm_changed_state_signal)
 
 func _on_custom_card_back_texture_changed_signal():
@@ -90,6 +92,7 @@ func _on_game_state_updated_signal():
 		$BuyIndicatorSprite2D.show() # Show buy indicator
 	else:
 		$BuyIndicatorSprite2D.hide() # Hide buy indicator
+	Global.dbg("Player('%s'): _on_game_state_updated_signal: hiding meld indicator" % [player_id])
 	is_meldable = false # Reset meldable state
 	# if is_meldable:
 	# 	$MeldIndicatorSprite2D.show() # Show meld indicator
@@ -150,6 +153,7 @@ func _update_hand_meldability() -> void:
 	var current_hand_stats = gen_player_hand_stats(Global.private_player_info)
 	# Store the last hand evaluation for melding when user clicks on the player.
 	last_hand_evaluation = evaluate_player_hand(current_hand_stats)
+	Global.dbg("Player('%s'): _update_hand_meldability: hiding meld indicator" % [player_id])
 	is_meldable = false
 	$MeldIndicatorSprite2D.hide()
 	if len(last_hand_evaluation['can_be_personally_melded']) == 0: return
@@ -183,6 +187,7 @@ func _on_player_is_meldable_signal(possibility: Dictionary) -> void:
 	$MeldIndicatorSprite2D.show() # Show meld indicator
 
 func clear_meldability_indicator() -> void:
+	Global.dbg("Player('%s'): clear_meldability_indicator: HIDE MELD INDICATOR" % [player_id])
 	is_meldable = false
 	local_public_meld_possibilities.clear()
 	$MeldIndicatorSprite2D.hide()
@@ -422,13 +427,17 @@ func _input(event):
 		# Don't allow any other nodes to also handle this event.
 		get_viewport().set_input_as_handled()
 		for possibility in local_public_meld_possibilities:
-			var is_meldable_player_id = possibility.target_player_id
+			var is_meldable_player_id = possibility['melding_player_id'] if possibility.has('melding_player_id') else possibility.target_player_id
 			var is_meldable_card_key = possibility.card_key
 			var is_meldable_meld_group_index = possibility.meld_group_index
 			Global.meld_card_to_public_meld(is_meldable_player_id, is_meldable_card_key, player_id, is_meldable_meld_group_index)
 			# wait 0.1 seconds between melds to allow for animation
 			await get_tree().create_timer(0.1).timeout
 		local_public_meld_possibilities.clear()
+		# Clear the meldable area sparklers
+		Global.emit_meld_area_state_changed_signal(false, 0)
+		Global.emit_meld_area_state_changed_signal(false, 1)
+		Global.emit_meld_area_state_changed_signal(false, 2)
 		return
 	if not is_my_turn and is_buying_card:
 		Global.dbg("Player('%s')._input: BUYING CARD - calling set_input_as_handled()" % player_id)
@@ -765,17 +774,18 @@ func add_joker_to_every_public_run_possibility(acc: Dictionary, card_key: String
 			Global.dbg("Player('%s'): add_joker_to_every_public_run_possibility: possibility=%s" % [player_id, str(possibility)])
 
 func _on_all_meld_area_states_updated_signal(post_meld_data: Dictionary) -> void:
-	# First, for ALL player nodes, clear their local_public_meld_possibilities.
-	clear_meldability_indicator()
-	# Next, determine if this Player node represents the current player.
 	# If it is the current player's turn and they are in PlayerDrewState and they have already melded,
 	# update the "Meld!" indicators on _ALL_ players.
-	# Note that the rest of this signal is handled _ONLY_ by the Player node representing the current player
+	# Note that this signal is handled _ONLY_ by the Player node representing the current player
 	# which calculates all meld possibilities, then fires a second "local" signal to all Player nodes
 	# to update their "Meld!" indicators accordingly.
 	var player_is_me = Global.private_player_info.id == player_id
 	if not player_is_me: return
 	if not Global.is_my_turn(): return
+
+	# First, clear all existing meldable indicators on all Player nodes.
+	Global.emit_clear_all_player_meldable_indicators_signal()
+
 	var current_state_name = game_state_machine.get_current_state_name()
 	if current_state_name != 'PlayerDrewState': return
 	if not Global.player_has_melded(Global.private_player_info['id']): return
@@ -784,6 +794,7 @@ func _on_all_meld_area_states_updated_signal(post_meld_data: Dictionary) -> void
 	Global.dbg("Player('%s'): _on_all_meld_area_states_updated_signal: found %d meld possibilities" % [player_id, len(all_possibilities)])
 	for possibility in all_possibilities:
 		Global.dbg("Player('%s'): _on_all_meld_area_states_updated_signal: possibility=%s - emitting signal!" % [player_id, str(possibility)])
+		possibility['melding_player_id'] = player_id
 		Global.emit_player_is_meldable_signal(possibility)
 
 static func get_all_meld_possibilities(post_meld_data: Dictionary) -> Array:

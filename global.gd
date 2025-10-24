@@ -67,6 +67,7 @@ signal card_moved_signal(playing_card, from_position, global_position)
 signal meld_area_state_changed_signal(is_valid: bool, area_idx: int)
 signal all_meld_area_states_updated_signal(post_meld_data: Dictionary)
 signal player_is_meldable_signal(public_meld_possibility: Dictionary) # for local player to change meld signals on all other player nodes.
+signal clear_all_player_meldable_indicators_signal() # for local player to clear meld signals on all other player nodes.
 
 @onready var playing_cards_control: Control = $"/root/RootNode/PlayingCardsControl" if has_node("/root/RootNode/PlayingCardsControl") else null
 
@@ -469,6 +470,9 @@ func emit_card_moved_signal(playing_card, from_position, global_position):
 
 func emit_player_is_meldable_signal(public_meld_possibility: Dictionary):
 	player_is_meldable_signal.emit(public_meld_possibility)
+
+func emit_clear_all_player_meldable_indicators_signal() -> void:
+	clear_all_player_meldable_indicators_signal.emit()
 
 func emit_meld_area_state_changed_signal(is_valid: bool, area_idx: int):
 	dbg("GML: emit_meld_area_state_changed_signal: is_valid=%s, area_idx=%d" % [str(is_valid), area_idx])
