@@ -264,8 +264,8 @@ func _input(event):
 		# get_global_mouse_position() can return incorrect coordinates when there are
 		# viewport transforms, canvas transforms, or other coordinate space issues
 		var mouse_pos = event.position
-		var viewport_mouse_pos = get_viewport().get_mouse_position()
-		var global_mouse_pos = get_global_mouse_position()
+		# var viewport_mouse_pos = get_viewport().get_mouse_position()
+		# var global_mouse_pos = get_global_mouse_position()
 
 		# For release events, only handle if we're currently dragging or got_mouse_down
 		# For press events, check if mouse is over this card AND we're the topmost card
@@ -273,7 +273,7 @@ func _input(event):
 			# Enable detailed logging for this click
 			debug_logging_enabled = true
 
-			Global.dbg("PlayingCard._input: BUTTON PRESSED: Card '%s' (draggable=%s, tappable=%s) at event_pos=%s, viewport_mouse=%s, global_mouse=%s, z_index=%d" % [key, is_draggable, is_tappable, str(mouse_pos), str(viewport_mouse_pos), str(global_mouse_pos), z_index])
+			# Global.dbg("PlayingCard._input: BUTTON PRESSED: Card '%s' (draggable=%s, tappable=%s) at event_pos=%s, viewport_mouse=%s, global_mouse=%s, z_index=%d" % [key, is_draggable, is_tappable, str(mouse_pos), str(viewport_mouse_pos), str(global_mouse_pos), z_index])
 
 			# POPULATE TEST RECTANGLES for all cards in hand to visualize what we're testing
 			# ONLY populate if this is the FIRST card to process this event
@@ -361,7 +361,7 @@ func _input(event):
 			got_mouse_down = true
 			initial_touch_pos = mouse_pos # Store the initial touch position
 			drag_offset = mouse_pos - global_position
-			Global.dbg("PlayingCard._input: LEFT BUTTON DOWN on card '%s' at z_index=%d, position: %s - calling set_input_as_handled()" % [key, z_index, str(mouse_pos)])
+			Global.dbg("PlayingCard._input: LEFT BUTTON DOWN on card '%s' at z_index=%d, mouse_pos=%s, global_position=%s, drag_offset=%s - calling set_input_as_handled()" % [key, z_index, str(mouse_pos), str(global_position), str(drag_offset)])
 			get_viewport().set_input_as_handled()
 
 		elif not event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
@@ -386,12 +386,16 @@ func _input(event):
 
 	elif event is InputEventMouseMotion:
 		if dragging:
-			var mouse_pos = get_global_mouse_position()
+			# NEVER USE get_global_mouse_position()!!! It is broken on desktop!
+			# var mouse_pos = get_global_mouse_position()
+			var mouse_pos = event.position
 			global_position = mouse_pos - drag_offset
 			get_viewport().set_input_as_handled()
 		elif got_mouse_down:
 			# Check if we should start dragging
-			var mouse_pos = get_global_mouse_position()
+			# NEVER USE get_global_mouse_position()!!! It is broken on desktop!
+			# var mouse_pos = get_global_mouse_position()
+			var mouse_pos = event.position
 			if mouse_pos.distance_to(initial_touch_pos) > DRAG_START_THRESHOLD:
 				if is_draggable:
 					dragging = true

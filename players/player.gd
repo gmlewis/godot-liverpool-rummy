@@ -356,7 +356,9 @@ func _input(event):
 	# Only handle click events on the player node.
 	if not (event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT): return
 	var current_state_name = game_state_machine.get_current_state_name()
-	var mouse_pos = get_global_mouse_position()
+	# NEVER USE get_global_mouse_position()!!! It is WRONG on desktop!!!
+	# var mouse_pos = get_global_mouse_position()
+	var mouse_pos = event.position
 
 	Global.dbg("Player('%s')._input: BUTTON PRESSED at mouse_pos=%s, state=%s" % [player_id, str(mouse_pos), current_state_name])
 
