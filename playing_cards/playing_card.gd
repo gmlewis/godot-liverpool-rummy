@@ -290,8 +290,7 @@ func _input(event):
 						if card.debug_overlay:
 							card.debug_overlay.queue_redraw()
 
-			# Disable detailed logging after populating test rects
-			debug_logging_enabled = false # If another card is already handling input for this press event, skip
+			# If another card is already handling input for this press event, skip
 			if _card_handling_input != null and _card_handling_input != self:
 				Global.dbg("PlayingCard._input: Card '%s' skipping - '%s' already handling input" % [key, _card_handling_input.key])
 				return
@@ -331,6 +330,9 @@ func _input(event):
 				# Not a valid card to interact with - do NOT handle this input event!
 				Global.dbg("PlayingCard._input: Card '%s' - not in stock/discard/hand, IGNORING" % key)
 				return
+
+			# Disable detailed logging after all click detection logic completes
+			debug_logging_enabled = false
 
 			# if not is_mouse_over_card(mouse_pos):
 			# 	return
