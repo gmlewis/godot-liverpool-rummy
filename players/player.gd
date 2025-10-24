@@ -435,9 +435,12 @@ func _input(event):
 			await get_tree().create_timer(0.1).timeout
 		local_public_meld_possibilities.clear()
 		# Clear the meldable area sparklers
-		Global.emit_meld_area_state_changed_signal(false, 0)
-		Global.emit_meld_area_state_changed_signal(false, 1)
-		Global.emit_meld_area_state_changed_signal(false, 2)
+		if len(Global.private_player_info['meld_area_1_keys']) == 0:
+			Global.emit_meld_area_state_changed_signal(false, 0)
+		if len(Global.private_player_info['meld_area_2_keys']) == 0:
+			Global.emit_meld_area_state_changed_signal(false, 1)
+		if len(Global.private_player_info['meld_area_3_keys']) == 0:
+			Global.emit_meld_area_state_changed_signal(false, 2)
 		return
 	if not is_my_turn and is_buying_card:
 		Global.dbg("Player('%s')._input: BUYING CARD - calling set_input_as_handled()" % player_id)
