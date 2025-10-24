@@ -234,29 +234,20 @@ func _playing_card_is_from_stock_pile(playing_card: PlayingCard) -> bool:
 func _on_card_clicked_signal(playing_card, _global_position):
 	var player_is_me = Global.private_player_info.id == player_id
 	if not player_is_me: return # bots do not click or drag cards.
-	# Global.dbg("Player('%s'): _on_card_clicked_signal: playing_card=%s, is_my_turn=%s" % [player_id, playing_card.key, str(is_my_turn)])
-	if not is_my_turn:
-		if _playing_card_is_from_discard_pile(playing_card): # Express interest to Buy card.
-			Global.request_to_buy_card_from_discard_pile(player_id)
-		return
+	Global.dbg("Player('%s'): _on_card_clicked_signal: playing_card=%s, is_my_turn=%s" % [player_id, playing_card.key, str(is_my_turn)])
 	if _playing_card_is_from_discard_pile(playing_card):
-		# Moved to game_state_machine:
-		# if len(Global.stock_pile) > 0:
-		# 	Global.stock_pile[0].is_draggable = false
-		# 	Global.stock_pile[0].is_tappable = false
+		if not is_my_turn:
+			Global.request_to_buy_card_from_discard_pile(player_id)
+			return
 		# Global.dbg("Player('%s'): _on_card_clicked_signal: Drawing card '%s' from discard pile for player %s" % [player_id, playing_card.key, player_id])
 		Global.draw_card_from_discard_pile(Global.private_player_info.id)
 		return
-	if _playing_card_is_from_stock_pile(playing_card):
+	if is_my_turn and _playing_card_is_from_stock_pile(playing_card):
 		# If there are outstanding buy requests, go ahead and allow the buy since the user clicked on the stock pile.
 		if Global.has_outstanding_buy_request():
 			# Global.dbg("Player('%s'): _on_card_clicked_signal: Allowing outstanding buy request" % [player_id])
 			Global.allow_outstanding_buy_request(player_id)
 			return
-		# Moved to game_state_machine:
-		# if len(Global.stock_pile) > 0:
-		# 	Global.discard_pile[0].is_draggable = false
-		# 	Global.discard_pile[0].is_tappable = false
 		# Global.dbg("Player('%s'): _on_card_clicked_signal: Drawing card '%s' from stock pile for player %s" % [player_id, playing_card.key, player_id])
 		Global.draw_card_from_stock_pile(Global.private_player_info.id)
 		return
@@ -268,7 +259,7 @@ func _on_card_clicked_signal(playing_card, _global_position):
 		Global.dbg("Player('%s'): _on_card_clicked_signal: Raising meld area card '%s' to top z-index" % [player_id, playing_card.key])
 		playing_card.z_index = _get_next_z_index_for_player_cards()
 		return
-	if game_state_machine.get_current_state_name() == 'PlayerDrewState':
+	if is_my_turn and game_state_machine.get_current_state_name() == 'PlayerDrewState':
 		# If the player can meld their hand, interpret this click as an accident and ignore it.
 		if is_meldable:
 			Global.dbg("Player('%s'): _on_card_clicked_signal: Ignoring click on meldable hand card '%s' for player %s" % [player_id, playing_card.key, player_id])

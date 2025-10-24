@@ -383,21 +383,27 @@ func get_rect(padding: float = 0.0) -> Rect2:
 	if key in Global.private_player_info['card_keys_in_hand']:
 		# Find the card with the next higher z-index in the hand
 		var next_higher_card_y = full_rect.position.y - 1000.0 # Default: no card above
+		Global.dbg("PlayingCard.get_rect: Checking clipping for card '%s' (z_index=%d) at pos=%s, full_rect=%s" % [key, z_index, str(global_position), str(full_rect)])
 		for card_key in Global.private_player_info['card_keys_in_hand']:
 			var other_card = Global.playing_cards.get(card_key) as PlayingCard
 			if not other_card or other_card == self:
 				continue
 			# If this card has higher z-index and is at a similar X position, it might cover us
-			if other_card.z_index > self.z_index and abs(other_card.global_position.x - global_position.x) < texture_size.x:
+			var x_diff = abs(other_card.global_position.x - global_position.x)
+			if other_card.z_index > self.z_index and x_diff < texture_size.x:
 				# This card is visually on top of us - clip our bounding box at its top edge
 				var other_top = other_card.global_position.y - (texture_size.y / 2)
+				Global.dbg("  -> Card '%s' (z_index=%d) at X=%0.1f might cover us (x_diff=%0.1f < %0.1f), other_top=%0.1f" % [other_card.key, other_card.z_index, other_card.global_position.x, x_diff, texture_size.x, other_top])
 				if other_top > full_rect.position.y and other_top < next_higher_card_y:
 					next_higher_card_y = other_top
+					Global.dbg("  -> WILL CLIP at Y=%0.1f (was next_higher_card_y)" % next_higher_card_y)
 
 		# Clip the rect height if another card covers us
 		if next_higher_card_y > full_rect.position.y:
 			var clipped_height = next_higher_card_y - full_rect.position.y
+			var old_height = full_rect.size.y
 			full_rect.size.y = min(full_rect.size.y, clipped_height)
+			Global.dbg("PlayingCard.get_rect: CLIPPED card '%s' height from %0.1f to %0.1f (bottom was Y=%0.1f, now Y=%0.1f)" % [key, old_height, full_rect.size.y, full_rect.position.y + old_height, full_rect.position.y + full_rect.size.y])
 
 	# Add padding
 	return Rect2(
@@ -436,7 +442,7 @@ func is_topmost_card_under_mouse(mouse_pos: Vector2) -> bool:
 ################################################################################
 
 func _handle_card_click():
-	# Global.dbg("playing_card.gd: _handle_card_click: Card clicked at position: %s" % [str(global_position)])
+	Global.dbg("playing_card.gd: _handle_card_click: Card clicked at position: %s" % [str(global_position)])
 	Global.emit_card_clicked_signal(self, global_position)
 
 func _handle_card_drag_started(from_position: Vector2):
@@ -445,5 +451,5 @@ func _handle_card_drag_started(from_position: Vector2):
 	Global.emit_card_drag_started_signal(self, from_position)
 
 func _handle_card_moved(from_position: Vector2):
-	# Global.dbg("playing_card.gd: _handle_card_moved: Card moved from position: %s to: %s" % [str(from_position), str(global_position)])
+	Global.dbg("playing_card.gd: _handle_card_moved: Card moved from position: %s to: %s" % [str(from_position), str(global_position)])
 	Global.emit_card_moved_signal(self, from_position, global_position)
