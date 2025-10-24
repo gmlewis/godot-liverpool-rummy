@@ -268,14 +268,19 @@ func is_mouse_over_card(mouse_pos: Vector2) -> bool:
 	if not sprite or not sprite.texture:
 		return false
 	var card_rect = get_rect(5.0)
-	return card_rect.has_point(mouse_pos)
+	var result = card_rect.has_point(mouse_pos)
+	if result:
+		Global.dbg("PlayingCard: is_mouse_over_card: Card '%s' at global_pos=%s, scale=%s, rect=%s contains mouse_pos=%s" % [key, str(global_position), str(scale), str(card_rect), str(mouse_pos)])
+	return result
 
 func get_rect(padding: float = 0.0) -> Rect2:
 	if not sprite or not sprite.texture:
 		return Rect2(Vector2.ZERO, Vector2.ZERO)
 
 	var texture_size = sprite.texture.get_size() * self.scale
-	var sprite_pos = global_position + sprite.position
+	var sprite_pos = global_position
+
+	Global.dbg("PlayingCard.get_rect: card='%s', sprite.position=%s, global_position=%s, sprite.scale=%s, self.scale=%s" % [key, str(sprite.position), str(global_position), str(sprite.scale), str(self.scale)])
 
 	# Add some padding for easier touch interaction on mobile
 	return Rect2(
@@ -284,42 +289,24 @@ func get_rect(padding: float = 0.0) -> Rect2:
 	)
 
 func is_topmost_card_under_mouse(mouse_pos: Vector2) -> bool:
-	# Get the parent container that holds all the cards
-	var parent_container = get_parent()
-	if not parent_container:
-		push_error("PlayingCard: is_topmost_card_under_mouse: No parent container found for card '%s'" % key)
-		return true
-
-	var highest_z_index = z_index
-	var topmost_card = self
+	# Find the card with the highest z_index whose bounding box contains the mouse position.
+	# This works correctly because in Godot, higher z_index means visually on top.
+	# We don't need to worry about "visible portions" - we just need the highest z_index.
+	var highest_z_index = -1
+	var topmost_card = null
 
 	# Check all cards in player's hand
 	for card_key in Global.private_player_info['card_keys_in_hand']:
 		var card = Global.playing_cards.get(card_key) as PlayingCard
 		if not card:
-			push_error("PlayingCard: is_topmost_card_under_mouse: Card '%s' not found in Global.playing_cards" % card_key)
 			continue
 
-		# Skip if it's this card
-		if card == self:
-			continue
-
-		# Check if this card is under the mouse and has a higher z_index
+		# If this card's bounding box contains the mouse AND it has the highest z_index so far
 		if card.is_mouse_over_card(mouse_pos) and card.z_index > highest_z_index:
 			highest_z_index = card.z_index
 			topmost_card = card
 
-	# for child in parent_container.get_children():
-	# 	# Skip if it's this card
-	# 	if child == self:
-	# 		continue
-
-	# 	# Check if this sibling card is under the mouse and has a higher z_index
-	# 	if child.is_mouse_over_card(mouse_pos) and child.z_index > highest_z_index:
-	# 		highest_z_index = child.z_index
-	# 		topmost_card = child
-
-	# Return true only if we are the topmost card
+	# We are topmost if we have the highest z_index among all cards under the mouse
 	return topmost_card == self
 
 ################################################################################
