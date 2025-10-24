@@ -360,16 +360,16 @@ func _input(event):
 	# var mouse_pos = get_global_mouse_position()
 	var mouse_pos = event.position
 
-	Global.dbg("Player('%s')._input: BUTTON PRESSED at mouse_pos=%s, state=%s" % [player_id, str(mouse_pos), current_state_name])
+	# Global.dbg("Player('%s')._input: BUTTON PRESSED at mouse_pos=%s, state=%s" % [player_id, str(mouse_pos), current_state_name])
 
 	if Global.is_server() and (current_state_name == 'PlayerWonRoundState' or current_state_name == 'TallyScoresState' or current_state_name == 'FinalScoresState'):
 		if not is_mouse_over_player(mouse_pos):
-			Global.dbg("Player('%s')._input: Mouse NOT over player, ignoring" % player_id)
+			# Global.dbg("Player('%s')._input: Mouse NOT over player, ignoring" % player_id)
 			return # false alarm.
 		Global.dbg("Player('%s')._input: Mouse IS over player in end-game state, processing..." % player_id)
-		if is_winning_player and current_state_name == 'PlayerWonRoundState':
-			# Allow host to click on winner to advance to TallyScoresState
-			Global.dbg("Player('%s')._input: Clicked on winning player node, advancing to TallyScoresState - calling set_input_as_handled()" % player_id)
+		if current_state_name == 'PlayerWonRoundState':
+			# Allow host to click any player to advance to TallyScoresState
+			Global.dbg("Player('%s')._input: Clicked on player, advancing to TallyScoresState - calling set_input_as_handled()" % player_id)
 			Global.send_transition_all_clients_state_to_signal('TallyScoresState')
 			# Don't allow any other nodes to also handle this event.
 			get_viewport().set_input_as_handled()
@@ -396,14 +396,14 @@ func _input(event):
 		return
 	# Only current player can click on _ANY_ player node and only during playing state.
 	if not Global.is_my_turn() or not game_state_machine.is_playing_state():
-		Global.dbg("Player('%s')._input: Not my turn or not playing state, ignoring" % player_id)
+		# Global.dbg("Player('%s')._input: Not my turn or not playing state, ignoring" % player_id)
 		return
 	if not is_meldable and not is_buying_card:
-		Global.dbg("Player('%s')._input: Not meldable and not buying, ignoring" % player_id)
+		# Global.dbg("Player('%s')._input: Not meldable and not buying, ignoring" % player_id)
 		return
 	# Finally, after all the trivial rejects, now calculate if the mouse is actually over this player node.
 	if not is_mouse_over_player(mouse_pos):
-		Global.dbg("Player('%s')._input: Mouse NOT over player (rect check), ignoring" % player_id)
+		# Global.dbg("Player('%s')._input: Mouse NOT over player (rect check), ignoring" % player_id)
 		return # false alarm.
 	Global.dbg("Player('%s')._input: Mouse IS over player! is_meldable=%s, is_buying_card=%s" % [player_id, is_meldable, is_buying_card])
 	if is_meldable and is_my_turn and len(Global.private_player_info['played_to_table']) == 0:
