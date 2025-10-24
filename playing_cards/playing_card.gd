@@ -431,7 +431,7 @@ func get_rect(padding: float = 0.0) -> Rect2:
 
 	# DEBUG: Log only when debug_logging_enabled is true (during click processing)
 	if debug_logging_enabled and (is_draggable or is_tappable):
-		Global.dbg("PlayingCard.get_rect: Card '%s': result=%s, sprite_global_pos=%s, self.global_pos=%s" % [key, str(result), str(sprite_global_pos), str(global_position)])
+		Global.dbg("PlayingCard.get_rect: Card '%s': result=%s, sprite_global_pos=%s, sprite_local_pos=%s, self.global_pos=%s" % [key, str(result), str(sprite_global_pos), str(sprite.position), str(global_position)])
 
 	# Add padding and return - NO CLIPPING!
 	# The z-index check in is_topmost_card_under_mouse() handles which card responds to clicks
