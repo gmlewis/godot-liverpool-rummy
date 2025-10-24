@@ -142,6 +142,8 @@ func _on_animate_publicly_meld_card_only_signal(_player_id: String, card_key: St
 	Global.dbg("PUBLIC MELD DEBUG: meld_group type='%s', card_keys=%s" % [meld_group.get('type', 'UNKNOWN'), str(meld_group['card_keys'])])
 
 	var playing_card = Global.playing_cards.get(card_key) as PlayingCard
+	if not playing_card.is_face_up:
+		playing_card.flip_card()
 	var meld_tween = playing_cards_control.create_tween()
 	meld_tween.set_parallel(true)
 	tween_card_into_personal_meld_group(target_player, target_player_id, meld_tween, playing_card, meld_group_index, card_idx)
@@ -184,18 +186,18 @@ func tween_card_into_personal_meld_group(player: Node2D, player_id: String, meld
 			playing_card.flip_card() # Flip the card for the local player
 	meld_tween.tween_callback(hide_or_flip_card).set_delay(card_duration)
 
-func tween_card_into_public_meld_group(player: Node2D, player_id: String, _meld_tween: Tween, playing_card: PlayingCard, _ard_key: String) -> void:
-	var player_is_me = Global.private_player_info.id == player_id
-	if not player_is_me:
-		playing_card.position = player.position
-		playing_card.rotation = player.rotation
-	playing_card.is_draggable = false
-	playing_card.is_tappable = false
-	playing_card.z_index = 20 # TODO
-	playing_card.show()
-	if not playing_card.is_face_up:
-		await playing_card.flip_card()
-	# TODO: Find public meld group position based on card_key
+# func tween_card_into_public_meld_group(player: Node2D, player_id: String, _meld_tween: Tween, playing_card: PlayingCard, _ard_key: String) -> void:
+# 	var player_is_me = Global.private_player_info.id == player_id
+# 	if not player_is_me:
+# 		playing_card.position = player.position
+# 		playing_card.rotation = player.rotation
+# 	playing_card.is_draggable = false
+# 	playing_card.is_tappable = false
+# 	playing_card.z_index = 20 # TODO
+# 	playing_card.show()
+# 	if not playing_card.is_face_up:
+# 		await playing_card.flip_card()
+# 	# TODO: Find public meld group position based on card_key
 
 func tween_card_to_discard_pile(player: Node2D, player_id: String, discard_tween: Tween, playing_card: PlayingCard, is_winning_hand: bool) -> void:
 	var player_is_me = Global.private_player_info.id == player_id
@@ -246,34 +248,39 @@ func _on_animate_reorder_run_cards_signal(player_id: String, card_key: String, t
 	for card_idx in range(len(sorted_card_keys)):
 		var sorted_card_key = sorted_card_keys[card_idx]
 		var playing_card = Global.playing_cards.get(sorted_card_key) as PlayingCard
-		if playing_card:
-			# Check if this is the newly added card (needs full setup)
-			var is_new_card = (sorted_card_key == card_key)
+		if not playing_card:
+			Global.error("REORDER RUN DEBUG: PlayingCard not found for key '%s'" % sorted_card_key)
+			continue
+		# Check if this is the newly added card (needs full setup)
+		var is_new_card = (sorted_card_key == card_key)
 
-			if is_new_card:
-				# Set up the newly added card similar to tween_card_into_personal_meld_group
-				var player_is_me = Global.private_player_info.id == target_player_id
-				if not player_is_me:
-					playing_card.position = target_player.position
-					playing_card.rotation = target_player.rotation
-				playing_card.is_draggable = false
-				playing_card.is_tappable = false
-				playing_card.z_index = 20 # Start high, will tween down
-				playing_card.show()
+		if is_new_card:
+			# Set up the newly added card similar to tween_card_into_personal_meld_group
+			var player_is_me = Global.private_player_info.id == target_player_id
+			if not player_is_me:
+				playing_card.position = target_player.position
+				playing_card.rotation = target_player.rotation
+			playing_card.is_draggable = false
+			playing_card.is_tappable = false
+			playing_card.z_index = 20 # Start high, will tween down
 
-			var new_position = target_player.position + Vector2(75 * meld_group_index - 50, 200 + 25 * card_idx)
-			var new_z_index = 2 + card_idx
-			var card_travel_distance = new_position.distance_to(playing_card.position)
-			var card_duration = card_travel_distance / Global.play_speed_pixels_per_second
-			reorder_tween.tween_property(playing_card, "position", new_position, card_duration)
-			reorder_tween.tween_property(playing_card, "z_index", new_z_index, card_duration)
+		if not playing_card.is_face_up:
+			playing_card.flip_card()
+		playing_card.show()
 
-			if is_new_card:
-				# Also tween rotation and scale for the new card
-				reorder_tween.tween_property(playing_card, "rotation", 0.0, card_duration)
-				reorder_tween.tween_property(playing_card, "scale", REVEAL_MELD_SCALE, card_duration)
+		var new_position = target_player.position + Vector2(75 * meld_group_index - 50, 200 + 25 * card_idx)
+		var new_z_index = 2 + card_idx
+		var card_travel_distance = new_position.distance_to(playing_card.position)
+		var card_duration = card_travel_distance / Global.play_speed_pixels_per_second
+		reorder_tween.tween_property(playing_card, "position", new_position, card_duration)
+		reorder_tween.tween_property(playing_card, "z_index", new_z_index, card_duration)
 
-			Global.dbg("REORDER RUN DEBUG: Moving card '%s' to position %s with z_index %d%s" % [sorted_card_key, str(new_position), new_z_index, " (NEW CARD)" if is_new_card else ""])
+		if is_new_card:
+			# Also tween rotation and scale for the new card
+			reorder_tween.tween_property(playing_card, "rotation", 0.0, card_duration)
+			reorder_tween.tween_property(playing_card, "scale", REVEAL_MELD_SCALE, card_duration)
+
+		Global.dbg("REORDER RUN DEBUG: Moving card '%s' to position %s with z_index %d%s" % [sorted_card_key, str(new_position), new_z_index, " (NEW CARD)" if is_new_card else ""])
 
 	await reorder_tween.finished
 	if ack_sync_name:
