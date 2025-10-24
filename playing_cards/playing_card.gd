@@ -260,9 +260,12 @@ func _input(event):
 
 	# Handle both mouse and touch input
 	if event is InputEventMouseButton:
-		var mouse_pos = get_global_mouse_position()
+		# CRITICAL FIX: Use event.position directly instead of get_global_mouse_position()
+		# get_global_mouse_position() can return incorrect coordinates when there are
+		# viewport transforms, canvas transforms, or other coordinate space issues
+		var mouse_pos = event.position
 		var viewport_mouse_pos = get_viewport().get_mouse_position()
-		var event_mouse_pos = event.position
+		var global_mouse_pos = get_global_mouse_position()
 
 		# For release events, only handle if we're currently dragging or got_mouse_down
 		# For press events, check if mouse is over this card AND we're the topmost card
@@ -270,7 +273,7 @@ func _input(event):
 			# Enable detailed logging for this click
 			debug_logging_enabled = true
 
-			Global.dbg("PlayingCard._input: BUTTON PRESSED: Card '%s' (draggable=%s, tappable=%s) at mouse_pos=%s, viewport_mouse=%s, event_pos=%s, z_index=%d" % [key, is_draggable, is_tappable, str(mouse_pos), str(viewport_mouse_pos), str(event_mouse_pos), z_index])
+			Global.dbg("PlayingCard._input: BUTTON PRESSED: Card '%s' (draggable=%s, tappable=%s) at event_pos=%s, viewport_mouse=%s, global_mouse=%s, z_index=%d" % [key, is_draggable, is_tappable, str(mouse_pos), str(viewport_mouse_pos), str(global_mouse_pos), z_index])
 
 			# POPULATE TEST RECTANGLES for all cards in hand to visualize what we're testing
 			# ONLY populate if this is the FIRST card to process this event
