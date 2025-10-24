@@ -88,12 +88,26 @@ func _on_player_drew_state_entered() -> void:
 	var current_hand_evaluation = evaluate_bot_hand(current_hand_stats, bot_id)
 	# Global.dbg("BOT('%s'): _on_player_drew_state_entered: current_hand_evaluation=%s" % [get_bot_name(), str(current_hand_evaluation)])
 
-	# Check to see if this bot can meld its hand.
+	# Check to see if this bot can meld its hand (personal meld).
 	if current_hand_evaluation['can_be_personally_melded']:
 		Global.dbg("BOT('%s'): _on_player_drew_state_entered: can_meld=true, melding hand" % [get_bot_name()])
 		Global.personally_meld_hand(bot_id, current_hand_evaluation)
 		Global.dbg("BOT('%s'): LEAVE1 _on_player_drew_state_entered()" % get_bot_name())
 		return
+
+	# If the bot has already personally melded (this turn or earlier), check for public melds
+	if Global.player_has_melded(bot_id):
+		var can_be_publicly_melded = current_hand_evaluation['can_be_publicly_melded']
+		if can_be_publicly_melded.size() > 0:
+			Global.dbg("BOT('%s'): _on_player_drew_state_entered: has already melded, can publicly meld %d cards - melding next card" % [get_bot_name(), can_be_publicly_melded.size()])
+			var next_meld_operation = can_be_publicly_melded[0]
+			var card_key = next_meld_operation['card_key']
+			var target_player_id = next_meld_operation['target_player_id']
+			var meld_group_index = next_meld_operation['meld_group_index']
+			Global.meld_card_to_public_meld(bot_id, card_key, target_player_id, meld_group_index)
+			Global.dbg("BOT('%s'): LEAVE2 _on_player_drew_state_entered() after requesting public meld" % get_bot_name())
+			return
+
 	_smart_discard_card(current_hand_evaluation)
 
 func _smart_discard_card(current_hand_evaluation: Dictionary) -> void:

@@ -272,6 +272,16 @@ func test_is_valid_run() -> bool:
 	test_framework.assert_true(Global.is_valid_run(valid_run_with_joker), "2-3-JOKER-5-6 should be valid (joker fills the 4)")
 	test_framework.assert_false(Global.is_valid_run(invalid_run_with_joker), "2-3-JOKER-6-7 should be invalid (joker can only fill 1 gap, but 2 gaps exist)")
 	test_framework.assert_false(Global.is_valid_run(invalid_run_too_short), "2-3-JOKER should be invalid (runs must be at least 4 cards)")
+	# Test duplicate rank detection (regression test for bot4 bug)
+	var invalid_run_duplicate_rank = ['A-clubs-1', 'Q-clubs-3', 'Q-clubs-1', 'K-clubs-3']
+	test_framework.assert_false(Global.is_valid_run(invalid_run_duplicate_rank), "A-Q-Q-K should be invalid (duplicate Q)")
+	var invalid_run_two_same_rank = ['10-hearts-1', 'J-hearts-0', 'Q-hearts-1', 'Q-hearts-2']
+	test_framework.assert_false(Global.is_valid_run(invalid_run_two_same_rank), "10-J-Q-Q should be invalid (two Queens)")
+	# Test mixed suits detection
+	var invalid_run_mixed_suits = ['2-hearts-0', '3-clubs-0', '4-hearts-0', '5-hearts-0']
+	test_framework.assert_false(Global.is_valid_run(invalid_run_mixed_suits), "2♥-3♣-4♥-5♥ should be invalid (mixed suits)")
+	var invalid_run_all_different_suits = ['A-hearts-0', '2-clubs-0', '3-diamonds-0', '4-spades-0']
+	test_framework.assert_false(Global.is_valid_run(invalid_run_all_different_suits), "A♥-2♣-3♦-4♠ should be invalid (all different suits)")
 	return true
 
 func test_sort_run_cards() -> bool:

@@ -55,6 +55,7 @@ signal animate_move_card_to_player_signal(playing_card: PlayingCard, player_id: 
 signal animate_move_card_from_player_to_discard_pile_signal(playing_card: PlayingCard, player_id: String, player_won: bool, ack_sync_name: String)
 signal animate_personally_meld_cards_only_signal(player_id: String, hand_evaluation: Dictionary, ack_sync_name: String)
 signal animate_publicly_meld_card_only_signal(player_id: String, card_key: String, target_player_id: String, meld_group_index: int, ack_sync_name: String)
+signal animate_reorder_run_cards_signal(player_id: String, card_key: String, target_player_id: String, meld_group_index: int, sorted_card_keys: Array, ack_sync_name: String)
 signal animate_winning_confetti_explosion_signal(num_millis: int)
 signal new_card_exposed_on_discard_pile_signal()
 signal transition_all_clients_state_to_signal(state_name: String)
@@ -810,6 +811,7 @@ func is_valid_run(card_keys: Array) -> bool:
 	var regular_cards = []
 	var num_jokers = 0
 	var has_ace = false
+	var suit = null
 
 	for card_key in card_keys:
 		var parts = card_key.split('-')
@@ -817,10 +819,23 @@ func is_valid_run(card_keys: Array) -> bool:
 		if rank == 'JOKER':
 			num_jokers += 1
 		else:
+			var card_suit = parts[1]
+			# All cards in a run must be the same suit
+			if suit == null:
+				suit = card_suit
+			elif suit != card_suit:
+				return false
+
 			var value = _value_lookup[rank]
 			if value == 14: # Ace
 				has_ace = true
 			regular_cards.append(value)
+
+	# Check for duplicate ranks - runs cannot have the same rank twice
+	regular_cards.sort()
+	for i in range(1, len(regular_cards)):
+		if regular_cards[i] == regular_cards[i - 1]:
+			return false # Duplicate rank found
 
 	# Calculate gaps
 	var min_gaps = 999
@@ -1265,9 +1280,31 @@ func server_meld_card_to_public_meld(player_id: String, card_key: String, target
 func _rpc_publicly_meld_card_only(player_id: String, card_key: String, target_player_id: String, meld_group_index: int) -> void:
 	dbg("received RPC _rpc_publicly_meld_card_only: player_id='%s', card_key='%s', target_player_id='%s', meld_group_index=%d" %
 		[player_id, card_key, target_player_id, meld_group_index])
+
+	# Check if this is a run that will need reordering
+	var needs_reorder = false
+	var sorted_card_keys = []
+	var players_by_id = get_players_by_id()
+	if target_player_id in players_by_id:
+		var target_player_info = players_by_id[target_player_id]
+		if meld_group_index < len(target_player_info.get('played_to_table', [])):
+			var meld_group = target_player_info['played_to_table'][meld_group_index]
+			if meld_group.get('type') == 'run':
+				# Simulate adding the card and sorting
+				var temp_keys = meld_group['card_keys'].duplicate()
+				temp_keys.append(card_key)
+				sorted_card_keys = sort_run_cards(temp_keys)
+				# Check if order changed (card was inserted, not just appended)
+				needs_reorder = (sorted_card_keys[-1] != card_key)
+
 	# Move the playable card from the player's hand to the table and then perform the animations.
 	_publicly_meld_card(player_id, card_key, target_player_id, meld_group_index)
-	animate_publicly_meld_card_only_signal.emit(player_id, card_key, target_player_id, meld_group_index, '_rpc_publicly_meld_card_only')
+
+	# If run needs reordering, skip the normal animation and go straight to reorder
+	if needs_reorder:
+		animate_reorder_run_cards_signal.emit(player_id, card_key, target_player_id, meld_group_index, sorted_card_keys, '_rpc_publicly_meld_card_only')
+	else:
+		animate_publicly_meld_card_only_signal.emit(player_id, card_key, target_player_id, meld_group_index, '_rpc_publicly_meld_card_only')
 
 func _publicly_meld_card(_player_id: String, card_key: String, target_player_id: String, meld_group_index: int) -> void:
 	_remove_card_from_player_hand(card_key, _player_id)
@@ -1275,15 +1312,35 @@ func _publicly_meld_card(_player_id: String, card_key: String, target_player_id:
 		[_player_id, card_key, target_player_id, meld_group_index])
 	var target_player_is_me = private_player_info.id == target_player_id
 	if target_player_is_me:
-		dbg("_publicly_meld_card: BEFORE updating card_key=%s, private_player_info.played_to_table[meld_group_index=%d]['card_keys'] (ME): %s" % [card_key, meld_group_index, str(private_player_info.played_to_table)])
+		var meld_group = private_player_info.played_to_table[meld_group_index]
+		dbg("_publicly_meld_card: BEFORE updating card_key=%s, meld_group type='%s', rank='%s', suit='%s', card_keys=%s" %
+			[card_key, meld_group.get('type', 'UNKNOWN'), meld_group.get('rank', 'N/A'), meld_group.get('suit', 'N/A'), str(meld_group['card_keys'])])
 		private_player_info.played_to_table[meld_group_index]['card_keys'].append(card_key)
-		dbg("_publicly_meld_card: AFTER updating card_key=%s, private_player_info.played_to_table[meld_group_index=%d]['card_keys'] (ME): %s" % [card_key, meld_group_index, str(private_player_info.played_to_table)])
+		# Sort runs after adding a new card to maintain proper sequence
+		if meld_group.get('type') == 'run':
+			private_player_info.played_to_table[meld_group_index]['card_keys'] = sort_run_cards(private_player_info.played_to_table[meld_group_index]['card_keys'])
+		dbg("_publicly_meld_card: AFTER updating - card_keys=%s" % [str(private_player_info.played_to_table[meld_group_index]['card_keys'])])
 	elif is_server():
 		if target_player_id in bots_private_player_info:
 			var bot = bots_private_player_info[target_player_id]
-			dbg("_publicly_meld_card: BEFORE updating card_key=%s, bots_private_player_info[target_player_id='%s'].played_to_table[%s]['card_keys'] (BOT): %s" % [card_key, target_player_id, meld_group_index, str(bot.played_to_table)])
+			var meld_group = bot.played_to_table[meld_group_index]
+			dbg("_publicly_meld_card: BEFORE updating card_key=%s, meld_group type='%s', rank='%s', suit='%s', card_keys=%s" %
+				[card_key, meld_group.get('type', 'UNKNOWN'), meld_group.get('rank', 'N/A'), meld_group.get('suit', 'N/A'), str(meld_group['card_keys'])])
 			bot.played_to_table[meld_group_index]['card_keys'].append(card_key)
-			dbg("_publicly_meld_card: AFTER updating card_key=%s, bots_private_player_info[target_player_id='%s'].played_to_table[%s]['card_keys'] (BOT): %s" % [card_key, target_player_id, meld_group_index, str(bot.played_to_table)])
+			# Sort runs after adding a new card to maintain proper sequence
+			if meld_group.get('type') == 'run':
+				bot.played_to_table[meld_group_index]['card_keys'] = sort_run_cards(bot.played_to_table[meld_group_index]['card_keys'])
+			dbg("_publicly_meld_card: AFTER updating - card_keys=%s" % [str(bot.played_to_table[meld_group_index]['card_keys'])])
+
+	# Also update public_players_info so the animation code can see the updated meld
+	for pi in game_state.public_players_info:
+		if pi.id == target_player_id:
+			pi.played_to_table[meld_group_index]['card_keys'].append(card_key)
+			# Sort runs after adding a new card to maintain proper sequence
+			var meld_group = pi.played_to_table[meld_group_index]
+			if meld_group.get('type') == 'run':
+				pi.played_to_table[meld_group_index]['card_keys'] = sort_run_cards(pi.played_to_table[meld_group_index]['card_keys'])
+			break
 
 ################################################################################
 ## MULTIPLAYER SYNCHRONIZATION
