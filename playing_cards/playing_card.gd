@@ -18,11 +18,18 @@ var key: String # key (e.g. 'A-spades-0', 'Joker-1-0', 'Joker-2-0', etc.) used t
 var is_draggable = false # Whether the card can be dragged by the player
 var is_tappable = false # Whether the card can be tapped to buy or auto-move by the player
 
+# Debug feature: Toggle this to visualize the clickable/draggable bounding box
+# Set to true to see the exact rectangle used for click/drag detection
+const DEBUG_SHOW_CLICK_RECT = true
+
 var back_texture: Texture2D
 var face_texture: Texture2D
 var is_face_up: bool = false
 var is_flipping: bool = false
 var tween: Tween = null
+
+# Debug overlay to render on top
+var debug_overlay: Node2D = null
 
 func _ready():
 	# Global.dbg("PlayerCard _ready called")
@@ -34,6 +41,11 @@ func _ready():
 		sprite.texture = back_texture
 	is_face_up = false
 	card_border.show()
+
+	# Create debug overlay if enabled
+	if DEBUG_SHOW_CLICK_RECT:
+		_create_debug_overlay()
+
 	if Global.DEBUG_SHOW_CARD_INFO:
 		# Create a label on the card to show its properties
 		var label = Label.new()
@@ -43,6 +55,15 @@ func _ready():
 		label.add_theme_font_size_override('font_size', 36)
 		label.text = _to_string()
 		sprite.add_child(label)
+
+func _create_debug_overlay():
+	# Create a Node2D that will render on top with a very high z_index
+	debug_overlay = Node2D.new()
+	debug_overlay.z_index = 1000 # Very high to ensure it's always on top
+	debug_overlay.top_level = true # Make it independent of parent's transform
+	# Connect the draw signal to our custom draw function
+	debug_overlay.draw.connect(_draw_debug_overlay)
+	add_child(debug_overlay)
 
 func _exit_tree() -> void:
 	Global.disconnect('custom_card_back_texture_changed_signal', _on_custom_card_back_texture_changed_signal)
@@ -55,6 +76,47 @@ func _process(_delta: float) -> void:
 		var label = sprite.get_child(0) as Label
 		label.text = _to_string() # Update label text with current properties
 		label.position = - label.size / 2
+
+	# Request redraw every frame when debug mode is enabled to keep the rectangle updated
+	if DEBUG_SHOW_CLICK_RECT and debug_overlay:
+		debug_overlay.queue_redraw()
+
+func _draw_debug_overlay() -> void:
+	if not DEBUG_SHOW_CLICK_RECT or not debug_overlay:
+		return
+
+	# Get the exact rectangle used for click/drag detection
+	var click_rect = get_rect(5.0)
+
+	# Since debug_overlay has top_level=true, it uses global coordinates
+	# So we can directly use the click_rect position
+	var rect_to_draw = click_rect
+
+	# Draw the rectangle border
+	var color = Color.YELLOW if (is_draggable or is_tappable) else Color.RED
+	var line_width = 3.0
+
+	# Top line
+	debug_overlay.draw_line(rect_to_draw.position,
+			  rect_to_draw.position + Vector2(rect_to_draw.size.x, 0),
+			  color, line_width)
+	# Right line
+	debug_overlay.draw_line(rect_to_draw.position + Vector2(rect_to_draw.size.x, 0),
+			  rect_to_draw.position + rect_to_draw.size,
+			  color, line_width)
+	# Bottom line
+	debug_overlay.draw_line(rect_to_draw.position + rect_to_draw.size,
+			  rect_to_draw.position + Vector2(0, rect_to_draw.size.y),
+			  color, line_width)
+	# Left line
+	debug_overlay.draw_line(rect_to_draw.position + Vector2(0, rect_to_draw.size.y),
+			  rect_to_draw.position,
+			  color, line_width)
+
+	# Draw the card's actual center position as a crosshair (in global coords)
+	var center = global_position
+	debug_overlay.draw_line(center - Vector2(10, 0), center + Vector2(10, 0), Color.CYAN, 2.0)
+	debug_overlay.draw_line(center - Vector2(0, 10), center + Vector2(0, 10), Color.CYAN, 2.0)
 
 # Constructor-like method to initialize the card with texture paths
 func initialize(new_rank: String, new_suit: String, new_points: int, face_texture_path: String):
