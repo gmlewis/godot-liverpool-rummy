@@ -1,11 +1,6 @@
 extends Node2D
 class_name PlayingCard
 
-# signal card_clicked_signal(playing_card, global_position)
-# signal card_drag_started_signal(playing_card, from_position)
-# signal card_moved_signal(playing_card, from_position, global_position)
-# signal flip_complete_signal
-
 @onready var sprite: Sprite2D = $Sprite2D
 @onready var card_border: Sprite2D = $CardBoarder
 @export var flip_duration: float = 0.6
@@ -34,6 +29,7 @@ func _ready():
 		sprite.texture = back_texture
 	is_face_up = false
 	card_border.show()
+
 	if Global.DEBUG_SHOW_CARD_INFO:
 		# Create a label on the card to show its properties
 		var label = Label.new()
@@ -169,56 +165,67 @@ var dragging: bool = false
 var drag_offset: Vector2 = Vector2.ZERO
 var initial_touch_pos: Vector2 = Vector2.ZERO # Store initial touch position
 
+# Static variable to track which card is currently handling mouse input
+static var _card_handling_input: PlayingCard = null
+
 func _input(event):
 	if not is_draggable and not is_tappable:
 		return
 
 	# Handle both mouse and touch input
 	if event is InputEventMouseButton:
-		var mouse_pos = get_global_mouse_position()
+		# CRITICAL FIX: Use event.position directly instead of get_global_mouse_position()
+		# get_global_mouse_position() can return incorrect coordinates when there are
+		# viewport transforms, canvas transforms, or other coordinate space issues
+		var mouse_pos = event.position
+		# var viewport_mouse_pos = get_viewport().get_mouse_position()
+		# var global_mouse_pos = get_global_mouse_position()
 
 		# For release events, only handle if we're currently dragging or got_mouse_down
 		# For press events, check if mouse is over this card AND we're the topmost card
 		if event.pressed:
+			# Global.dbg("PlayingCard._input: BUTTON PRESSED: Card '%s' (draggable=%s, tappable=%s) at event_pos=%s, viewport_mouse=%s, global_mouse=%s, z_index=%d" % [key, is_draggable, is_tappable, str(mouse_pos), str(viewport_mouse_pos), str(global_mouse_pos), z_index])
+			# If another card is already handling input for this press event, skip
+			# if _card_handling_input != null and _card_handling_input != self:
+			# 	Global.dbg("PlayingCard._input: Card '%s' skipping - '%s' already handling input" % [key, _card_handling_input.key])
+			# 	return
+			#
 			# There are only 2 specific cards that can be tapped (top of stock pile or discard pile)
 			# and one class of cards that can be tapped or dragged (the player's hand).
 			if len(Global.stock_pile) > 0 and Global.stock_pile[0].key == key:
 				# CASE 1: This card is the top of the stock pile
 				if not is_mouse_over_card(mouse_pos):
+					# Global.dbg("PlayingCard._input: Stock pile card '%s' - mouse NOT over card" % key)
 					return
 				if not Global.is_my_turn():
-					# Global.dbg("PlayingCard: _input: Mouse PRESSED on stock pile card '%s' by non-current player at z_index=%d, position: %s - IGNORING" % [key, z_index, str(mouse_pos)])
+					# Global.dbg("PlayingCard._input: Stock pile card '%s' - not my turn, IGNORING" % key)
 					return
-				# Global.dbg("PlayingCard: _input: Mouse PRESSED on stock pile card '%s' by current player at z_index=%d, position: %s" % [key, z_index, str(mouse_pos)])
+				# Global.dbg("PlayingCard._input: Stock pile card '%s' - ACCEPTING CLICK at z_index=%d, position: %s" % [key, z_index, str(mouse_pos)])
 			elif len(Global.discard_pile) > 0 and Global.discard_pile[0].key == key:
 				# CASE 2: This card is the top of the discard pile
 				if not is_mouse_over_card(mouse_pos):
+					# Global.dbg("PlayingCard._input: Discard pile card '%s' - mouse NOT over card" % key)
 					return
-				# Global.dbg("PlayingCard: _input: Mouse PRESSED on discard pile card '%s' at z_index=%d, position: %s" % [key, z_index, str(mouse_pos)])
+				# Global.dbg("PlayingCard._input: Discard pile card '%s' - ACCEPTING CLICK at z_index=%d, position: %s" % [key, z_index, str(mouse_pos)])
 			elif key in Global.private_player_info['card_keys_in_hand']:
 				# CASE 3: Player's hand
 				if not is_mouse_over_card(mouse_pos):
+					# Global.dbg("PlayingCard._input: Hand card '%s' - mouse NOT over card at %s (rect=%s)" % [key, str(mouse_pos), str(get_rect(5.0))])
 					return
 				if not is_topmost_card_under_mouse(mouse_pos):
+					# Global.dbg("PlayingCard._input: Hand card '%s' - NOT topmost under mouse at %s" % [key, str(mouse_pos)])
 					return
-				# Global.dbg("PlayingCard: _input: Mouse PRESSED on player's card '%s' at z_index=%d, position: %s" % [key, z_index, str(mouse_pos)])
+				# This card is the topmost card under the mouse - claim it
+				# Global.dbg("PlayingCard._input: Hand card '%s' IS TOPMOST - CLAIMING INPUT and calling set_input_as_handled()" % key)
+				_card_handling_input = self
+				# This card is the topmost card under the mouse - claim the input event immediately
+				get_viewport().set_input_as_handled()
+				# Global.dbg("PlayingCard._input: Hand card '%s' - ACCEPTED CLICK at z_index=%d, position: %s" % [key, z_index, str(mouse_pos)])
 			else:
 				# Not a valid card to interact with - do NOT handle this input event!
+				# Global.dbg("PlayingCard._input: Card '%s' - not in stock/discard/hand, IGNORING" % key)
 				return
 
-			# if not is_mouse_over_card(mouse_pos):
-			# 	return
-			# # Check if we're the topmost card under the mouse within the player's hand
-			# if key in Global.private_player_info['card_keys_in_hand'] and not is_topmost_card_under_mouse(mouse_pos):
-			# 	return
-			# # Check if the mouse is over the top card of the stock pile
-			# if len(Global.stock_pile) > 0 and Global.stock_pile[0].is_mouse_over_card(mouse_pos):
-			# 	if not Global.is_my_turn() or Global.stock_pile[0].key != key:
-			# 		return
-			# elif len(Global.discard_pile) > 0 and Global.discard_pile[0].is_mouse_over_card(mouse_pos):
-			# 	if Global.discard_pile[0].key != key:
-			# 		return
-			# 	Global.dbg("PlayingCard: _intput: Mouse PRESSED on discard pile card '%s' at z_index=%d, position: %s" % [key, z_index, str(mouse_pos)])
 		elif not (dragging or got_mouse_down):
 			# Release event
 			return
@@ -228,36 +235,45 @@ func _input(event):
 			got_mouse_down = true
 			initial_touch_pos = mouse_pos # Store the initial touch position
 			drag_offset = mouse_pos - global_position
-			# Global.dbg("PlayingCard: _input: Mouse PRESSED on card '%s' at z_index=%d, position: %s - SET_INPUT_AS_HANDLED" % [key, z_index, str(mouse_pos)])
+			# Global.dbg("PlayingCard._input: LEFT BUTTON DOWN on card '%s' at z_index=%d, mouse_pos=%s, global_position=%s, drag_offset=%s - calling set_input_as_handled()" % [key, z_index, str(mouse_pos), str(global_position), str(drag_offset)])
 			get_viewport().set_input_as_handled()
 
 		elif not event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
+			# Clear the input handling flag on release
+			if _card_handling_input == self:
+				_card_handling_input = null
+
 			if dragging:
 				# Handle drag end
 				dragging = false
 				got_mouse_down = false
 				var from_position = global_position + drag_offset # Use release position
 				_handle_card_moved(from_position)
-				# Global.dbg("PlayingCard: _input: Mouse STOPPED DRAGGING on card '%s' at z_index=%d, position: %s - SET_INPUT_AS_HANDLED" % [key, z_index, str(mouse_pos)])
+				# Global.dbg("PlayingCard._input: STOPPED DRAGGING card '%s' at z_index=%d, position: %s - calling set_input_as_handled()" % [key, z_index, str(mouse_pos)])
 			elif got_mouse_down:
 				# Handle tap/click
 				got_mouse_down = false
 				if is_tappable:
 					_handle_card_click()
-				# Global.dbg("PlayingCard: _input: Mouse RELEASED on card '%s' at z_index=%d, position: %s - SET_INPUT_AS_HANDLED" % [key, z_index, str(mouse_pos)])
+				# Global.dbg("PlayingCard._input: RELEASED (tap) card '%s' at z_index=%d, position: %s - calling set_input_as_handled()" % [key, z_index, str(mouse_pos)])
 			get_viewport().set_input_as_handled()
 
 	elif event is InputEventMouseMotion:
 		if dragging:
-			var mouse_pos = get_global_mouse_position()
+			# NEVER USE get_global_mouse_position()!!! It is broken on desktop!
+			# var mouse_pos = get_global_mouse_position()
+			var mouse_pos = event.position
 			global_position = mouse_pos - drag_offset
 			get_viewport().set_input_as_handled()
 		elif got_mouse_down:
 			# Check if we should start dragging
-			var mouse_pos = get_global_mouse_position()
+			# NEVER USE get_global_mouse_position()!!! It is broken on desktop!
+			# var mouse_pos = get_global_mouse_position()
+			var mouse_pos = event.position
 			if mouse_pos.distance_to(initial_touch_pos) > DRAG_START_THRESHOLD:
 				if is_draggable:
 					dragging = true
+					# Global.dbg("PlayingCard._input: STARTING DRAG for card '%s' (moved %0.1f pixels from initial touch)" % [key, mouse_pos.distance_to(initial_touch_pos)])
 					_handle_card_drag_started(initial_touch_pos)
 				else:
 					# If not draggable, just reset the mouse down state
@@ -268,59 +284,69 @@ func is_mouse_over_card(mouse_pos: Vector2) -> bool:
 	if not sprite or not sprite.texture:
 		return false
 	var card_rect = get_rect(5.0)
-	return card_rect.has_point(mouse_pos)
+	var result = card_rect.has_point(mouse_pos)
+	# if not result and (is_draggable or is_tappable):
+	# 	# Log when a draggable/tappable card says mouse is NOT over it during a click
+	# 	Global.dbg("PlayingCard.is_mouse_over_card: Card '%s' at global_pos=%s, rect=%s does NOT contain mouse_pos=%s" % [key, str(global_position), str(card_rect), str(mouse_pos)])
+	return result
 
 func get_rect(padding: float = 0.0) -> Rect2:
 	if not sprite or not sprite.texture:
 		return Rect2(Vector2.ZERO, Vector2.ZERO)
 
-	var texture_size = sprite.texture.get_size() * self.scale
-	var sprite_pos = global_position + sprite.position
+	# Force transform update to ensure global_position is current
+	sprite.force_update_transform()
 
-	# Add some padding for easier touch interaction on mobile
-	return Rect2(
-		sprite_pos - texture_size / 2 - Vector2(padding, padding),
-		texture_size + Vector2(padding * 2, padding * 2)
+	# Get the sprite's actual rendered rectangle
+	var sprite_rect = sprite.get_rect() # Returns Rect2 in local sprite coords (centered)
+
+	# Transform to global coordinates
+	# sprite.get_rect() returns a rect centered at origin, we need to offset by sprite's global position
+	var texture_size = sprite_rect.size * sprite.scale * self.scale
+	var sprite_global_pos = sprite.global_position
+
+	var full_rect = Rect2(
+		sprite_global_pos - texture_size / 2,
+		texture_size
 	)
 
-func is_topmost_card_under_mouse(mouse_pos: Vector2) -> bool:
-	# Get the parent container that holds all the cards
-	var parent_container = get_parent()
-	if not parent_container:
-		push_error("PlayingCard: is_topmost_card_under_mouse: No parent container found for card '%s'" % key)
-		return true
+	var result = Rect2(
+		full_rect.position - Vector2(padding, padding),
+		full_rect.size + Vector2(padding * 2, padding * 2)
+	)
 
-	var highest_z_index = z_index
-	var topmost_card = self
+	# Add padding and return - NO CLIPPING!
+	# The z-index check in is_topmost_card_under_mouse() handles which card responds to clicks
+	return result
+
+func is_topmost_card_under_mouse(mouse_pos: Vector2) -> bool:
+	# Find the card with the highest z_index whose bounding box contains the mouse position.
+	# This works correctly because in Godot, higher z_index means visually on top.
+	# We don't need to worry about "visible portions" - we just need the highest z_index.
+	var highest_z_index = -1
+	var topmost_card = null
+	var cards_under_mouse = [] # DEBUG: Track all cards under mouse
 
 	# Check all cards in player's hand
 	for card_key in Global.private_player_info['card_keys_in_hand']:
 		var card = Global.playing_cards.get(card_key) as PlayingCard
 		if not card:
-			push_error("PlayingCard: is_topmost_card_under_mouse: Card '%s' not found in Global.playing_cards" % card_key)
 			continue
 
-		# Skip if it's this card
-		if card == self:
-			continue
+		# If this card's bounding box contains the mouse AND it has the highest z_index so far
+		if card.is_mouse_over_card(mouse_pos):
+			cards_under_mouse.append({"key": card.key, "z_index": card.z_index}) # DEBUG
+			if card.z_index > highest_z_index:
+				highest_z_index = card.z_index
+				topmost_card = card
 
-		# Check if this card is under the mouse and has a higher z_index
-		if card.is_mouse_over_card(mouse_pos) and card.z_index > highest_z_index:
-			highest_z_index = card.z_index
-			topmost_card = card
-
-	# for child in parent_container.get_children():
-	# 	# Skip if it's this card
-	# 	if child == self:
-	# 		continue
-
-	# 	# Check if this sibling card is under the mouse and has a higher z_index
-	# 	if child.is_mouse_over_card(mouse_pos) and child.z_index > highest_z_index:
-	# 		highest_z_index = child.z_index
-	# 		topmost_card = child
-
-	# Return true only if we are the topmost card
-	return topmost_card == self
+	# We are topmost if we have the highest z_index among all cards under the mouse
+	var result = topmost_card == self
+	# if result:
+	# 	Global.dbg("PlayingCard.is_topmost_card_under_mouse: Card '%s' z_index=%d IS topmost at mouse_pos=%s" % [key, z_index, str(mouse_pos)])
+	# else:
+	# 	Global.dbg("PlayingCard.is_topmost_card_under_mouse: Card '%s' z_index=%d NOT topmost (topmost='%s' z_index=%d) at mouse_pos=%s" % [key, z_index, topmost_card.key if topmost_card else "null", highest_z_index, str(mouse_pos)])
+	return result
 
 ################################################################################
 ## Handle mouse interactions

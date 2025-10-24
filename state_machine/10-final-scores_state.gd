@@ -60,7 +60,8 @@ func make_trophy(image: CompressedTexture2D) -> Sprite2D:
 	trophy.scale = Vector2(0.01, 0.01)
 	trophy.z_index = 200
 	trophy.position = Global.screen_size * Vector2(0.5, 0.5)
-	add_child(trophy)
+	var all_players_control = get_tree().root.get_node("/root/RootNode/AllPlayersControl")
+	all_players_control.add_child(trophy)
 	return trophy
 
 func hide_all_playing_cards() -> void:

@@ -92,6 +92,7 @@ func test_player_has_melded() -> bool:
 				'id': 'player2',
 				'played_to_table': [ {
 					'type': 'group',
+					'rank': 'A',
 					'card_keys': ['A-hearts-0', 'A-spades-0', 'A-diamonds-0']
 				}]
 			}

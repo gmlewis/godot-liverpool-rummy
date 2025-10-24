@@ -17,6 +17,8 @@ func _ready() -> void:
 	rotation_controller = get_tree().root.get_node("RootNode")
 	if rotation_controller:
 		last_orientation = rotation_controller.get_current_orientation()
+	else:
+		Global.error("CountdownTimer: RotationController node not found!")
 
 	var top_card = Global.stock_pile[0]
 	var target_position = calculate_position(top_card.position)

@@ -374,14 +374,14 @@ func _riffle_bridge_shuffle():
 		var index_in_half = i if is_left else i - half
 		var delay = index_in_half * 0.015
 
-		var bridge_height = -200 - (abs(index_in_half - half / 2.0) * 2.0)
-		var mid_x = Global.screen_center.x + (50 if is_left else -50)
-		var mid_y = Global.screen_center.y + bridge_height
+		var bridge_height = -200.0 - (abs(index_in_half - half / 2.0) * 2.0)
+		var mid_x = float(Global.screen_center.x + (50.0 if is_left else -50.0))
+		var mid_y = float(Global.screen_center.y + bridge_height)
 
 		var _create_bridge_motion = func(progress: float):
 			if progress < 0.5:
 				var t = progress * 2.0
-				var start_x = -300 if is_left else 300
+				var start_x = -300.0 if is_left else 300.0
 				var current_x = lerp(start_x, mid_x - Global.screen_center.x, t)
 				var current_y = lerp(0.0, mid_y - Global.screen_center.y, t)
 				card.position = Global.screen_center + Vector2(current_x, current_y)
@@ -389,9 +389,9 @@ func _riffle_bridge_shuffle():
 			else:
 				var t = (progress - 0.5) * 2.0
 				var current_x = lerp(mid_x - Global.screen_center.x, 0.0, t)
-				var current_y = lerp(mid_y - Global.screen_center.y, -i * 2, t)
+				var current_y = lerp(mid_y - Global.screen_center.y, -i * 2.0, t)
 				card.position = Global.screen_center + Vector2(current_x, current_y)
-				card.rotation = lerp(PI * 0.15 * (-1 if is_left else 1), 0.0, t)
+				card.rotation = lerp(PI * 0.15 * (-1.0 if is_left else 1.0), 0.0, t)
 
 		tween.tween_method(_create_bridge_motion, 0.0, 1.0, riffle_duration).set_delay(delay)
 		tween.tween_callback(card.flip_card).set_delay(delay + riffle_duration * 0.4)

@@ -49,6 +49,9 @@ func deal_cards_to_players(round_num: int, cards_per_player: int) -> void:
 	if num_cards_in_stock_pile == 0 or num_cards_in_stock_pile != len(Global.stock_pile):
 		Global.dbg("FATAL: Mismatch in stock pile size: %d vs %d" % [num_cards_in_stock_pile, len(Global.stock_pile)])
 		return
+	# DEVELOPMENT3: Force way more cards to be dealt so that melding can be tested easily:
+	# total_cards = min(total_cards + 50, num_cards_in_stock_pile) # ONLY FOR TESTING!!!
+
 	if total_cards > num_cards_in_stock_pile:
 		# TODO: Handle this case more gracefully, e.g. by reshuffling the discard pile
 		Global.dbg("Not enough cards in stock pile to deal %d cards to %d players for round %d. Only %d cards available." % [total_cards, num_players, round_num, num_cards_in_stock_pile])
@@ -120,6 +123,8 @@ func deal_cards_to_players(round_num: int, cards_per_player: int) -> void:
 
 func gen_card_deal_position_x(card_hand_idx: int, cards_per_player: int) -> float:
 	var card_x = Global.player_hand_x_start() + (card_hand_idx * (Global.player_hand_x_end - Global.player_hand_x_start()) / (cards_per_player - 1))
+	if card_x > Global.screen_size.x - 50.0: # happens during debugging with extra cards
+		card_x = Global.screen_size.x / 2.0
 	return card_x
 
 func gen_card_deal_position_y(card_hand_idx: int, _cards_per_player: int) -> float:

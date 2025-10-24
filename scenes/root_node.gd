@@ -55,7 +55,7 @@ func _ready():
 	player_circle_radius = $AllPlayersControl.size.x * PLAYER_CIRCLE_RADIUS_RATIO
 	$HUDLayer/Control/CustomRulesDialog/CustomRulesPanel.size = get_viewport().get_visible_rect().size * Vector2(0.9, 0.9)
 	if Global.LANGUAGE == 'de':
-		$HUDLayer/Control/CustomRulesDialog.title = "Regeln für Liverpool Rummy" # TODO
+		$HUDLayer/Control/CustomRulesDialog/Title.text = "Regeln für Liverpool Rummy"
 		$HUDLayer/Control/CustomRulesDialog/CustomRulesPanel/ScrollContainer/Label.text = german_rules_text
 
 func _exit_tree():
@@ -420,14 +420,15 @@ func find_canvas_layers(node: Node) -> Array:
 	return layers
 
 # Debug function to manually test rotation
-# func _input(event: InputEvent):
+func _input(event: InputEvent):
+	if not (event is InputEventKey and event.pressed and event.keycode == KEY_SPACE): return
+	if OS.has_feature("mobile"): return
 	# For desktop testing: press Space to toggle rotation
-	# if event is InputEventKey and event.pressed and event.keycode == KEY_SPACE:
-		# if not OS.has_feature("mobile"):
-			# Global.dbg("Manual rotation toggle (testing)")
-			# current_orientation = 180 if current_orientation == 0 else 0
-			# target_rotation = float(current_orientation)
-			# orientation_stable_timer = stability_time # Skip stability wait for testing
+	Global.dbg("RootNode._input: Space key pressed, manual rotation toggle (testing) - calling set_input_as_handled()")
+	current_orientation = 180 if current_orientation == 0 else 0
+	target_rotation = float(current_orientation)
+	orientation_stable_timer = stability_time # Skip stability wait for testing
+	get_viewport().set_input_as_handled()
 
 # Public function to get current orientation (for other scripts)
 func get_current_orientation() -> int:

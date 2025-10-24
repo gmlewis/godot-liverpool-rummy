@@ -209,7 +209,8 @@ func _start_udp_discovery_server():
 	udp_discovery_server = UDPServer.new()
 	var result = udp_discovery_server.listen(Global.DISCOVERY_PORT, "0.0.0.0")
 	if result == OK:
-		Global.dbg("Discovery server listening on port: %s" % Global.DISCOVERY_PORT)
+		# Global.dbg("Discovery server listening on port: %s" % Global.DISCOVERY_PORT)
+		pass
 	else:
 		Global.error("Failed to start discovery server: %s" % result)
 
@@ -237,7 +238,7 @@ func _process(_delta):
 		udp_discovery_server.poll()
 		if udp_discovery_server.is_connection_available():
 			var peer = udp_discovery_server.take_connection()
-			Global.dbg("Discovery request received from: %s" % peer.get_packet_ip())
+			# Global.dbg("Discovery request received from: %s" % peer.get_packet_ip())
 			_handle_discovery_request(peer)
 
 func _handle_discovery_request(peer: PacketPeerUDP):
@@ -246,7 +247,7 @@ func _handle_discovery_request(peer: PacketPeerUDP):
 		var message = packet.get_string_from_utf8()
 		var sender_ip = peer.get_packet_ip()
 		var sender_port = peer.get_packet_port()
-		Global.dbg("Received discovery request: %s from %s:%d" % [message, sender_ip, sender_port])
+		# Global.dbg("Received discovery request: %s from %s:%d" % [message, sender_ip, sender_port])
 
 		if message == "DISCOVER_SERVERS":
 			# Create a new UDP socket to send response
@@ -262,11 +263,12 @@ func _handle_discovery_request(peer: PacketPeerUDP):
 				var response = JSON.stringify(server_info)
 
 				if response_socket.put_packet(response.to_utf8_buffer()) == OK:
-					Global.dbg("Sent server info to: %s:%d (game_started: %s)" % [sender_ip, sender_port, game_has_started])
+					# Global.dbg("Sent server info to: %s:%d (game_started: %s)" % [sender_ip, sender_port, game_has_started])
+					pass
 				else:
-					Global.dbg("Failed to send response to: %s:%d" % [sender_ip, sender_port])
+					Global.error("Failed to send response to: %s:%d" % [sender_ip, sender_port])
 			else:
-				Global.dbg("Failed to set destination address: %s:%d" % [sender_ip, sender_port])
+				Global.error("Failed to set destination address: %s:%d" % [sender_ip, sender_port])
 
 			response_socket.close()
 
@@ -276,7 +278,7 @@ func _scan_for_servers():
 	var parts = current_ip_address.split('.')
 	if len(parts) != 4:
 		if current_ip_address != 'localhost':
-			Global.dbg("Invalid IP address format: %s" % current_ip_address)
+			Global.error("Invalid IP address format: %s" % current_ip_address)
 		return
 	var broadcast_ip = "%s.%s.%s.255" % [parts[0], parts[1], parts[2]]
 
@@ -318,10 +320,10 @@ func _scan_for_servers():
 		while client_socket.get_available_packet_count() > 0:
 			var packet = client_socket.get_packet()
 			var sender_ip = client_socket.get_packet_ip()
-			Global.dbg("Received response from server: %s" % sender_ip)
+			# Global.dbg("Received response from server: %s" % sender_ip)
 			if packet.size() > 0:
 				var response = packet.get_string_from_utf8()
-				Global.dbg("response: '%s'" % response)
+				# Global.dbg("response: '%s'" % response)
 				parse_server_response(response, sender_ip)
 
 		await get_tree().create_timer(0.005).timeout # wait for 5ms.
@@ -342,16 +344,16 @@ func parse_server_response(response: String, ip: String):
 			var game_started = server_data.get('game_started', false)
 
 			# Track the game state for this host
-			var was_previously_discovered = ip in remote_host_player_name
+			# var was_previously_discovered = ip in remote_host_player_name
 			remote_host_player_name[ip] = host_name
 			remote_host_game_started[ip] = game_started
 
-			if not was_previously_discovered:
-				Global.dbg("Discovered server: %s at %s (game_started: %s)" % [host_name, ip, game_started])
-			
+			# if not was_previously_discovered:
+			# 	Global.dbg("Discovered server: %s at %s (game_started: %s)" % [host_name, ip, game_started])
+
 			# If the game has started, don't show Join Game button - force host mode
 			if game_started:
-				Global.dbg("Server %s has already started game - cannot join" % host_name)
+				# Global.dbg("Server %s has already started game - cannot join" % host_name)
 				any_game_started_detected = true
 				# Remove this IP from remote hosts since game has started
 				remote_host_player_name.erase(ip)

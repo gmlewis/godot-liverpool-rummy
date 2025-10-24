@@ -77,7 +77,7 @@ corner_detail = 5
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_jwwji"]
 content_margin_left = 50.0
-content_margin_top = 50.0
+content_margin_top = 100.0
 content_margin_right = 50.0
 content_margin_bottom = 0.0
 bg_color = Color(0, 0, 0, 1)
@@ -161,7 +161,14 @@ texture = ExtResource("1_elm8r")
 expand_mode = 5
 stretch_mode = 5
 
-[node name="RoundNode" type="Node" parent="."]
+[node name="RoundNode" type="Control" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
 
 [node name="RoundSpawner" type="MultiplayerSpawner" parent="."]
 _spawnable_scenes = PackedStringArray("uid://dd0vu47oxmnsf", "uid://cvjeg10x130y7", "uid://n7ytejdevrjs", "uid://b2lonlathwlqu", "uid://cbr0hcxvpnf7s", "uid://d4f0lutipg6lf", "uid://kyg3e8do065o")
@@ -469,6 +476,16 @@ grow_horizontal = 2
 grow_vertical = 0
 theme_override_font_sizes/font_size = 50
 text = "       OK       "
+
+[node name="Title" type="Label" parent="HUDLayer/Control/CustomRulesDialog/CustomRulesPanel"]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 23.0
+grow_horizontal = 2
+theme_override_font_sizes/font_size = 50
+text = "Liverpool Rummy Rules"
+horizontal_alignment = 1
 
 [connection signal="text_submitted" from="TitlePageUI/PanelPositionControl/WelcomePanel/NameLineEdit" to="TitlePageUI" method="_on_line_edit_text_submitted"]
 [connection signal="pressed" from="TitlePageUI/PanelPositionControl/WelcomePanel/RefreshNameButton" to="TitlePageUI" method="_on_refresh_name_button_pressed"]

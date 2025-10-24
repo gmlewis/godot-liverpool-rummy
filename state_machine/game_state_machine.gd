@@ -32,6 +32,8 @@ func _on_reset_game_signal() -> void:
 	# 	Global.connect('game_state_updated_signal', _on_game_state_updated_signal)
 
 func _input(event: InputEvent) -> void:
+	# GameStateMachine delegates input to current state - this doesn't call set_input_as_handled()
+	# Global.dbg("GameStateMachine._input: Delegating to current_state '%s'" % get_current_state_name())
 	if current_state:
 		current_state.handle_input(event)
 
