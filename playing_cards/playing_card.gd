@@ -427,8 +427,8 @@ func get_rect(padding: float = 0.0) -> Rect2:
 		full_rect.size + Vector2(padding * 2, padding * 2)
 	)
 
-	# DEBUG: ALWAYS log for draggable/tappable cards to catch position changes
-	if (is_draggable or is_tappable) and DEBUG_SHOW_CLICK_RECT:
+	# DEBUG: Log only when debug_logging_enabled is true (during click processing)
+	if debug_logging_enabled and (is_draggable or is_tappable):
 		Global.dbg("PlayingCard.get_rect: Card '%s': result=%s, sprite_global_pos=%s, self.global_pos=%s" % [key, str(result), str(sprite_global_pos), str(global_position)])
 
 	# Add padding and return - NO CLIPPING!
