@@ -100,18 +100,6 @@ func _on_animate_personally_meld_cards_only_signal(player_id: String, hand_evalu
 			var playing_card = Global.playing_cards.get(card_key) as PlayingCard
 			tween_card_into_personal_meld_group(player, player_id, meld_tween, playing_card, meld_idx, card_idx)
 
-	# TODO: Make these separately-synced animations
-	# for card_idx in len(hand_evaluation['can_be_publicly_melded']):
-	# 	var card_key = hand_evaluation['can_be_publicly_melded'][card_idx]
-	# 	player_public_info['num_cards'] -= 1
-	# 	var playing_card = Global.playing_cards.get(card_key) as PlayingCard
-	# 	tween_card_into_public_meld_group(player, player_id, meld_tween, playing_card, card_key)
-	# if len(hand_evaluation['recommended_discards']) > 0:
-	# 	var card_key = hand_evaluation['recommended_discards'][0]
-	# 	player_public_info['num_cards'] -= 1
-	# 	var playing_card = Global.playing_cards.get(card_key) as PlayingCard
-	# 	tween_card_to_discard_pile(player, player_id, meld_tween, playing_card, hand_evaluation['is_winning_hand'])
-
 	await meld_tween.finished
 	if ack_sync_name:
 		Global.ack_sync_completed(ack_sync_name)
@@ -185,19 +173,6 @@ func tween_card_into_personal_meld_group(player: Node2D, player_id: String, meld
 		if not playing_card.is_face_up:
 			playing_card.flip_card() # Flip the card for the local player
 	meld_tween.tween_callback(hide_or_flip_card).set_delay(card_duration)
-
-# func tween_card_into_public_meld_group(player: Node2D, player_id: String, _meld_tween: Tween, playing_card: PlayingCard, _ard_key: String) -> void:
-# 	var player_is_me = Global.private_player_info.id == player_id
-# 	if not player_is_me:
-# 		playing_card.position = player.position
-# 		playing_card.rotation = player.rotation
-# 	playing_card.is_draggable = false
-# 	playing_card.is_tappable = false
-# 	playing_card.z_index = 20 # TODO
-# 	playing_card.show()
-# 	if not playing_card.is_face_up:
-# 		await playing_card.flip_card()
-# 	# TODO: Find public meld group position based on card_key
 
 func tween_card_to_discard_pile(player: Node2D, player_id: String, discard_tween: Tween, playing_card: PlayingCard, is_winning_hand: bool) -> void:
 	var player_is_me = Global.private_player_info.id == player_id
