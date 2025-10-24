@@ -24,6 +24,8 @@ const DEBUG_SHOW_CLICK_RECT = true
 
 # Static storage for test rectangles to draw (shared across all card instances)
 static var test_rects_to_draw: Array = []
+# Flag to enable detailed logging during click detection
+static var debug_logging_enabled: bool = false
 
 var back_texture: Texture2D
 var face_texture: Texture2D
@@ -263,6 +265,9 @@ func _input(event):
 		# For release events, only handle if we're currently dragging or got_mouse_down
 		# For press events, check if mouse is over this card AND we're the topmost card
 		if event.pressed:
+			# Enable detailed logging for this click
+			debug_logging_enabled = true
+
 			Global.dbg("PlayingCard._input: BUTTON PRESSED: Card '%s' (draggable=%s, tappable=%s) at mouse_pos=%s" % [key, is_draggable, is_tappable, str(mouse_pos)])
 
 			# POPULATE TEST RECTANGLES for all cards in hand to visualize what we're testing
@@ -281,6 +286,9 @@ func _input(event):
 						# Trigger redraw for this card
 						if card.debug_overlay:
 							card.debug_overlay.queue_redraw()
+
+			# Disable detailed logging after populating test rects
+			debug_logging_enabled = false
 
 			# If another card is already handling input for this press event, skip
 			if _card_handling_input != null and _card_handling_input != self:
@@ -408,8 +416,8 @@ func get_rect(padding: float = 0.0) -> Rect2:
 	var texture_size = sprite_rect.size * sprite.scale * self.scale
 	var sprite_global_pos = sprite.global_position
 
-	# DEBUG: Log all the values used in calculation
-	if (is_draggable or is_tappable) and DEBUG_SHOW_CLICK_RECT:
+	# DEBUG: Log all the values used in calculation (only when debug logging is enabled)
+	if debug_logging_enabled and (is_draggable or is_tappable):
 		Global.dbg("PlayingCard.get_rect: Card '%s': sprite_rect=%s, sprite.scale=%s, self.scale=%s, texture_size=%s, sprite_global_pos=%s" % [key, str(sprite_rect), str(sprite.scale), str(self.scale), str(texture_size), str(sprite_global_pos)])
 
 	var full_rect = Rect2(
