@@ -411,6 +411,9 @@ func get_rect(padding: float = 0.0) -> Rect2:
 	if not sprite or not sprite.texture:
 		return Rect2(Vector2.ZERO, Vector2.ZERO)
 
+	# Force transform update to ensure global_position is current
+	sprite.force_update_transform()
+
 	# Get the sprite's actual rendered rectangle
 	var sprite_rect = sprite.get_rect() # Returns Rect2 in local sprite coords (centered)
 
