@@ -3,8 +3,6 @@ extends Node2D
 
 @onready var game_state_machine: Node = $"/root/RootNode/GameStateMachine"
 
-signal _local_player_is_meldable_signal(public_meld_possibility: Dictionary) # Used locally to communicate with other player nodes.
-
 var player_id: String
 var player_name: String
 var turn_index: int
@@ -35,7 +33,7 @@ func _ready():
 	Global.connect('card_drag_started_signal', _on_card_drag_started_signal)
 	Global.connect('card_moved_signal', _on_card_moved_signal)
 	Global.connect('all_meld_area_states_updated_signal', _on_all_meld_area_states_updated_signal)
-	connect('_local_player_is_meldable_signal', _on_local_player_is_meldable_signal)
+	Global.connect('player_is_meldable_signal', _on_player_is_meldable_signal)
 	game_state_machine.connect('gsm_changed_state_signal', _on_gsm_changed_state_signal)
 	$PlayerNameLabel.text = player_name
 	$TurnIndicatorRect.scale = Vector2(0.1, 0.1) # Hide turn indicator at start
@@ -52,7 +50,7 @@ func _exit_tree():
 	Global.disconnect('card_drag_started_signal', _on_card_drag_started_signal)
 	Global.disconnect('card_moved_signal', _on_card_moved_signal)
 	Global.disconnect('all_meld_area_states_updated_signal', _on_all_meld_area_states_updated_signal)
-	disconnect('_local_player_is_meldable_signal', _on_local_player_is_meldable_signal)
+	Global.disconnect('player_is_meldable_signal', _on_player_is_meldable_signal)
 	game_state_machine.disconnect('gsm_changed_state_signal', _on_gsm_changed_state_signal)
 
 func _on_custom_card_back_texture_changed_signal():
@@ -172,17 +170,22 @@ func _update_hand_meldability() -> void:
 	# 	Global.dbg("Player('%s'): found %d possibilities to meld publicly" % [player_id, len(last_hand_evaluation['can_be_publicly_melded'])])
 	# 	local_public_meld_possibilities.clear()
 	# 	for possibility in last_hand_evaluation['can_be_publicly_melded']:
-	# 		Global.dbg("Player('%s'): calling _local_player_is_meldable_signal.emit(%s)" % [player_id, str(possibility)])
-	# 		_local_player_is_meldable_signal.emit(possibility)
+	# 		Global.dbg("Player('%s'): calling _player_is_meldable_signal.emit(%s)" % [player_id, str(possibility)])
+	# 		_player_is_meldable_signal.emit(possibility)
 
-func _on_local_player_is_meldable_signal(possibility: Dictionary) -> void:
+func _on_player_is_meldable_signal(possibility: Dictionary) -> void:
 	if possibility.target_player_id != player_id:
-		Global.dbg("Player('%s'): _on_local_player_is_meldable_signal: possibility.target_player_id='%s' does not match this player_id='%s', IGNORING" % [player_id, possibility.target_player_id, player_id])
+		# Global.dbg("Player('%s'): _on_player_is_meldable_signal: possibility.target_player_id='%s' does not match this player_id='%s', IGNORING" % [player_id, possibility.target_player_id, player_id])
 		return
-	Global.dbg("Player('%s'): _on_local_player_is_meldable_signal: possibility=%s SHOW MELD INDICATOR" % [player_id, str(possibility)])
+	Global.dbg("Player('%s'): _on_player_is_meldable_signal: possibility=%s SHOW MELD INDICATOR" % [player_id, str(possibility)])
 	is_meldable = true
 	local_public_meld_possibilities.append(possibility)
 	$MeldIndicatorSprite2D.show() # Show meld indicator
+
+func clear_meldability_indicator() -> void:
+	is_meldable = false
+	local_public_meld_possibilities.clear()
+	$MeldIndicatorSprite2D.hide()
 
 func _update_turn_indicator_color(current_state_name: String, already_melded: bool) -> void:
 	if current_state_name == 'PlayerDrewState':
@@ -394,14 +397,14 @@ func _input(event):
 		return
 	# Only current player can click on _ANY_ player node and only during playing state.
 	if not Global.is_my_turn() or not game_state_machine.is_playing_state():
-		# Global.dbg("Player('%s')._input: Not my turn or not playing state, ignoring" % player_id)
+		Global.dbg("Player('%s')._input: Not my turn or not playing state, ignoring" % player_id)
 		return
 	if not is_meldable and not is_buying_card:
-		# Global.dbg("Player('%s')._input: Not meldable and not buying, ignoring" % player_id)
+		Global.dbg("Player('%s')._input: Not meldable and not buying, ignoring" % player_id)
 		return
 	# Finally, after all the trivial rejects, now calculate if the mouse is actually over this player node.
 	if not is_mouse_over_player(mouse_pos):
-		# Global.dbg("Player('%s')._input: Mouse NOT over player (rect check), ignoring" % player_id)
+		Global.dbg("Player('%s')._input: Mouse NOT over player (rect check), ignoring" % player_id)
 		return # false alarm.
 	Global.dbg("Player('%s')._input: Mouse IS over player! is_meldable=%s, is_buying_card=%s" % [player_id, is_meldable, is_buying_card])
 	if is_meldable and is_my_turn and len(Global.private_player_info['played_to_table']) == 0:
@@ -763,7 +766,7 @@ func add_joker_to_every_public_run_possibility(acc: Dictionary, card_key: String
 
 func _on_all_meld_area_states_updated_signal(post_meld_data: Dictionary) -> void:
 	# First, for ALL player nodes, clear their local_public_meld_possibilities.
-	local_public_meld_possibilities.clear()
+	clear_meldability_indicator()
 	# Next, determine if this Player node represents the current player.
 	# If it is the current player's turn and they are in PlayerDrewState and they have already melded,
 	# update the "Meld!" indicators on _ALL_ players.
@@ -781,7 +784,7 @@ func _on_all_meld_area_states_updated_signal(post_meld_data: Dictionary) -> void
 	Global.dbg("Player('%s'): _on_all_meld_area_states_updated_signal: found %d meld possibilities" % [player_id, len(all_possibilities)])
 	for possibility in all_possibilities:
 		Global.dbg("Player('%s'): _on_all_meld_area_states_updated_signal: possibility=%s - emitting signal!" % [player_id, str(possibility)])
-		_local_player_is_meldable_signal.emit(possibility)
+		Global.emit_player_is_meldable_signal(possibility)
 
 static func get_all_meld_possibilities(post_meld_data: Dictionary) -> Array:
 	var all_possibilities = []
