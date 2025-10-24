@@ -169,6 +169,9 @@ var dragging: bool = false
 var drag_offset: Vector2 = Vector2.ZERO
 var initial_touch_pos: Vector2 = Vector2.ZERO # Store initial touch position
 
+# Static variable to track which card is currently handling mouse input
+static var _card_handling_input: PlayingCard = null
+
 func _input(event):
 	if not is_draggable and not is_tappable:
 		return
@@ -180,6 +183,11 @@ func _input(event):
 		# For release events, only handle if we're currently dragging or got_mouse_down
 		# For press events, check if mouse is over this card AND we're the topmost card
 		if event.pressed:
+			# If another card is already handling input for this press event, skip
+			if _card_handling_input != null and _card_handling_input != self:
+				# Global.dbg("PlayingCard: _input: Card '%s' skipping - '%s' already handling input" % [key, _card_handling_input.key])
+				return
+
 			# There are only 2 specific cards that can be tapped (top of stock pile or discard pile)
 			# and one class of cards that can be tapped or dragged (the player's hand).
 			if len(Global.stock_pile) > 0 and Global.stock_pile[0].key == key:
@@ -198,9 +206,16 @@ func _input(event):
 			elif key in Global.private_player_info['card_keys_in_hand']:
 				# CASE 3: Player's hand
 				if not is_mouse_over_card(mouse_pos):
+					# Global.dbg("PlayingCard: _input: Card '%s' NOT under mouse at %s" % [key, str(mouse_pos)])
 					return
 				if not is_topmost_card_under_mouse(mouse_pos):
+					# Global.dbg("PlayingCard: _input: Card '%s' NOT topmost under mouse at %s" % [key, str(mouse_pos)])
 					return
+				# This card is the topmost card under the mouse - claim it
+				# Global.dbg("PlayingCard: _input: Card '%s' IS topmost - claiming input" % key)
+				_card_handling_input = self
+				# This card is the topmost card under the mouse - claim the input event immediately
+				get_viewport().set_input_as_handled()
 				# Global.dbg("PlayingCard: _input: Mouse PRESSED on player's card '%s' at z_index=%d, position: %s" % [key, z_index, str(mouse_pos)])
 			else:
 				# Not a valid card to interact with - do NOT handle this input event!
@@ -232,6 +247,10 @@ func _input(event):
 			get_viewport().set_input_as_handled()
 
 		elif not event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
+			# Clear the input handling flag on release
+			if _card_handling_input == self:
+				_card_handling_input = null
+
 			if dragging:
 				# Handle drag end
 				dragging = false
@@ -269,23 +288,53 @@ func is_mouse_over_card(mouse_pos: Vector2) -> bool:
 		return false
 	var card_rect = get_rect(5.0)
 	var result = card_rect.has_point(mouse_pos)
-	if result:
-		Global.dbg("PlayingCard: is_mouse_over_card: Card '%s' at global_pos=%s, scale=%s, rect=%s contains mouse_pos=%s" % [key, str(global_position), str(scale), str(card_rect), str(mouse_pos)])
+	# if result:
+		# Global.dbg("PlayingCard: is_mouse_over_card: Card '%s' at global_pos=%s, scale=%s, rect=%s contains mouse_pos=%s" % [key, str(global_position), str(scale), str(card_rect), str(mouse_pos)])
 	return result
 
 func get_rect(padding: float = 0.0) -> Rect2:
 	if not sprite or not sprite.texture:
 		return Rect2(Vector2.ZERO, Vector2.ZERO)
 
-	var texture_size = sprite.texture.get_size() * self.scale
-	var sprite_pos = global_position
+	# Get the sprite's actual rendered rectangle
+	var sprite_rect = sprite.get_rect() # Returns Rect2 in local sprite coords (centered)
 
-	Global.dbg("PlayingCard.get_rect: card='%s', sprite.position=%s, global_position=%s, sprite.scale=%s, self.scale=%s" % [key, str(sprite.position), str(global_position), str(sprite.scale), str(self.scale)])
+	# Transform to global coordinates
+	# sprite.get_rect() returns a rect centered at origin, we need to offset by sprite's global position
+	var texture_size = sprite_rect.size * sprite.scale * self.scale
+	var sprite_global_pos = sprite.global_position
 
-	# Add some padding for easier touch interaction on mobile
+	var full_rect = Rect2(
+		sprite_global_pos - texture_size / 2,
+		texture_size
+	)
+
+	# For cards in the player's hand, we need to clip the bounding box to only the visible portion
+	# Cards are laid out with 60-pixel vertical spacing (±30 alternation), but are much taller
+	# So we need to find out how much of this card is visible (not covered by cards with higher z-index)
+	if key in Global.private_player_info['card_keys_in_hand']:
+		# Find the card with the next higher z-index in the hand
+		var next_higher_card_y = full_rect.position.y - 1000.0 # Default: no card above
+		for card_key in Global.private_player_info['card_keys_in_hand']:
+			var other_card = Global.playing_cards.get(card_key) as PlayingCard
+			if not other_card or other_card == self:
+				continue
+			# If this card has higher z-index and is at a similar X position, it might cover us
+			if other_card.z_index > self.z_index and abs(other_card.global_position.x - global_position.x) < texture_size.x:
+				# This card is visually on top of us - clip our bounding box at its top edge
+				var other_top = other_card.global_position.y - (texture_size.y / 2)
+				if other_top > full_rect.position.y and other_top < next_higher_card_y:
+					next_higher_card_y = other_top
+
+		# Clip the rect height if another card covers us
+		if next_higher_card_y > full_rect.position.y:
+			var clipped_height = next_higher_card_y - full_rect.position.y
+			full_rect.size.y = min(full_rect.size.y, clipped_height)
+
+	# Add padding
 	return Rect2(
-		sprite_pos - texture_size / 2 - Vector2(padding, padding),
-		texture_size + Vector2(padding * 2, padding * 2)
+		full_rect.position - Vector2(padding, padding),
+		full_rect.size + Vector2(padding * 2, padding * 2)
 	)
 
 func is_topmost_card_under_mouse(mouse_pos: Vector2) -> bool:
@@ -307,7 +356,12 @@ func is_topmost_card_under_mouse(mouse_pos: Vector2) -> bool:
 			topmost_card = card
 
 	# We are topmost if we have the highest z_index among all cards under the mouse
-	return topmost_card == self
+	var result = topmost_card == self
+	# if result:
+	# 	Global.dbg("PlayingCard: is_topmost_card_under_mouse: Card '%s' z_index=%d IS topmost at mouse_pos=%s" % [key, z_index, str(mouse_pos)])
+	# else:
+	# 	Global.dbg("PlayingCard: is_topmost_card_under_mouse: Card '%s' z_index=%d NOT topmost (topmost='%s' z_index=%d) at mouse_pos=%s" % [key, z_index, topmost_card.key if topmost_card else "null", highest_z_index, str(mouse_pos)])
+	return result
 
 ################################################################################
 ## Handle mouse interactions
