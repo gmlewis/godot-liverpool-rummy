@@ -177,6 +177,7 @@ func _update_hand_meldability() -> void:
 
 func _on_local_player_is_meldable_signal(possibility: Dictionary) -> void:
 	if possibility.target_player_id != player_id:
+		Global.dbg("Player('%s'): _on_local_player_is_meldable_signal: possibility.target_player_id='%s' does not match this player_id='%s', IGNORING" % [player_id, possibility.target_player_id, player_id])
 		return
 	Global.dbg("Player('%s'): _on_local_player_is_meldable_signal: possibility=%s SHOW MELD INDICATOR" % [player_id, str(possibility)])
 	is_meldable = true
@@ -273,17 +274,14 @@ func _on_card_clicked_signal(playing_card, _global_position):
 
 func _on_card_drag_started_signal(_playing_card, _from_position):
 	hack_hide_meld_indicator_next_frame = false
-	var player_is_me = Global.private_player_info.id == player_id
-	if not player_is_me: return # bots do not click or drag cards.
-	if not is_my_turn: return
+	# var player_is_me = Global.private_player_info.id == player_id
+	# if not player_is_me: return # bots do not click or drag cards.
+	# if not is_my_turn: return
 
 func _on_card_moved_signal(playing_card, _from_position, _global_position):
 	hack_hide_meld_indicator_next_frame = false
-	Global.dbg("Player('%s'): _on_card_moved_signal: playing_card=%s, is_my_turn=%s, Global.is_my_turn=%s, has_melded=%s" % [
-		player_id, playing_card.key, str(is_my_turn), str(Global.is_my_turn()), str(Global.player_has_melded(Global.private_player_info['id']))])
-	# if Global.is_my_turn() and Global.player_has_melded(Global.private_player_info['id']):
-	# 	_update_hand_meldability()
-	# 	return
+	# Global.dbg("Player('%s'): _on_card_moved_signal: playing_card=%s, is_my_turn=%s, Global.is_my_turn=%s, has_melded=%s" % [
+	# 	player_id, playing_card.key, str(is_my_turn), str(Global.is_my_turn()), str(Global.player_has_melded(Global.private_player_info['id']))])
 
 	var player_is_me = Global.private_player_info.id == player_id
 	if not player_is_me: return # bots do not click or drag cards.
@@ -764,9 +762,12 @@ func add_joker_to_every_public_run_possibility(acc: Dictionary, card_key: String
 			Global.dbg("Player('%s'): add_joker_to_every_public_run_possibility: possibility=%s" % [player_id, str(possibility)])
 
 func _on_all_meld_area_states_updated_signal(post_meld_data: Dictionary) -> void:
+	# First, for ALL player nodes, clear their local_public_meld_possibilities.
+	local_public_meld_possibilities.clear()
+	# Next, determine if this Player node represents the current player.
 	# If it is the current player's turn and they are in PlayerDrewState and they have already melded,
 	# update the "Meld!" indicators on _ALL_ players.
-	# Note that this signal is handled _ONLY_ by the Player node representing the current player
+	# Note that the rest of this signal is handled _ONLY_ by the Player node representing the current player
 	# which calculates all meld possibilities, then fires a second "local" signal to all Player nodes
 	# to update their "Meld!" indicators accordingly.
 	var player_is_me = Global.private_player_info.id == player_id
@@ -776,3 +777,66 @@ func _on_all_meld_area_states_updated_signal(post_meld_data: Dictionary) -> void
 	if current_state_name != 'PlayerDrewState': return
 	if not Global.player_has_melded(Global.private_player_info['id']): return
 	Global.dbg("Player('%s'): _on_all_meld_area_states_updated_signal: updating _ALL_ Meld! indicators by alerting all Player nodes... post_meld_data=%s" % [player_id, str(post_meld_data)])
+	var all_possibilities = get_all_meld_possibilities(post_meld_data)
+	Global.dbg("Player('%s'): _on_all_meld_area_states_updated_signal: found %d meld possibilities" % [player_id, len(all_possibilities)])
+	for possibility in all_possibilities:
+		Global.dbg("Player('%s'): _on_all_meld_area_states_updated_signal: possibility=%s - emitting signal!" % [player_id, str(possibility)])
+		_local_player_is_meldable_signal.emit(possibility)
+
+static func get_all_meld_possibilities(post_meld_data: Dictionary) -> Array:
+	var all_possibilities = []
+	# Only consider cards found in "complete" meld areas.
+	if post_meld_data.meld_area_1_complete:
+		var meld_area_1_keys = Global.private_player_info['meld_area_1_keys']
+		add_possibilities_from_meld_area(post_meld_data.meld_area_1_type, meld_area_1_keys, post_meld_data, all_possibilities)
+	if post_meld_data.meld_area_2_complete:
+		var meld_area_2_keys = Global.private_player_info['meld_area_2_keys']
+		add_possibilities_from_meld_area(post_meld_data.meld_area_2_type, meld_area_2_keys, post_meld_data, all_possibilities)
+	if post_meld_data.meld_area_3_complete:
+		var meld_area_3_keys = Global.private_player_info['meld_area_3_keys']
+		add_possibilities_from_meld_area(post_meld_data.meld_area_3_type, meld_area_3_keys, post_meld_data, all_possibilities)
+	return all_possibilities
+
+static func add_possibilities_from_meld_area(meld_area_type: String, meld_area_keys: Array, post_meld_data: Dictionary, all_possibilities: Array) -> void:
+	if meld_area_type == 'group':
+		add_group_possibilities(meld_area_keys, post_meld_data, all_possibilities)
+		return
+	add_run_possibilities(meld_area_keys, post_meld_data, all_possibilities)
+
+static func add_group_possibilities(meld_area_keys: Array, post_meld_data: Dictionary, all_possibilities: Array) -> void:
+	for card_key in meld_area_keys:
+		var parts = card_key.split('-')
+		var rank = parts[0]
+		if rank == 'JOKER':
+			# A JOKER can be added to any group.
+			for possibility in post_meld_data.all_public_group_ranks.values():
+				var new_possibility = possibility.duplicate(true)
+				new_possibility['card_key'] = card_key
+				all_possibilities.append(new_possibility)
+			continue
+		if not post_meld_data.all_public_group_ranks.has(rank): continue
+		for possibility in post_meld_data.all_public_group_ranks[rank]:
+			var new_possibility = possibility.duplicate(true)
+			new_possibility['card_key'] = card_key
+			all_possibilities.append(new_possibility)
+
+static func add_run_possibilities(meld_area_keys: Array, post_meld_data: Dictionary, all_possibilities: Array) -> void:
+	for card_key in meld_area_keys:
+		var parts = card_key.split('-')
+		var rank = parts[0]
+		if rank == 'JOKER':
+			# A JOKER can be added to any run.
+			for possibility in post_meld_data.all_public_run_suits.values():
+				var new_possibility = possibility.duplicate(true)
+				new_possibility['card_key'] = card_key
+				all_possibilities.append(new_possibility)
+			continue
+		var suit = parts[1]
+		if not post_meld_data.all_public_run_suits.has(suit): continue
+		for possibility in post_meld_data.all_public_run_suits[suit]:
+			var new_run_card_keys = possibility.card_keys.duplicate()
+			new_run_card_keys.append(card_key)
+			if not Global.is_valid_run(new_run_card_keys): continue
+			var new_possibility = possibility.duplicate(true)
+			new_possibility['card_key'] = card_key
+			all_possibilities.append(new_possibility)

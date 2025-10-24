@@ -17,144 +17,38 @@ func cleanup_test_resources() -> void:
 		test_framework.queue_free()
 	test_framework = null
 
-# Test cases for public meld validation
-func test_can_publicly_meld_card_to_runs():
+func test_get_all_meld_possibilities() -> bool:
 	var test_cases = [
 		{
-			"name": "Can extend run with same suit consecutive rank",
-			"card_key": "6-hearts-0",
-			"expected": true
-		},
-		{
-			"name": "Cannot extend run with different suit",
-			"card_key": "6-diamonds-0",
-			"expected": false
-		},
-		{
-			"name": "Cannot extend run with non-consecutive rank",
-			"card_key": "Q-hearts-0",
-			"expected": false
+			'name': 'Check to replace joker with 4-diamonds',
+			'meld_area_1_keys': ['4-diamonds-0'],
+			'post_meld_data': {'meld_area_1_complete': true, 'meld_area_1_type': 'run', 'meld_area_2_complete': false, 'meld_area_2_type': 'run', 'meld_area_3_complete': false, 'meld_area_3_type': '', 'all_public_group_ranks': {}, 'all_public_run_suits': {'diamonds': [ {'target_player_id': '1', 'type': 'run', 'suit': 'diamonds', 'card_keys': ['3-diamonds-2', 'JOKER-2-3', '5-diamonds-3', '6-diamonds-3', '7-diamonds-3', '8-diamonds-3'], 'meld_group_index': 0}, {'target_player_id': 'bot9', 'type': 'run', 'suit': 'diamonds', 'card_keys': ['8-diamonds-0', '9-diamonds-2', '10-diamonds-2', 'J-diamonds-1'], 'meld_group_index': 0}], 'clubs': [ {'target_player_id': '1', 'type': 'run', 'suit': 'clubs', 'card_keys': ['10-clubs-3', 'J-clubs-1', 'Q-clubs-0', 'K-clubs-3', 'JOKER-2-0'], 'meld_group_index': 1}], 'spades': [ {'target_player_id': 'bot5', 'type': 'run', 'suit': 'spades', 'card_keys': ['9-spades-3', '10-spades-2', 'J-spades-3', 'Q-spades-1', 'JOKER-1-3'], 'meld_group_index': 0}], 'hearts': [ {'target_player_id': 'bot5', 'type': 'run', 'suit': 'hearts', 'card_keys': ['7-hearts-2', '8-hearts-3', 'JOKER-2-2', '10-hearts-0', 'J-hearts-1', 'Q-hearts-0'], 'meld_group_index': 1}, {'target_player_id': 'bot9', 'type': 'run', 'suit': 'hearts', 'card_keys': ['2-hearts-3', '3-hearts-2', '4-hearts-0', '5-hearts-2', '6-hearts-3'], 'meld_group_index': 1}]}},
+			'expected': [
+				{
+					'card_key': '4-diamonds-0',
+					'target_player_id': '1',
+					'type': 'run',
+					'suit': 'diamonds',
+					'card_keys': [
+					'3-diamonds-2',
+					'JOKER-2-3',
+					'5-diamonds-3',
+					'6-diamonds-3',
+					'7-diamonds-3',
+					'8-diamonds-3'
+					],
+					'meld_group_index': 0
+				},
+			],
 		}
 	]
 
-	# Set up a mock game state with a run meld
-	Global.game_state = {
-		"public_players_info": [
-			{
-				"id": "player1",
-				"name": "Test Player",
-				"played_to_table": [
-					{
-						"type": "run",
-						'suit': 'hearts',
-						"card_keys": ["7-hearts-0", "8-hearts-0", "9-hearts-0", "10-hearts-0"],
-					}
-				]
-			}
-		]
-	}
-
-	# TODO:
-	# for test_case in test_cases:
-		# var all_public_meld_stats = Global._gen_all_public_meld_stats()
-		# var result = Global.can_publicly_meld_card(test_case['card_key'], all_public_meld_stats)
-		# test_framework.assert_equal(test_case['expected'], result, test_case['name'])
-
+	var player = load("res://players/player.gd")
+	for test_case in test_cases:
+		if test_case.has('meld_area_1_keys'):
+			Global.private_player_info['meld_area_1_keys'] = test_case.meld_area_1_keys
+		var got = player.get_all_meld_possibilities(test_case.post_meld_data)
+		test_framework.assert_array_size(got, len(test_case.expected), "Test case '%s' failed: expected %d possibilities, got %d" % [test_case.name, len(test_case.expected), len(got)])
+		for i in range(len(test_case.expected)):
+			test_framework.assert_dict_deep_equal(test_case.expected[i], got[i], "Test case '%s' failed at possibility %d" % [test_case.name, i])
 	return true
-
-func test_can_publicly_meld_card_to_groups():
-	var test_cases = [
-		{
-			"name": "Can add to group with same rank different suit",
-			"card_key": "K-diamonds-0",
-			"expected": true
-		},
-		{
-			"name": "Can add to group with same suit",
-			"card_key": "K-hearts-1",
-			"expected": true
-		},
-		{
-			"name": "Cannot add to group with different rank",
-			"card_key": "Q-diamonds-0",
-			"expected": false
-		}
-	]
-
-	# Set up a mock game state with a group meld
-	Global.game_state = {
-		"public_players_info": [
-			{
-				"id": "player1",
-				"name": "Test Player",
-				"played_to_table": [
-					{
-						"type": "group",
-						'rank': 'K',
-						"card_keys": ["K-hearts-0", "K-clubs-0", "K-spades-0"]
-					}
-				]
-			}
-		]
-	}
-
-	# TODO:
-	# for test_case in test_cases:
-		# var all_public_meld_stats = Global._gen_all_public_meld_stats()
-		# var result = Global.can_publicly_meld_card(test_case["card_key"], all_public_meld_stats)
-		# test_framework.assert_equal(test_case["expected"], result, test_case["name"])
-
-	return true
-
-func test_can_replace_joker_in_run():
-	var test_cases = [
-		{
-			"name": "Can replace JOKER with valid consecutive card",
-			"card_key": "8-hearts-0",
-			"expected": true
-		},
-		{
-			"name": "Cannot replace JOKER with wrong suit",
-			"card_key": "8-diamonds-0",
-			"expected": false
-		}
-	]
-
-	# Set up a mock game state with a run containing a JOKER
-	Global.game_state = {
-		"public_players_info": [
-			{
-				"id": "player1",
-				"name": "Test Player",
-				"played_to_table": [
-					{
-						"type": "run",
-						'suit': 'hearts',
-						"card_keys": ["7-hearts-0", "JOKER-1-0", "9-hearts-0", "10-hearts-0"],
-					}
-				]
-			}
-		]
-	}
-
-	# TODO:
-	var pub_meld = {"player_id": "player1", "meld_group_index": 0, "meld_group_type": "run"}
-
-	# for test_case in test_cases:
-	# 	var result = Global.can_card_replace_joker_in_run(test_case["card_key"], pub_meld)
-	# 	test_framework.assert_equal(test_case["expected"], result, test_case["name"])
-
-	return true
-
-# Placeholder implementations for testing (to be replaced with actual logic)
-func _can_publicly_meld_card_to_runs(card: Dictionary, existing_melds: Array) -> bool:
-	# TODO: Implement run validation logic
-	return false
-
-func _can_publicly_meld_card_to_groups(card: Dictionary, existing_melds: Array) -> bool:
-	# TODO: Implement group validation logic
-	return false
-
-func _can_replace_joker_in_run(card: Dictionary, existing_meld: Array) -> bool:
-	# TODO: Implement JOKER replacement logic
-	return false

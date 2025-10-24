@@ -777,5 +777,5 @@ func run_test_scenario(scenario: Dictionary) -> bool:
 	var hand_stats = test_bot.gen_bot_hand_stats(scenario.cards)
 	var evaluation = test_bot.evaluate_bot_hand(hand_stats, "test_bot")
 	evaluation.erase('eval_score') # Remove eval_score for comparison
-	test_framework.assert_dict_equal(scenario.want_evaluation, evaluation, "Bot hand evaluation should match expected")
+	test_framework.assert_dict_deep_equal(scenario.want_evaluation, evaluation, "Bot hand evaluation should match expected")
 	return true

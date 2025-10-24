@@ -632,8 +632,8 @@ func gen_all_public_group_ranks() -> Dictionary:
 	for pi in game_state.public_players_info:
 		if not pi.has('played_to_table'): continue
 		Global.dbg("gen_all_public_group_ranks: player id=%s, played_to_table=%s" % [pi.id, str(pi.played_to_table)])
-		for card_group_index in range(len(pi.played_to_table)):
-			var meld = pi.played_to_table[card_group_index]
+		for meld_group_index in range(len(pi.played_to_table)):
+			var meld = pi.played_to_table[meld_group_index]
 			dbg("gen_all_public_group_ranks: played_to_table meld=%s" % [str(meld)])
 			if meld.type != 'group': continue
 			var rank = meld.rank
@@ -644,7 +644,7 @@ func gen_all_public_group_ranks() -> Dictionary:
 				'type': 'group',
 				'rank': rank,
 				'card_keys': meld.card_keys.duplicate(),
-				'card_group_index': card_group_index,
+				'meld_group_index': meld_group_index,
 			}
 			ranks[rank].append(possibility)
 			dbg("gen_all_public_group_ranks: added meld for rank=%s: meld=%s, possibility=%s" % [rank, str(meld), str(possibility)])
@@ -655,8 +655,8 @@ func gen_all_public_run_suits() -> Dictionary:
 	var suits = {}
 	for pi in game_state.public_players_info:
 		if not pi.has('played_to_table'): continue
-		for card_group_index in range(len(pi.played_to_table)):
-			var meld = pi.played_to_table[card_group_index]
+		for meld_group_index in range(len(pi.played_to_table)):
+			var meld = pi.played_to_table[meld_group_index]
 			dbg("gen_all_public_run_suits: played_to_table meld=%s" % [str(meld)])
 			if meld.type != 'run': continue
 			var suit = meld.suit
@@ -668,7 +668,7 @@ func gen_all_public_run_suits() -> Dictionary:
 				'type': 'run',
 				'suit': suit,
 				'card_keys': meld.card_keys.duplicate(),
-				'card_group_index': card_group_index,
+				'meld_group_index': meld_group_index,
 			}
 			suits[suit].append(possibility)
 			dbg("gen_all_public_run_suits: added meld for suit=%s: meld=%s, possibility=%s" % [suit, str(meld), str(possibility)])
