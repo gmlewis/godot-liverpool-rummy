@@ -366,18 +366,25 @@ func _input(event):
 	if not (event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT): return
 	var current_state_name = game_state_machine.get_current_state_name()
 	var mouse_pos = get_global_mouse_position()
+
+	Global.dbg("Player('%s')._input: BUTTON PRESSED at mouse_pos=%s, state=%s" % [player_id, str(mouse_pos), current_state_name])
+
 	if Global.is_server() and (current_state_name == 'PlayerWonRoundState' or current_state_name == 'TallyScoresState' or current_state_name == 'FinalScoresState'):
-		if not is_mouse_over_player(mouse_pos): return # false alarm.
+		if not is_mouse_over_player(mouse_pos):
+			Global.dbg("Player('%s')._input: Mouse NOT over player, ignoring" % player_id)
+			return # false alarm.
+		Global.dbg("Player('%s')._input: Mouse IS over player in end-game state, processing..." % player_id)
 		if is_winning_player and current_state_name == 'PlayerWonRoundState':
 			# Allow host to click on winner to advance to TallyScoresState
-			Global.dbg("Player('%s'): _input: Clicked on winning player node, advancing to TallyScoresState" % player_id)
+			Global.dbg("Player('%s')._input: Clicked on winning player node, advancing to TallyScoresState - calling set_input_as_handled()" % player_id)
 			Global.send_transition_all_clients_state_to_signal('TallyScoresState')
 			# Don't allow any other nodes to also handle this event.
 			get_viewport().set_input_as_handled()
 		if current_state_name == 'TallyScoresState':
+			Global.dbg("Player('%s')._input: TallyScoresState, advancing to next round - calling set_input_as_handled()" % player_id)
 			# Allow host to click on any player to advance to next round (or reset game if round 7 is complete).
 			if Global.game_state.current_round_num >= 7:
-				Global.dbg("Player('%s'): _input: Round 7 complete, showing final scores" % player_id)
+				Global.dbg("Player('%s')._input: Round 7 complete, showing final scores" % player_id)
 				var next_round_scene = load("res://rounds/final_scores.tscn") as PackedScene
 				Global.request_change_round(next_round_scene)
 				Global.send_transition_all_clients_state_to_signal('FinalScoresState')
@@ -388,18 +395,26 @@ func _input(event):
 				return # Happens in round 7 after a win.
 			get_viewport().set_input_as_handled()
 		if current_state_name == 'FinalScoresState':
+			Global.dbg("Player('%s')._input: FinalScoresState, resetting game - calling set_input_as_handled()" % player_id)
 			Global.reset_game_signal.emit()
 			if not get_viewport():
 				return # Happens in round 7 after a win.
 			get_viewport().set_input_as_handled()
 		return
 	# Only current player can click on _ANY_ player node and only during playing state.
-	if not Global.is_my_turn() or not game_state_machine.is_playing_state(): return
-	if not is_meldable and not is_buying_card: return
+	if not Global.is_my_turn() or not game_state_machine.is_playing_state():
+		Global.dbg("Player('%s')._input: Not my turn or not playing state, ignoring" % player_id)
+		return
+	if not is_meldable and not is_buying_card:
+		Global.dbg("Player('%s')._input: Not meldable and not buying, ignoring" % player_id)
+		return
 	# Finally, after all the trivial rejects, now calculate if the mouse is actually over this player node.
-	if not is_mouse_over_player(mouse_pos): return # false alarm.
+	if not is_mouse_over_player(mouse_pos):
+		Global.dbg("Player('%s')._input: Mouse NOT over player (rect check), ignoring" % player_id)
+		return # false alarm.
+	Global.dbg("Player('%s')._input: Mouse IS over player! is_meldable=%s, is_buying_card=%s" % [player_id, is_meldable, is_buying_card])
 	if is_meldable and is_my_turn and len(Global.private_player_info['played_to_table']) == 0:
-		Global.dbg("Player('%s'): _input: is_meldable=%s, PERSONALLY MELD!" % [player_id, is_meldable])
+		Global.dbg("Player('%s')._input: PERSONALLY MELDING - calling set_input_as_handled()" % player_id)
 		Global.personally_meld_hand(player_id, last_hand_evaluation)
 		# Clear the meldable area sparklers
 		Global.emit_meld_area_state_changed_signal(false, 0)
@@ -409,9 +424,9 @@ func _input(event):
 		get_viewport().set_input_as_handled()
 		return
 	if is_meldable: # current player wishes to meld publicly on this player.
+		Global.dbg("Player('%s')._input: PUBLICLY MELDING on this player - calling set_input_as_handled()" % player_id)
 		# Don't allow any other nodes to also handle this event.
 		get_viewport().set_input_as_handled()
-		Global.dbg("Player('%s'): _input: is_meldable=%s, PUBLICLY MELD ON ME!" % [player_id, is_meldable])
 		for possibility in local_public_meld_possibilities:
 			var is_meldable_player_id = possibility.target_player_id
 			var is_meldable_card_key = possibility.card_key
@@ -422,6 +437,7 @@ func _input(event):
 		local_public_meld_possibilities.clear()
 		return
 	if not is_my_turn and is_buying_card:
+		Global.dbg("Player('%s')._input: BUYING CARD - calling set_input_as_handled()" % player_id)
 		var current_player_id = Global.private_player_info.id
 		Global.allow_outstanding_buy_request(current_player_id)
 		# Don't allow any other nodes to also handle this event.
