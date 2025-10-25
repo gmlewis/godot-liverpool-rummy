@@ -136,7 +136,16 @@ func discover_and_run_test_suite(test_suite_name: String, test_instance: Object)
 
 		var result = callable.call()
 		if result == null or result == false or current_test_failed or Global.error_count > 0:
-			print("GML: test '%s' result: %s - test failed, current_test_failed=%s, error_count=%d" % [test_name, str(result), str(current_test_failed), Global.error_count])
+			var failure_reason = ""
+			if Global.error_count > 0:
+				failure_reason = "Global.error() was called %d time(s) during test execution" % Global.error_count
+			elif current_test_failed:
+				failure_reason = "assertion failed"
+			elif result == null or result == false:
+				failure_reason = "test returned %s" % str(result)
+			print("GML: test '%s' FAILED - %s (result=%s, current_test_failed=%s, error_count=%d)" % [test_name, failure_reason, str(result), str(current_test_failed), Global.error_count])
+			if not current_test_failed:
+				fail_test(failure_reason)
 			return false
 		pass_test()
 
@@ -174,7 +183,16 @@ func run_test_suite(test_suite_name: String, test_functions: Array) -> bool:
 
 		# print("GML: test '%s' result: %s" % [test_name, str(result)])
 		if result == null or result == false or current_test_failed or Global.error_count > 0:
-			print("GML: test '%s' result: %s - test failed" % [test_name, str(result)])
+			var failure_reason = ""
+			if Global.error_count > 0:
+				failure_reason = "Global.error() was called %d time(s) during test execution" % Global.error_count
+			elif current_test_failed:
+				failure_reason = "assertion failed"
+			elif result == null or result == false:
+				failure_reason = "test returned %s" % str(result)
+			print("GML: test '%s' FAILED - %s (result=%s, current_test_failed=%s, error_count=%d)" % [test_name, failure_reason, str(result), str(current_test_failed), Global.error_count])
+			if not current_test_failed:
+				fail_test(failure_reason)
 			# Don't quit here - let the test runner handle exit codes
 			return false
 		pass_test()
