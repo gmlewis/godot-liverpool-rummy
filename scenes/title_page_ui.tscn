@@ -1,4 +1,4 @@
-[gd_scene load_steps=33 format=3 uid="uid://cr0477tbltrwb"]
+[gd_scene load_steps=34 format=3 uid="uid://cr0477tbltrwb"]
 
 [ext_resource type="Script" uid="uid://c0vhxe5f80og6" path="res://scenes/root_node.gd" id="1_3twdq"]
 [ext_resource type="Texture2D" uid="uid://cvo43b68mb4qu" path="res://backgrounds/openart-image_HhP98Etm_1749088776837_raw.jpg" id="1_elm8r"]
@@ -25,6 +25,7 @@
 [ext_resource type="Texture2D" uid="uid://d1b6bva1rr8ao" path="res://pngs/1st-place.png" id="16_pfi7e"]
 [ext_resource type="Texture2D" uid="uid://d1p5d7tp3gf56" path="res://pngs/2nd-place.png" id="17_jwwji"]
 [ext_resource type="Texture2D" uid="uid://byuey0008j7l1" path="res://pngs/3rd-place.png" id="18_75b8u"]
+[ext_resource type="Script" uid="uid://cnk44o8m2ndvj" path="res://scripts/virtual-keyboard-adjuster.gd" id="23_jwwji"]
 
 [sub_resource type="SystemFont" id="SystemFont_6r1xf"]
 
@@ -269,6 +270,7 @@ offset_bottom = 428.0
 theme_override_font_sizes/font_size = 80
 alignment = 1
 caret_blink = true
+script = ExtResource("23_jwwji")
 
 [node name="RefreshNameButton" type="Button" parent="TitlePageUI/PanelPositionControl/WelcomePanel"]
 layout_mode = 0
@@ -337,6 +339,7 @@ offset_bottom = 335.0
 theme_override_font_sizes/font_size = 80
 alignment = 1
 caret_blink = true
+script = ExtResource("23_jwwji")
 
 [node name="NextIPAddressButton" type="Button" parent="TitlePageUI/PanelPositionControl/StartGamePanel"]
 layout_mode = 0
