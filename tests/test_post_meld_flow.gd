@@ -162,17 +162,16 @@ func test_ack_sync_handler_operation_filtering() -> bool:
 func test_bot_ignores_other_players_ack_sync_callbacks() -> bool:
 	print("  Running: test_bot_ignores_other_players_ack_sync_callbacks")
 
-	# This test verifies that bots only process ack_sync callbacks for their OWN operations
-	# NOT for other players' operations. This prevents the bug where bot7 was processing
-	# bot6's discard operation callback.
+	# This test verifies that bots only process ack_sync callbacks when it's their turn.
+	# The peer_id parameter represents the LAST peer that sent an ack, not the peer that
+	# initiated the operation, so bots should only check is_currently_my_turn, not peer_id.
 
 	Global.game_state.current_round_num = 1
-	Global.game_state.current_player_turn_index = 7
 
 	var bot7 = load("res://players/00-bot.gd").new("bot7")
-	bot7.is_my_turn = true
+	bot7.is_my_turn = false
 
-	# Give bot7 cards that CAN be melded
+	# Give bot7 some cards
 	Global.bots_private_player_info["bot7"] = {
 		"id": "bot7",
 		"turn_index": 7,
@@ -194,19 +193,18 @@ func test_bot_ignores_other_players_ack_sync_callbacks() -> bool:
 		}
 	]
 
-	# Simulate bot6 (peer_id=6) discarding a card - bot7 should NOT process this
-	# peer_id != 1 means it's from another player, not this bot
+	# Test: Bot7 is NOT on their turn - should ignore all operations regardless of peer_id
+	Global.game_state.current_player_turn_index = 5 # Someone else's turn
+
+	# These should all be ignored because it's not bot7's turn
+	# Different peer_ids representing different players' acks
 	bot7._on_server_ack_sync_completed_signal(6, "_rpc_move_player_card_to_discard_pile", {})
-
-	# Also test with a meld operation from another player
 	bot7._on_server_ack_sync_completed_signal(5, "_rpc_personally_meld_cards_only", {})
-
-	# If we get here without errors or unwanted side effects, the handler correctly
-	# filtered out operations from other players (peer_id != 1)
-
-	# Now test that bot7 DOES process its own operations (peer_id=1)
-	# This should evaluate the hand but not crash since we haven't set up full mocking
 	bot7._on_server_ack_sync_completed_signal(1, "_rpc_give_top_stock_pile_card_to_player", {})
+	bot7._on_server_ack_sync_completed_signal(2, "_rpc_publicly_meld_card_only", {})
+
+	# If we reach here without any game logic executing, the test passes
+	# (The bot correctly ignored all signals since it wasn't their turn)
 
 	# Cleanup
 	bot7.queue_free()
