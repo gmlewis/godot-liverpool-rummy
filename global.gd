@@ -79,7 +79,7 @@ const MAX_PLAYERS = 10
 const CARD_SPACING_IN_STACK = 0.5 # Y-spacing for final stack in pixels
 const PLAYER_SCALE = Vector2(0.65, 0.65)
 const DEBUG_SHOW_CARD_INFO = false
-const OTHER_PLAYER_BUY_GRACE_PERIOD_SECONDS: float = 3.0 # if DEBUG_SHOW_CARD_INFO else 10.0
+var OTHER_PLAYER_BUY_GRACE_PERIOD_SECONDS: float = 3.0 if OS.has_feature("mobile") else 0.1
 const MELD_AREA_TOP_PERCENT = 0.7 # 70% down the screen
 const MELD_AREA_RIGHT_PERCENT = 0.5 # 50% across the screen
 const MELD_AREA_1_RIGHT_PERCENT = 0.333 * MELD_AREA_RIGHT_PERCENT # 16.65% across the screen
@@ -1347,11 +1347,15 @@ func _publicly_meld_card(_player_id: String, card_key: String, target_player_id:
 	# Also update public_players_info so the animation code can see the updated meld
 	for pi in game_state.public_players_info:
 		if pi.id == target_player_id:
-			pi.played_to_table[meld_group_index]['card_keys'].append(card_key)
-			# Sort runs after adding a new card to maintain proper sequence
-			var meld_group = pi.played_to_table[meld_group_index]
-			if meld_group.get('type') == 'run':
-				pi.played_to_table[meld_group_index]['card_keys'] = sort_run_cards(pi.played_to_table[meld_group_index]['card_keys'])
+			# Check if the meld group exists (may not exist yet if personal meld RPC is still processing)
+			if meld_group_index < len(pi.played_to_table):
+				pi.played_to_table[meld_group_index]['card_keys'].append(card_key)
+				# Sort runs after adding a new card to maintain proper sequence
+				var meld_group = pi.played_to_table[meld_group_index]
+				if meld_group.get('type') == 'run':
+					pi.played_to_table[meld_group_index]['card_keys'] = sort_run_cards(pi.played_to_table[meld_group_index]['card_keys'])
+			else:
+				push_warning("_publicly_meld_card: player_id='%s' meld_group_index=%d doesn't exist yet in played_to_table (size=%d) - personal meld RPC may still be processing" % [target_player_id, meld_group_index, len(pi.played_to_table)])
 			break
 
 ################################################################################
@@ -1555,12 +1559,14 @@ func _rpc_send_stock_pile_order_to_clients(stock_pile_order: Array) -> void:
 			# Global.dbg("B: Card key='%s', z_index=%d" % [child.key, child.z_index])
 			# if child.z_index != Global.playing_cards.get(child.key).z_index:
 				# push_error("Card '%s' z_index mismatch: %d != %d" % [child.key, child.z_index, Global.playing_cards.get(child.key).z_index])
-			var new_z_index = new_index_by_key[child.key]
-			tween.tween_property(child, 'z_index', new_z_index, 0.1)
-			# var position = child.get_position()
-			var new_position = stock_pile_position + Vector2(0, -new_z_index * CARD_SPACING_IN_STACK)
-			tween.tween_property(child, 'position', new_position, 0.1)
-			# dbg("GML13, Card '%s' z_index=%d, position=%s" % [child.key, child.z_index, str(child.position)])
+			# Only update cards that are in the stock pile (have an entry in new_index_by_key)
+			if child.key in new_index_by_key:
+				var new_z_index = new_index_by_key[child.key]
+				tween.tween_property(child, 'z_index', new_z_index, 0.1)
+				# var position = child.get_position()
+				var new_position = stock_pile_position + Vector2(0, -new_z_index * CARD_SPACING_IN_STACK)
+				tween.tween_property(child, 'position', new_position, 0.1)
+				# dbg("GML13, Card '%s' z_index=%d, position=%s" % [child.key, child.z_index, str(child.position)])
 		else:
 			push_error("Child '%s' is not a PlayingCard!" % [child.name])
 	await tween.finished

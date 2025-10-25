@@ -92,7 +92,9 @@ func _on_player_drew_state_entered() -> void:
 	if current_hand_evaluation['can_be_personally_melded']:
 		Global.dbg("BOT('%s'): _on_player_drew_state_entered: can_meld=true, melding hand" % [get_bot_name()])
 		Global.personally_meld_hand(bot_id, current_hand_evaluation)
-		Global.dbg("BOT('%s'): LEAVE1 _on_player_drew_state_entered()" % get_bot_name())
+		# After personally melding, the state machine will re-trigger this handler
+		# when the sync completes, so we return here instead of recursing
+		Global.dbg("BOT('%s'): LEAVE1 _on_player_drew_state_entered() - waiting for state machine to re-trigger after personal meld sync" % get_bot_name())
 		return
 
 	# If the bot has already personally melded (this turn or earlier), check for public melds
@@ -105,7 +107,9 @@ func _on_player_drew_state_entered() -> void:
 			var target_player_id = next_meld_operation['target_player_id']
 			var meld_group_index = next_meld_operation['meld_group_index']
 			Global.meld_card_to_public_meld(bot_id, card_key, target_player_id, meld_group_index)
-			Global.dbg("BOT('%s'): LEAVE2 _on_player_drew_state_entered() after requesting public meld" % get_bot_name())
+			# After publicly melding, the state machine will re-trigger this handler
+			# when the sync completes, so we return here instead of recursing
+			Global.dbg("BOT('%s'): LEAVE2 _on_player_drew_state_entered() - waiting for state machine to re-trigger after public meld sync" % get_bot_name())
 			return
 
 	_smart_discard_card(current_hand_evaluation)
@@ -214,12 +218,7 @@ func _on_server_ack_sync_completed_signal(_peer_id: int, operation_name: String,
 	var is_currently_my_turn = bot_private_player_info.turn_index == Global.game_state.current_player_turn_index
 	if not is_currently_my_turn: return
 
-	# CRITICAL: Only process ack_sync callbacks for operations initiated by THIS bot
-	# The signal is broadcast to all players, but each bot should only respond to their own operations
-	# peer_id=1 means the server (this bot), any other peer_id means a different player
-	if _peer_id != 1: return
-
-	Global.dbg("BOT('%s'): ENTER _on_server_ack_sync_completed_signal(operation_name='%s', is_my_turn=%s, is_currently_my_turn=%s)" % [get_bot_name(), operation_name, is_my_turn, is_currently_my_turn])
+	Global.dbg("BOT('%s'): ENTER _on_server_ack_sync_completed_signal(operation_name='%s', is_my_turn=%s, is_currently_my_turn=%s, peer_id=%d)" % [get_bot_name(), operation_name, is_my_turn, is_currently_my_turn, _peer_id])
 	var card_keys_in_hand = bot_private_player_info.card_keys_in_hand
 	Global.dbg("BOT('%s'): _on_server_ack_sync_completed_signal: card_keys_in_hand=%s, num_cards=%d" % [get_bot_name(), str(card_keys_in_hand), len(card_keys_in_hand)])
 	var current_hand_stats = gen_bot_hand_stats(card_keys_in_hand)

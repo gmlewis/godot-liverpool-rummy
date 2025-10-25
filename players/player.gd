@@ -92,7 +92,7 @@ func _on_game_state_updated_signal():
 		$BuyIndicatorSprite2D.show() # Show buy indicator
 	else:
 		$BuyIndicatorSprite2D.hide() # Hide buy indicator
-	Global.dbg("Player('%s'): _on_game_state_updated_signal: hiding meld indicator" % [player_id])
+	# Global.dbg("Player('%s'): _on_game_state_updated_signal: hiding meld indicator" % [player_id])
 	is_meldable = false # Reset meldable state
 	# if is_meldable:
 	# 	$MeldIndicatorSprite2D.show() # Show meld indicator
@@ -102,7 +102,7 @@ func _on_game_state_updated_signal():
 	var current_state_name = game_state_machine.get_current_state_name()
 	var num_cards = public_player_info['num_cards']
 	is_winning_player = current_state_name == 'PlayerWonRoundState' and num_cards == 0
-	Global.dbg("Player('%s'): _on_game_state_updated_signal: current_state='%s', num_cards=%d, is_winning_player=%s" % [player_id, current_state_name, num_cards, str(is_winning_player)])
+	# Global.dbg("Player('%s'): _on_game_state_updated_signal: current_state='%s', num_cards=%d, is_winning_player=%s" % [player_id, current_state_name, num_cards, str(is_winning_player)])
 	if is_winning_player:
 		Global.dbg("Player('%s'): *** WINNING PLAYER ANIMATION TRIGGERED ***" % [player_id])
 		$TurnIndicatorRect.color = Color(0.8, 0.8, 0.2, 1.0) # Set color to yellow for winning player
@@ -368,7 +368,7 @@ func _input(event):
 
 	# Global.dbg("Player('%s')._input: BUTTON PRESSED at mouse_pos=%s, state=%s" % [player_id, str(mouse_pos), current_state_name])
 
-	if Global.is_server() and (current_state_name == 'PlayerWonRoundState' or current_state_name == 'TallyScoresState' or current_state_name == 'FinalScoresState'):
+	if Global.is_server() and (current_state_name == 'PlayerWonRoundState' or current_state_name == 'TallyScoresState'):
 		if not is_mouse_over_player(mouse_pos):
 			# Global.dbg("Player('%s')._input: Mouse NOT over player, ignoring" % player_id)
 			return # false alarm.
@@ -393,12 +393,13 @@ func _input(event):
 			if not get_viewport():
 				return # Happens in round 7 after a win.
 			get_viewport().set_input_as_handled()
-		if current_state_name == 'FinalScoresState':
-			Global.dbg("Player('%s')._input: FinalScoresState, resetting game - calling set_input_as_handled()" % player_id)
-			Global.reset_game_signal.emit()
-			if not get_viewport():
-				return # Happens in round 7 after a win.
-			get_viewport().set_input_as_handled()
+		return
+	if current_state_name == 'FinalScoresState':
+		Global.dbg("Player('%s')._input: FinalScoresState, resetting game - calling set_input_as_handled()" % player_id)
+		Global.reset_game_signal.emit()
+		if not get_viewport():
+			return # Happens in round 7 after a win.
+		get_viewport().set_input_as_handled()
 		return
 	# Only current player can click on _ANY_ player node and only during playing state.
 	if not Global.is_my_turn() or not game_state_machine.is_playing_state():

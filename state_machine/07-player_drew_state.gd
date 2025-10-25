@@ -120,6 +120,13 @@ func _on_animate_publicly_meld_card_only_signal(_player_id: String, card_key: St
 	melding_player_public_info['num_cards'] -= 1
 	# Get the target player's meld group (where the card is being added)
 	var player_public_info = players_by_id[target_player_id]
+
+	# Check if the meld group exists (may not exist yet if personal meld RPC is still processing)
+	if meld_group_index >= len(player_public_info['played_to_table']):
+		push_warning("07-player_drew_state: _on_animate_publicly_meld_card_only_signal: meld_group_index=%d doesn't exist yet in played_to_table (size=%d) for player '%s' - personal meld may still be processing. Skipping animation." % [meld_group_index, len(player_public_info['played_to_table']), target_player_id])
+		Global.ack_sync_completed(ack_sync_name)
+		return
+
 	var meld_group = player_public_info['played_to_table'][meld_group_index]
 
 	Global.dbg("PUBLIC MELD DEBUG: meld_group BEFORE adding card: %s" % str(meld_group))
