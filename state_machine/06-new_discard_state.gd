@@ -52,6 +52,8 @@ func _on_new_card_exposed_on_discard_pile_signal() -> void:
 
 func exit():
 	Global.dbg("LEAVE NewDiscardState")
+	# Cancel any countdown timer that might still be running
+	Global.emit_cancel_countdown_timer_signal()
 	Global.disconnect('card_clicked_signal', _on_card_clicked_signal)
 	Global.disconnect('card_drag_started_signal', _on_card_drag_started_signal)
 	Global.disconnect('card_moved_signal', _on_card_moved_signal)
@@ -73,8 +75,13 @@ func sanitize_discard_pile():
 		# 	playing_card.flip_card()
 		z_index -= 1
 
-func _on_card_clicked_signal(_playing_card, _global_position):
-	pass
+func _on_card_clicked_signal(playing_card, _global_position):
+	# If the current player clicks the discard pile, cancel the countdown timer
+	if Global.is_my_turn():
+		# Check if the clicked card is the top card of the discard pile
+		if len(Global.discard_pile) > 0 and Global.discard_pile[0] == playing_card:
+			Global.dbg("06-new_discard_state: Current player clicked discard pile, cancelling countdown timer")
+			Global.emit_cancel_countdown_timer_signal()
 
 func _on_card_drag_started_signal(_playing_card, _from_position):
 	pass

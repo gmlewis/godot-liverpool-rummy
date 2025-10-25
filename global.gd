@@ -58,6 +58,7 @@ signal animate_publicly_meld_card_only_signal(player_id: String, card_key: Strin
 signal animate_reorder_run_cards_signal(player_id: String, card_key: String, target_player_id: String, meld_group_index: int, sorted_card_keys: Array, ack_sync_name: String)
 signal animate_winning_confetti_explosion_signal(num_millis: int)
 signal new_card_exposed_on_discard_pile_signal()
+signal cancel_countdown_timer_signal()
 signal transition_all_clients_state_to_signal(state_name: String)
 signal server_ack_sync_completed_signal(peer_id: int, operation_name: String, operation_params: Dictionary)
 # Local player card manipulation signals:
@@ -461,6 +462,9 @@ func gen_playing_card_key(rank: String, suit: String, deck: int) -> String:
 
 func emit_card_clicked_signal(playing_card, global_position):
 	card_clicked_signal.emit(playing_card, global_position)
+
+func emit_cancel_countdown_timer_signal():
+	cancel_countdown_timer_signal.emit()
 
 func emit_card_drag_started_signal(playing_card, from_position):
 	card_drag_started_signal.emit(playing_card, from_position)
