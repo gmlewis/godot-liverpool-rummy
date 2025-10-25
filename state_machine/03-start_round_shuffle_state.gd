@@ -42,9 +42,10 @@ func enter(_params: Dictionary):
 	if Global.is_server():
 		# Server/host marks itself as complete
 		_on_client_shuffle_complete(1) # Server is always peer_id 1
-		# Wait for all clients to complete their shuffle
-		Global.dbg("StartRoundShuffleState: Server waiting for all clients to complete shuffle...")
-		await all_clients_shuffle_complete_signal
+		# Wait for all clients to complete their shuffle (unless already complete)
+		if not shuffle_completion_signal_emitted:
+			Global.dbg("StartRoundShuffleState: Server waiting for all clients to complete shuffle...")
+			await all_clients_shuffle_complete_signal
 		Global.dbg("StartRoundShuffleState: All clients have completed shuffle!")
 	else:
 		# Client notifies server that it has completed shuffling

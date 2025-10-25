@@ -1,7 +1,6 @@
 # countdown_timer.gd
 extends CanvasLayer
 
-@export var count_from: int = 3
 @export var number_font_size: int = 200
 @export var animation_duration: float = 0.5
 
@@ -61,6 +60,7 @@ func update_rotation() -> void:
 	$Label.rotation_degrees = rot
 
 func start_countdown(top_card_position: Vector2) -> void:
+	var count_from = int(Global.OTHER_PLAYER_BUY_GRACE_PERIOD_SECONDS)
 	for i in range(count_from, 0, -1):
 		if is_cancelled:
 			break
@@ -99,8 +99,3 @@ func animate_number(number: int, top_card_position: Vector2) -> void:
 	current_tween.tween_property(label, "scale", Vector2.ZERO, animation_duration).set_ease(Tween.EASE_IN)
 
 	await current_tween.finished
-
-func set_countdown_params(from: int, duration: float = 0.5, font_size: int = 80) -> void:
-	count_from = from
-	animation_duration = duration
-	number_font_size = font_size
