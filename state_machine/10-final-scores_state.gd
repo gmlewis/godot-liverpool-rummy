@@ -22,6 +22,14 @@ const TROPHY_SPACING_FACTOR = 8 # as if fitting # items next to each other, cent
 
 func enter(_params: Dictionary):
 	Global.dbg("ENTER FinalScoresState")
+
+	# Update RoundLabel text based on language
+	var round_node = get_tree().root.get_node_or_null("/root/RootNode/RoundNode")
+	if round_node:
+		var round_label = round_node.get_node_or_null("RoundLabel")
+		if round_label and Global.LANGUAGE == 'de':
+			round_label.text = "Spiel Vorbei! - Endergebnis"
+
 	# Step 0: Create trophy sprites but keep them hidden for now.
 	trophy1 = make_trophy(trophy1_image)
 	trophy2 = make_trophy(trophy2_image)

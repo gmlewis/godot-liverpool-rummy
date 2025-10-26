@@ -5,16 +5,6 @@ extends GameState
 func enter(_params: Dictionary):
 	Global.dbg("ENTER TutorialState")
 
-	# Update RoundLabel text based on language
-	var round_node = get_tree().root.get_node_or_null("/root/RootNode/RoundNode")
-	if round_node:
-		var round_label = round_node.get_node_or_null("RoundLabel")
-		if round_label:
-			if Global.LANGUAGE == 'de':
-				round_label.text = "Tutorial" # Same in German
-			else:
-				round_label.text = "Tutorial"
-
 	# Setup and show the "Main Menu" button
 	_setup_main_menu_button()
 	state_advance_button.show()

@@ -296,16 +296,4 @@ func _on_tutorial_button_pressed() -> void:
 	var tutorial_scene = load("res://rounds/tutorial.tscn") as PackedScene
 	Global.request_change_round(tutorial_scene)
 
-	# Set the RoundLabel text based on language
-	# Wait a frame for the scene to be instantiated
-	await get_tree().process_frame
-	var round_node = get_tree().root.get_node_or_null("/root/RootNode/RoundNode")
-	if round_node:
-		var round_label = round_node.get_node_or_null("RoundLabel")
-		if round_label:
-			if Global.LANGUAGE == 'de':
-				round_label.text = "Tutorial" # Same in German
-			else:
-				round_label.text = "Tutorial"
-
 	Global.send_transition_all_clients_state_to_signal("TutorialState")
