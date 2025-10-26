@@ -3,6 +3,7 @@ extends GameState
 # Scores are tallied and displayed. The host can then manually start the next round by clicking on any player.
 
 @onready var players_container: Node2D = $'../../AllPlayersControl/PlayersContainer'
+@onready var state_advance_button: TextureButton = $'../../HUDLayer/Control/StateAdvanceButton'
 
 var transient_round_score: PackedScene
 var added_children: Array = []
@@ -12,6 +13,13 @@ func enter(_params: Dictionary):
 	transient_round_score = preload("res://scenes/transient_round_score.tscn")
 	Global.dbg("ENTER TallyScoresState")
 	_state_is_active = true
+
+	# Setup the button but keep it hidden during animation (will be shown after animation completes)
+	if Global.is_server():
+		_setup_state_advance_button()
+		state_advance_button.hide()
+	else:
+		state_advance_button.hide()
 
 	# First, if this is the server, total up all bots' scores and share them with all players immediately.
 	if Global.is_server():
@@ -31,6 +39,11 @@ func enter(_params: Dictionary):
 func exit():
 	Global.dbg("LEAVE TallyScoresState")
 	_state_is_active = false
+	# Hide the button and disconnect signal when leaving state
+	if state_advance_button.visible:
+		state_advance_button.hide()
+		if state_advance_button.pressed.is_connected(_on_state_advance_button_pressed):
+			state_advance_button.pressed.disconnect(_on_state_advance_button_pressed)
 	for child in added_children:
 		child.queue_free()
 	added_children.clear()
@@ -145,3 +158,67 @@ func _animate_and_send_local_player_score() -> void:
 	card_score.position = target_position
 	card_score.rotation = target_rotation
 	card_score.scale = Vector2(1, 1)
+
+	# Now that animation is complete, show the button if we're the server
+	if Global.is_server():
+		state_advance_button.show()
+
+func _setup_state_advance_button() -> void:
+	# Determine which button to show based on current round
+	var texture_path: String
+	var current_round = Global.game_state['current_round_num']
+
+	if current_round >= 1 and current_round <= 6:
+		# Rounds 1-6: Show "Next Round" button
+		if Global.LANGUAGE == 'de':
+			texture_path = "res://svgs/next-round-german.svg"
+		else:
+			texture_path = "res://svgs/next-round-english.svg"
+	else:
+		# Round 7: Show "Final Scores" button
+		if Global.LANGUAGE == 'de':
+			texture_path = "res://svgs/final-scores-german.svg"
+		else:
+			texture_path = "res://svgs/final-scores-english.svg"
+
+	var texture = load(texture_path)
+	state_advance_button.texture_normal = texture
+	state_advance_button.texture_pressed = texture
+	state_advance_button.texture_hover = texture
+
+	# Enable texture scaling
+	state_advance_button.ignore_texture_size = true
+	state_advance_button.stretch_mode = TextureButton.STRETCH_KEEP_ASPECT_CENTERED
+
+	# Resize button to 25% of screen width while maintaining aspect ratio
+	var target_width = Global.screen_size.x * 0.25
+	var texture_size = texture.get_size()
+	var aspect_ratio = texture_size.y / texture_size.x
+	var target_height = target_width * aspect_ratio
+
+	state_advance_button.custom_minimum_size = Vector2(target_width, target_height)
+	state_advance_button.size = Vector2(target_width, target_height)
+
+	# Center the button by setting offsets based on the new size
+	state_advance_button.offset_left = - target_width / 2.0
+	state_advance_button.offset_top = - target_height / 2.0
+	state_advance_button.offset_right = target_width / 2.0
+	state_advance_button.offset_bottom = target_height / 2.0
+
+	# Set z_index to be below the animating cards (which use 999)
+	state_advance_button.z_index = 900
+
+	# Connect the button press signal
+	if not state_advance_button.pressed.is_connected(_on_state_advance_button_pressed):
+		state_advance_button.pressed.connect(_on_state_advance_button_pressed)
+
+func _on_state_advance_button_pressed() -> void:
+	var current_round = Global.game_state['current_round_num']
+	if current_round >= 1 and current_round <= 6:
+		Global.dbg("Host pressed Next Round button, advancing to next round")
+		Global.server_advance_to_next_round()
+	else:
+		Global.dbg("Host pressed Final Scores button, showing final scores")
+		var final_scores_scene = load("res://rounds/final_scores.tscn") as PackedScene
+		Global.request_change_round(final_scores_scene)
+		Global.send_transition_all_clients_state_to_signal("FinalScoresState")

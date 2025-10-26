@@ -6,6 +6,7 @@ var original_position_y = 0
 var last_keyboard_height = 0
 
 func _ready():
+	if not OS.has_feature("mobile"): return
 	root_node = get_node("/root/RootNode")
 	original_position_y = root_node.position.y
 
@@ -13,6 +14,7 @@ func _ready():
 	# focus_exited.connect(_on_focus_exited)
 
 func _exit_tree():
+	if not OS.has_feature("mobile"): return
 	focus_entered.disconnect(_on_focus_entered)
 	# focus_exited.disconnect(_on_focus_exited)
 
@@ -26,6 +28,7 @@ func _on_focus_entered():
 # 	pass
 
 func _process(_delta):
+	if not OS.has_feature("mobile"): return
 	# if is_monitoring_keyboard:
 	var keyboard_height = DisplayServer.virtual_keyboard_get_height()
 

@@ -5,6 +5,8 @@ extends GameState
 @export var trophy2_image: CompressedTexture2D
 @export var trophy3_image: CompressedTexture2D
 
+@onready var state_advance_button: TextureButton = $'../../HUDLayer/Control/StateAdvanceButton'
+
 var trophy1: Sprite2D
 var trophy2: Sprite2D
 var trophy3: Sprite2D
@@ -41,13 +43,20 @@ func enter(_params: Dictionary):
 	await animate_second_place_presentation(winning_ids[1])
 	# Step 6: Animated 1st place trophy presentation.
 	await animate_first_place_presentation(winning_ids[0])
-	# Step 7: Confetti and fireworks animation.
-	await animate_final_confetti_and_fireworks()
+	# Step 7: Start confetti and fireworks animation but don't wait for it.
+	animate_final_confetti_and_fireworks()
 	# Step 8: Wait for host to click to reset the game. This is handled in player.gd.
+	_setup_state_advance_button()
+	state_advance_button.show()
 
 func exit():
 	Global.dbg("LEAVE FinalScoresState")
 	continue_confetti = false
+	# Hide the button and disconnect signal when leaving state
+	if state_advance_button.visible:
+		state_advance_button.hide()
+		if state_advance_button.pressed.is_connected(_on_state_advance_button_pressed):
+			state_advance_button.pressed.disconnect(_on_state_advance_button_pressed)
 	# Free resources
 	trophy1.queue_free()
 	trophy2.queue_free()
@@ -190,3 +199,51 @@ static func next_winners(remaining_players: Array) -> Dictionary:
 		var player = remaining_players.pop_front()
 		result.append(player['id'])
 	return {'result': result, 'remaining_players': remaining_players}
+
+func _setup_state_advance_button() -> void:
+	# Load the appropriate SVG based on language
+	var texture_path: String
+	if Global.LANGUAGE == 'de':
+		texture_path = "res://svgs/main-menu-german.svg"
+	else:
+		texture_path = "res://svgs/main-menu-english.svg"
+
+	var texture = load(texture_path)
+	state_advance_button.texture_normal = texture
+	state_advance_button.texture_pressed = texture
+	state_advance_button.texture_hover = texture
+
+	# Enable texture scaling
+	state_advance_button.ignore_texture_size = true
+	state_advance_button.stretch_mode = TextureButton.STRETCH_KEEP_ASPECT_CENTERED
+
+	# Resize button to 25% of screen width while maintaining aspect ratio
+	var target_width = Global.screen_size.x * 0.25
+	var texture_size = texture.get_size()
+	var aspect_ratio = texture_size.y / texture_size.x
+	var target_height = target_width * aspect_ratio
+
+	state_advance_button.custom_minimum_size = Vector2(target_width, target_height)
+	state_advance_button.size = Vector2(target_width, target_height)
+
+	# Position button at 25% of screen width (left side), centered vertically
+	# Calculate position offset from center anchor (0.5, 0.5)
+	var target_x_center = Global.screen_size.x * 0.25
+	var screen_center_x = Global.screen_size.x * 0.5
+	var x_offset_from_center = target_x_center - screen_center_x
+
+	state_advance_button.offset_left = x_offset_from_center - target_width / 2.0
+	state_advance_button.offset_top = - target_height / 2.0
+	state_advance_button.offset_right = x_offset_from_center + target_width / 2.0
+	state_advance_button.offset_bottom = target_height / 2.0
+
+	# Set z_index to be above confetti and trophies
+	state_advance_button.z_index = 1000
+
+	# Connect the button press signal
+	if not state_advance_button.pressed.is_connected(_on_state_advance_button_pressed):
+		state_advance_button.pressed.connect(_on_state_advance_button_pressed)
+
+func _on_state_advance_button_pressed() -> void:
+	Global.dbg("Host pressed Main Menu button, resetting game")
+	Global.reset_game_signal.emit()
