@@ -3,13 +3,33 @@ extends GameState
 @export var players_container: Node2D
 @export var round1_scene: PackedScene
 
+@onready var state_advance_button: TextureButton = $'../../HUDLayer/Control/StateAdvanceButton'
+
 func enter(_params: Dictionary):
 	Global.dbg("ENTER PreGameSetupState")
 	$"../../TitlePageUI".connect('start_button_pressed_signal', _on_start_button_pressed_signal)
 
+	# Setup the "Start Tutorial" button but keep it hidden initially
+	_setup_tutorial_button()
+	state_advance_button.hide()
+
+	# Connect to detect when the player has chosen their name
+	var start_game_panel = $"../../TitlePageUI/PanelPositionControl/StartGamePanel"
+	if start_game_panel:
+		start_game_panel.visibility_changed.connect(_on_start_game_panel_visibility_changed)
+
 func exit():
 	$"../../TitlePageUI".disconnect('start_button_pressed_signal', _on_start_button_pressed_signal)
 	Global.dbg("LEAVE PreGameSetupState")
+	# Disconnect from start game panel visibility
+	var start_game_panel = $"../../TitlePageUI/PanelPositionControl/StartGamePanel"
+	if start_game_panel and start_game_panel.visibility_changed.is_connected(_on_start_game_panel_visibility_changed):
+		start_game_panel.visibility_changed.disconnect(_on_start_game_panel_visibility_changed)
+	# Hide the button and disconnect signal when leaving state
+	if state_advance_button.visible:
+		state_advance_button.hide()
+		if state_advance_button.pressed.is_connected(_on_tutorial_button_pressed):
+			state_advance_button.pressed.disconnect(_on_tutorial_button_pressed)
 
 var dragging_child: Node2D = null
 var dragging_save_button_text: String
@@ -188,6 +208,12 @@ func emit_reorder_signal():
 	Global.dbg("pre_game_setup_state:emit_reorder_signal: new order: %s" % [str(order_array)])
 	Global.reorder_players(order_array)
 
+func _on_start_game_panel_visibility_changed() -> void:
+	# When StartGamePanel becomes visible, the player has chosen their name
+	var start_game_panel = $"../../TitlePageUI/PanelPositionControl/StartGamePanel"
+	if start_game_panel and start_game_panel.visible:
+		state_advance_button.show()
+
 func _on_start_button_pressed_signal(): # only run on host/server
 	# Normal game play:
 	# Global.request_change_round(round1_scene)
@@ -210,3 +236,76 @@ func _on_start_button_pressed_signal(): # only run on host/server
 	#
 	# DEVELOPMENT3: Give all the bots a bunch of books in round 1 so they can all be melded upon
 	# Make this happen in 04-deal_new_round_state.gd.
+
+func _setup_tutorial_button() -> void:
+	# Load the appropriate SVG based on language
+	var texture_path: String
+	if Global.LANGUAGE == 'de':
+		texture_path = "res://svgs/start-tutorial-german.svg"
+	else:
+		texture_path = "res://svgs/start-tutorial-english.svg"
+
+	var texture = load(texture_path)
+	state_advance_button.texture_normal = texture
+	state_advance_button.texture_pressed = texture
+	state_advance_button.texture_hover = texture
+
+	# Enable texture scaling
+	state_advance_button.ignore_texture_size = true
+	state_advance_button.stretch_mode = TextureButton.STRETCH_KEEP_ASPECT_CENTERED
+
+	# Resize button to 25% of screen width while maintaining aspect ratio
+	var target_width = Global.screen_size.x * 0.25
+	var texture_size = texture.get_size()
+	var aspect_ratio = texture_size.y / texture_size.x
+	var target_height = target_width * aspect_ratio
+
+	state_advance_button.custom_minimum_size = Vector2(target_width, target_height)
+	state_advance_button.size = Vector2(target_width, target_height)
+
+	# Position button at center horizontally, 75% down vertically
+	# Calculate position offset from center anchor (0.5, 0.5)
+	var target_y_center = Global.screen_size.y * 0.75
+	var screen_center_y = Global.screen_size.y * 0.5
+	var y_offset_from_center = target_y_center - screen_center_y
+
+	state_advance_button.offset_left = - target_width / 2.0
+	state_advance_button.offset_top = y_offset_from_center - target_height / 2.0
+	state_advance_button.offset_right = target_width / 2.0
+	state_advance_button.offset_bottom = y_offset_from_center + target_height / 2.0
+
+	# Set z_index to be visible
+	state_advance_button.z_index = 1000
+
+	# Connect the button press signal
+	if not state_advance_button.pressed.is_connected(_on_tutorial_button_pressed):
+		state_advance_button.pressed.connect(_on_tutorial_button_pressed)
+
+func _on_tutorial_button_pressed() -> void:
+	Global.dbg("Start Tutorial button pressed, loading tutorial")
+
+	# Hide the title page UI (similar to starting a game)
+	var title_page_ui = $"../../TitlePageUI"
+	if title_page_ui:
+		title_page_ui.game_has_started = true
+		Global.game_has_started = true
+		title_page_ui.get_node("PanelPositionControl/StartGamePanel").hide()
+		# Call the RPC to hide title page and show playing cards
+		title_page_ui._rpc_hide_title_page_ui.rpc()
+
+	var tutorial_scene = load("res://rounds/tutorial.tscn") as PackedScene
+	Global.request_change_round(tutorial_scene)
+
+	# Set the RoundLabel text based on language
+	# Wait a frame for the scene to be instantiated
+	await get_tree().process_frame
+	var round_node = get_tree().root.get_node_or_null("/root/RootNode/RoundNode")
+	if round_node:
+		var round_label = round_node.get_node_or_null("RoundLabel")
+		if round_label:
+			if Global.LANGUAGE == 'de':
+				round_label.text = "Tutorial" # Same in German
+			else:
+				round_label.text = "Tutorial"
+
+	Global.send_transition_all_clients_state_to_signal("TutorialState")

@@ -1,4 +1,4 @@
-[gd_scene load_steps=34 format=3 uid="uid://cr0477tbltrwb"]
+[gd_scene load_steps=35 format=3 uid="uid://cr0477tbltrwb"]
 
 [ext_resource type="Script" uid="uid://c0vhxe5f80og6" path="res://scenes/root_node.gd" id="1_3twdq"]
 [ext_resource type="Texture2D" uid="uid://cvo43b68mb4qu" path="res://backgrounds/openart-image_HhP98Etm_1749088776837_raw.jpg" id="1_elm8r"]
@@ -25,6 +25,7 @@
 [ext_resource type="Texture2D" uid="uid://d1b6bva1rr8ao" path="res://pngs/1st-place.png" id="16_pfi7e"]
 [ext_resource type="Texture2D" uid="uid://d1p5d7tp3gf56" path="res://pngs/2nd-place.png" id="17_jwwji"]
 [ext_resource type="Texture2D" uid="uid://byuey0008j7l1" path="res://pngs/3rd-place.png" id="18_75b8u"]
+[ext_resource type="Script" uid="uid://dihjp01ho4hqa" path="res://state_machine/11-tutorial_state.gd" id="19_75b8u"]
 [ext_resource type="Script" uid="uid://cnk44o8m2ndvj" path="res://scripts/virtual-keyboard-adjuster.gd" id="23_jwwji"]
 
 [sub_resource type="SystemFont" id="SystemFont_6r1xf"]
@@ -150,6 +151,9 @@ trophy1_image = ExtResource("16_pfi7e")
 trophy2_image = ExtResource("17_jwwji")
 trophy3_image = ExtResource("18_75b8u")
 
+[node name="TutorialState" type="Node" parent="GameStateMachine"]
+script = ExtResource("19_75b8u")
+
 [node name="Background" type="TextureRect" parent="."]
 z_index = -10
 layout_mode = 1
@@ -172,7 +176,7 @@ grow_vertical = 2
 mouse_filter = 2
 
 [node name="RoundSpawner" type="MultiplayerSpawner" parent="."]
-_spawnable_scenes = PackedStringArray("uid://dd0vu47oxmnsf", "uid://cvjeg10x130y7", "uid://n7ytejdevrjs", "uid://b2lonlathwlqu", "uid://cbr0hcxvpnf7s", "uid://d4f0lutipg6lf", "uid://kyg3e8do065o")
+_spawnable_scenes = PackedStringArray("uid://dd0vu47oxmnsf", "uid://cvjeg10x130y7", "uid://n7ytejdevrjs", "uid://b2lonlathwlqu", "uid://cbr0hcxvpnf7s", "uid://d4f0lutipg6lf", "uid://kyg3e8do065o", "uid://6wxsnuk01u12")
 spawn_path = NodePath("../RoundNode")
 spawn_limit = 1
 
