@@ -1,4 +1,4 @@
-[gd_scene load_steps=35 format=3 uid="uid://cr0477tbltrwb"]
+[gd_scene load_steps=36 format=3 uid="uid://cr0477tbltrwb"]
 
 [ext_resource type="Script" uid="uid://c0vhxe5f80og6" path="res://scenes/root_node.gd" id="1_3twdq"]
 [ext_resource type="Texture2D" uid="uid://cvo43b68mb4qu" path="res://backgrounds/openart-image_HhP98Etm_1749088776837_raw.jpg" id="1_elm8r"]
@@ -26,6 +26,7 @@
 [ext_resource type="Texture2D" uid="uid://d1p5d7tp3gf56" path="res://pngs/2nd-place.png" id="17_jwwji"]
 [ext_resource type="Texture2D" uid="uid://byuey0008j7l1" path="res://pngs/3rd-place.png" id="18_75b8u"]
 [ext_resource type="Script" uid="uid://dihjp01ho4hqa" path="res://state_machine/11-tutorial_state.gd" id="19_75b8u"]
+[ext_resource type="Script" uid="uid://c6p36hxv0lv2q" path="res://state_machine/12-options_state.gd" id="20_4481k"]
 [ext_resource type="Script" uid="uid://cnk44o8m2ndvj" path="res://scripts/virtual-keyboard-adjuster.gd" id="23_jwwji"]
 
 [sub_resource type="SystemFont" id="SystemFont_6r1xf"]
@@ -154,6 +155,9 @@ trophy3_image = ExtResource("18_75b8u")
 [node name="TutorialState" type="Node" parent="GameStateMachine"]
 script = ExtResource("19_75b8u")
 
+[node name="OptionsState" type="Node" parent="GameStateMachine"]
+script = ExtResource("20_4481k")
+
 [node name="Background" type="TextureRect" parent="."]
 z_index = -10
 layout_mode = 1
@@ -176,7 +180,7 @@ grow_vertical = 2
 mouse_filter = 2
 
 [node name="RoundSpawner" type="MultiplayerSpawner" parent="."]
-_spawnable_scenes = PackedStringArray("uid://dd0vu47oxmnsf", "uid://cvjeg10x130y7", "uid://n7ytejdevrjs", "uid://b2lonlathwlqu", "uid://cbr0hcxvpnf7s", "uid://d4f0lutipg6lf", "uid://kyg3e8do065o", "uid://6wxsnuk01u12")
+_spawnable_scenes = PackedStringArray("uid://dd0vu47oxmnsf", "uid://cvjeg10x130y7", "uid://n7ytejdevrjs", "uid://b2lonlathwlqu", "uid://cbr0hcxvpnf7s", "uid://d4f0lutipg6lf", "uid://kyg3e8do065o", "uid://6wxsnuk01u12", "uid://c3apl7x3mtso4")
 spawn_path = NodePath("../RoundNode")
 spawn_limit = 1
 
@@ -498,6 +502,21 @@ text = "Liverpool Rummy Rules"
 horizontal_alignment = 1
 
 [node name="StateAdvanceButton" type="TextureButton" parent="HUDLayer/Control"]
+visible = false
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -4.0
+offset_top = -4.0
+offset_right = 95.0
+offset_bottom = 27.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="OptionsButton" type="TextureButton" parent="HUDLayer/Control"]
 visible = false
 layout_mode = 1
 anchors_preset = 8
