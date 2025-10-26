@@ -1,4 +1,4 @@
-[gd_scene load_steps=36 format=3 uid="uid://cr0477tbltrwb"]
+[gd_scene load_steps=38 format=3 uid="uid://cr0477tbltrwb"]
 
 [ext_resource type="Script" uid="uid://c0vhxe5f80og6" path="res://scenes/root_node.gd" id="1_3twdq"]
 [ext_resource type="Texture2D" uid="uid://cvo43b68mb4qu" path="res://backgrounds/openart-image_HhP98Etm_1749088776837_raw.jpg" id="1_elm8r"]
@@ -28,6 +28,9 @@
 [ext_resource type="Script" uid="uid://dihjp01ho4hqa" path="res://state_machine/11-tutorial_state.gd" id="19_75b8u"]
 [ext_resource type="Script" uid="uid://c6p36hxv0lv2q" path="res://state_machine/12-options_state.gd" id="20_4481k"]
 [ext_resource type="Script" uid="uid://cnk44o8m2ndvj" path="res://scripts/virtual-keyboard-adjuster.gd" id="23_jwwji"]
+[ext_resource type="Texture2D" uid="uid://y0buryq4reqa" path="res://svgs/glossy-green-button-with-blue-circular-arrow.svg" id="26_qei8u"]
+[ext_resource type="Texture2D" uid="uid://bwscpmvqx5oje" path="res://svgs/purple-glossy-button-with-green-checkmark.svg" id="27_gr8vi"]
+[ext_resource type="Texture2D" uid="uid://cxkogk2rgvh14" path="res://svgs/glossy-green-button-with-circle-arrows.svg" id="27_mswfl"]
 
 [sub_resource type="SystemFont" id="SystemFont_6r1xf"]
 
@@ -55,8 +58,6 @@ corner_radius_bottom_left = 50
 corner_detail = 5
 shadow_size = 25
 shadow_offset = Vector2(25, 25)
-
-[sub_resource type="ImageTexture" id="ImageTexture_dhk4a"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_hfq42"]
 content_margin_left = 0.0
@@ -287,9 +288,9 @@ offset_left = 7.0
 offset_top = 311.0
 offset_right = 93.0
 offset_bottom = 412.0
+scale = Vector2(0.2, 0.2)
 theme_override_font_sizes/font_size = 68
-text = "🔄"
-icon = SubResource("ImageTexture_dhk4a")
+icon = ExtResource("26_qei8u")
 flat = true
 
 [node name="AcceptNameButton" type="Button" parent="TitlePageUI/PanelPositionControl/WelcomePanel"]
@@ -299,9 +300,9 @@ offset_left = 877.6328
 offset_top = 312.0625
 offset_right = 963.6328
 offset_bottom = 413.0625
+scale = Vector2(0.15, 0.15)
 theme_override_font_sizes/font_size = 68
-text = "✅"
-icon = SubResource("ImageTexture_dhk4a")
+icon = ExtResource("27_gr8vi")
 flat = true
 
 [node name="StartGamePanel" type="Panel" parent="TitlePageUI/PanelPositionControl"]
@@ -358,9 +359,9 @@ offset_left = 1502.0
 offset_top = 218.0
 offset_right = 1588.0
 offset_bottom = 319.0
+scale = Vector2(0.2, 0.2)
 theme_override_font_sizes/font_size = 68
-text = "🔄"
-icon = SubResource("ImageTexture_dhk4a")
+icon = ExtResource("26_qei8u")
 flat = true
 
 [node name="PlayingCardsControl" type="Control" parent="."]
@@ -403,13 +404,12 @@ flat = true
 top_level = true
 z_index = 200
 layout_mode = 1
-offset_right = 86.0
-offset_bottom = 101.0
-scale = Vector2(2, 2)
+offset_right = 557.0
+offset_bottom = 557.0
+scale = Vector2(0.4, 0.4)
 focus_mode = 0
 theme_override_font_sizes/font_size = 68
-text = "🔄"
-icon = SubResource("ImageTexture_dhk4a")
+icon = ExtResource("27_mswfl")
 flat = true
 
 [node name="CardBacksNode" type="Node" parent="HUDLayer/Control/NewCardBackButton"]
