@@ -434,9 +434,11 @@ func _rpc_advance_to_next_round(new_round_num: int) -> void:
 
 func reset_remote_player_game(str_id) -> void:
 	game_state.public_players_info = game_state.public_players_info.filter(func(pi): return pi.id != str_id)
-	var id = int(str_id)
-	_rpc_remote_reset_game.rpc_id(id)
-	multiplayer.multiplayer_peer.disconnect_peer(id)
+	if not Global.bots_private_player_info.has(str_id):
+		var id = int(str_id)
+		_rpc_remote_reset_game.rpc_id(id)
+		multiplayer.multiplayer_peer.disconnect_peer(id)
+	Global.emit_player_disconnected_signal(str_id) # update buttons
 
 @rpc('authority', 'call_remote', 'reliable')
 func _rpc_remote_reset_game():
@@ -459,6 +461,9 @@ func gen_playing_card_key(rank: String, suit: String, deck: int) -> String:
 ################################################################################
 # Local player card meld area signals:
 ################################################################################
+
+func emit_player_disconnected_signal(player_id: String) -> void:
+	player_disconnected_signal.emit(player_id)
 
 func emit_card_clicked_signal(playing_card, global_position):
 	card_clicked_signal.emit(playing_card, global_position)

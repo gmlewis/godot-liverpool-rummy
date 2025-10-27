@@ -64,3 +64,14 @@ func _setup_main_menu_button() -> void:
 func _on_main_menu_button_pressed() -> void:
 	Global.dbg("Main Menu button pressed from tutorial, resetting game")
 	Global.reset_game_signal.emit()
+
+var steps = [
+	{
+		'en': 'Multiplayer Liverpool Rummy can be played either solo against AI opponents or with friends online (with or without additional AI opponents). To play solo, simply click "Host New Game" from the main menu and add one or more "bots" to your game lobby. To play online with friends, it works best if all players are on the same WiFi network or hotspot. One player should click "Host New Game" from the main menu then other players should detect that the game is available and can click "Join Game" if it automatically appears in their game lobby list. If it does not appear automatically, the host player can share their local IP address (displayed in the game lobby) with other players who can then manually enter that IP address and then click "Join Game".',
+		'de': '',
+	},
+	{
+		'en': 'Once all players have joined the game lobby, the host player can click "Start Game" to begin playing.',
+		'de': '',
+	},
+]

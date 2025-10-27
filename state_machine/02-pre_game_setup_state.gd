@@ -193,9 +193,9 @@ func end_drag():
 		restore_original_positions()
 
 func remove_player(child: Node2D) -> void:
-	Global.dbg("pre_game_setup_state: remove_player(id=%s)" % [child.player_id])
-	if not child.is_bot: # Removing client - reset its game
-		Global.reset_remote_player_game(child.player_id)
+	var player_id = child.player_id
+	Global.dbg("pre_game_setup_state: remove_player(id=%s)" % [player_id])
+	Global.reset_remote_player_game(player_id)
 	players_container.remove_child(child)
 	child.queue_free()
 
