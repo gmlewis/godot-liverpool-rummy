@@ -71,7 +71,11 @@ var steps = [
 		'de': '',
 	},
 	{
-		'en': 'Once all players have joined the game lobby, the host player can click "Start Game" to begin playing.',
+		'en': 'As players are joining the host’s game, the host may add or remove bots (or players) by clicking on "Add Bot" or by dragging the player’s icon to the "Remove" button. Once all players have joined the game lobby, the host player can click "Start Game" to begin playing.',
+		'de': '',
+	},
+	{
+		'en': 'Each round has a specific set of requirements for melding that must be met for a player to win that round. The exact number of books (groups or sets of 3 or more cards of the same rank) and runs (sequences of 4 or more cards in the same suit) required to win each round is displayed on each round’s screen at the top. Note that in rounds 1-6, players must meet the round’s melding requirements and personally meld their own hand before they can meld on other players’ melds. Round 7 is the only round where players must meld their own hand and have no cards remaining in order to win the round.',
 		'de': '',
 	},
 ]
