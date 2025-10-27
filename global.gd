@@ -72,7 +72,7 @@ signal clear_all_player_meldable_indicators_signal() # for local player to clear
 
 @onready var playing_cards_control: Control = $"/root/RootNode/PlayingCardsControl" if has_node("/root/RootNode/PlayingCardsControl") else null
 
-const VERSION = '0.14.0'
+const VERSION = '0.15.0'
 const GAME_PORT = 7000
 const DISCOVERY_PORT = 8910
 const MAX_PLAYERS = 10
