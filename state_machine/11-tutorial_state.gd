@@ -272,7 +272,7 @@ Runde 7 ist besonders – du musst alle Karten ablegen und darfst keine mehr a
 		'en': 'The game area has two main parts.
 The top shows every player’s public melds, while the bottom is private to you. You can move and arrange your cards any way you like.
 
-On the left are meld areas — drag cards there to build your melds. Once a card is in a meld area, you can’t tap it by mistake during your turn.
+On the left are meld areas — drag cards there to build your melds. Once a card is in a meld area, you can’t accidentally discard it by mistake during your turn by tapping on it.
 
 Cards in the lower-right can still be tapped to discard them during your turn.
 ',
