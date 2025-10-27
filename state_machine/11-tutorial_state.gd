@@ -67,31 +67,138 @@ func _on_main_menu_button_pressed() -> void:
 
 var steps = [
 	{
-		'en': 'Multiplayer Liverpool Rummy can be played either solo against AI opponents or with friends online (with or without additional AI opponents). To play solo, simply click "Host New Game" from the main menu and add one or more "bots" to your game lobby. To play online with friends, it works best if all players are on the same WiFi network or hotspot. One player should click "Host New Game" from the main menu then other players should detect that the game is available and can click "Join Game" if it automatically appears in their game lobby list. If it does not appear automatically, the host player can share their local IP address (displayed in the game lobby) with other players who can then manually enter that IP address and then click "Join Game".',
-		'de': '',
+		# Step 1 – Starting a Game
+		'en': 'Multiplayer Liverpool Rummy can be played either solo against AI opponents or online with friends — with or without extra bots.
+
+To play solo, click “Host New Game” on the main menu and add one or more bots to your lobby.
+
+To play with friends, it works best if everyone’s on the same Wi‑Fi or hotspot. One player hosts, and the others join when the game appears in their lobby list.
+
+If it doesn’t show up automatically, the host can share their local IP (it’s shown in the lobby) so others can type it in and tap “Join Game”.
+',
+		'de': 'Mehrspieler‑Liverpool Rummy kannst du entweder alleine gegen Computergegner oder online mit Freunden spielen – mit oder ohne zusätzliche Bots.
+
+Um solo zu spielen, klicke im Hauptmenü auf „Neues Spiel hosten“ und füge einen oder mehrere Bots zu deiner Lobby hinzu.
+
+Zum Spielen mit Freunden klappt es am besten, wenn alle im selben WLAN oder Hotspot sind. Ein Spieler hostet, und die anderen können beitreten, sobald das Spiel in ihrer Lobby‑Liste erscheint.
+
+Falls es nicht automatisch angezeigt wird, kann der Gastgeber seine lokale IP‑Adresse (in der Lobby zu sehen) an andere weitergeben. Diese geben die IP‑Adresse ein und klicken dann auf „Spiel beitreten“.
+',
 	},
 	{
-		'en': 'As players are joining the host’s game, the host may add or remove bots (or players) by clicking on "Add Bot" or by dragging the player’s icon to the "Remove" button. Once all players have joined the game lobby, the host player can click "Start Game" to begin playing.',
-		'de': '',
+		# Step 2 – Managing Players and Bots
+		'en': 'While players are joining, the host can add or remove bots (or players) by clicking “Add Bot” or by dragging a player’s icon to “Remove”.
+
+When everyone’s ready in the lobby, the host clicks “Start Game” to begin!
+',
+		'de': 'Während die Spieler beitreten, kann der Gastgeber Bots (oder Spieler) hinzufügen oder entfernen, indem er auf „Bot hinzufügen“ klickt oder das Spielersymbol zum „Entfernen“-Button zieht.
+
+Wenn alle bereit sind, klickt der Gastgeber auf „Spiel starten“, um loszulegen!
+',
 	},
 	{
-		'en': 'Each round has a specific set of requirements for melding that must be met for a player to win that round. The exact number of books (groups or sets of 3 or more cards of the same rank) and runs (sequences of 4 or more cards in the same suit) required to win each round is displayed on each round’s screen at the top. Note that in rounds 1-6, players must meet the round’s melding requirements and personally meld their own hand before they can meld on other players’ melds. Round 7 is the only round where players must meld their own hand and have no cards remaining in order to win the round.',
-		'de': '',
+		# Step 3 – Round Requirements
+		'en': 'Each round has its own melding requirements that must be met to win.
+
+At the top of each round’s screen, you’ll see how many books (groups of 3+ cards of the same rank) and runs (sequences of 4+ cards of the same suit) are needed.
+
+In rounds 1–6, you must meet your own melding requirements before you can meld on other players’ melds.
+
+Round 7 is special — you have to finish your hand completely with no cards left to win!
+',
+		'de': 'Jede Runde hat eigene Anforderungen zum Ablegen, die du erfüllen musst, um zu gewinnen.
+
+Oben auf dem Rundenscreen siehst du, wie viele Bücher (Gruppen aus 3 oder mehr Karten mit gleichem Wert) und Folgen (Reihen aus 4 oder mehr Karten derselben Farbe) nötig sind.
+
+In den Runden 1–6 musst du erst deine eigenen Anforderungen erfüllen, bevor du an andere Meldungen anlegen darfst.
+
+Runde 7 ist besonders – du musst alle Karten ablegen und darfst keine mehr auf der Hand haben, um zu gewinnen!
+',
 	},
 	{
-		'en': 'The game area is divided into two main sections: the top section of the screen displays all players’ public melds, while the bottom section is private to the local player and cards can be moved at any time and arranged in any way the player desires. To the left of the bottom section are meld areas where players can drag and drop cards to build up their own melds. Cards that have been moved to one of the meld areas can not be accidentally tapped on which would otherwise cause them to be discarded during the player’s turn. Cards in the lower right area, however, can be tapped on to discard them during the player’s turn.',
-		'de': '',
+		# Step 4 – Game Area
+		'en': 'The game area has two main parts.
+The top shows every player’s public melds, while the bottom is private to you. You can move and arrange your cards any way you like.
+
+On the left are meld areas — drag cards there to build your melds. Once a card is in a meld area, you can’t tap it by mistake during your turn.
+
+Cards in the lower-right can still be tapped to discard them during your turn.
+',
+		'de': 'Das Spielfeld hat zwei Hauptbereiche.
+Oben siehst du die öffentlichen Meldungen aller Spieler, unten deinen privaten Bereich. Dort kannst du deine Karten beliebig verschieben und anordnen.
+
+Links befinden sich die Ablageflächen – ziehe Karten dorthin, um deine Meldungen zu bilden. Karten, die dort liegen, können nicht versehentlich angetippt werden.
+
+Karten im unteren rechten Bereich kannst du an‑tippen, um sie während deines Zugs abzuwerfen.
+',
 	},
 	{
-		'en': 'A player’s turn is indicated by a pulsing orange border around their player icon in the upper section of the screen. On a player’s turn, they must first draw a card either from the stock pile on the left or from the discard pile on the right by tapping on the desired pile. Once a player has completely satisfied the round’s melding requirements by dragging cards into the meld areas such that they are all sparkling, a "Meld!" indicator will appear on the player’s icon in the top section of the screen. The player can then tap on this "Meld!" indicator to meld their hand. After melding, the player may then drag cards from their private hand area into the meld areas on the left (whether for books or runs) and then publicly meld these cards when the "Meld!" indicator appears on any player icon in the top section (including possibly their own). Finally, for rounds 1-6, the player must discard a card by tapping on it in the lower right area to complete their turn. If the player has no cards remaining after discarding, then they have won the round. Note that in round 7, the first person to meld must have no cards remaining, and therefore they do not meld on other players’ melds (since they were the first to meld).',
-		'de': '',
+		# Step 5 – Player’s Turn
+		'en': 'When it’s your turn, your player icon at the top will glow with a pulsing orange border.
+
+First, draw a card — tap the left pile to draw from stock, or the right pile to take the top discard.
+
+Then, try to meet the current round’s requirements. Drag cards into the meld zones until they sparkle. When you’re ready, tap the “Meld!” icon to lay down your hand.
+
+After melding, keep adding cards to your melds or to others’. Tap “Meld!” again to confirm.
+
+In rounds 1–6, end your turn by tapping a card in the lower-right to discard it. If you’ve got no cards left, you’ve won the round!
+
+In round 7, the first person to meld must finish their hand completely and can’t add to others’ melds.
+',
+		'de': 'Wenn du an der Reihe bist, leuchtet dein Spielersymbol oben mit einem orangefarbenen, pulsierenden Rahmen.
+
+Ziehe zuerst eine Karte – tippe auf den linken Stapel, um vom Nachziehstapel zu ziehen, oder auf den rechten, um die oberste Karte vom Ablagestapel zu nehmen.
+
+Versuche dann, die Anforderungen der Runde zu erfüllen. Ziehe Karten in die Ablageflächen, bis sie funkeln. Wenn du bereit bist, tippe auf „Melden!“, um deine Hand auszulegen.
+
+Danach kannst du weiter Karten an deine eigenen oder die Meldungen anderer Spieler anlegen. Tippe erneut auf „Melden!“, um das zu bestätigen.
+
+In den Runden 1–6 beendest du deinen Zug, indem du im unteren rechten Bereich auf eine Karte tippst, um sie abzuwerfen. Wenn du danach keine Karten mehr auf der Hand hast, hast du die Runde gewonnen!
+
+In Runde 7 muss der erste Spieler alle seine Karten ablegen und darf danach nicht mehr an andere Meldungen anlegen.
+',
 	},
 	{
-		'en': 'After each round, the host clicks the "Tally Scores" button where all players’ cards are totaled and counted against their scores. The host then clicks "Next Round" (or "Final Scores" after round 7). After all 7 rounds have been played, the player with the lowest score wins the game! A final scoreboard is displayed showing all players’ scores for each round as well as their total scores along with 3rd, 2nd, and 1st place trophies being awarded. After this, each player can click "Main Menu" to return to the main menu and start a new game if desired.',
-		'de': '',
+		# Step 6 – Scoring
+		'en': 'After each round, the host taps “Tally Scores” to total all cards and update each player’s score.
+
+Then tap “Next Round” (or “Final Scores” after round 7).
+
+After all seven rounds, the player with the lowest total wins!
+
+A scoreboard appears with each round’s scores and the final results — complete with trophies for 3rd, 2nd, and 1st place.
+
+When you’re done, tap “Main Menu” to go back and start a new game anytime.
+',
+		'de': 'Nach jeder Runde tippt der Gastgeber auf „Punkte zählen“, um alle Karten zusammenzurechnen und die Punktestände zu aktualisieren.
+
+Danach tippe auf „Nächste Runde“ (oder nach Runde 7 auf „Endergebnisse“).
+
+Nach allen sieben Runden gewinnt der Spieler mit der niedrigsten Gesamtpunktzahl!
+
+Die Endwertung zeigt alle Runden‑ und Gesamtpunkte – mit Pokalen für den 3., 2. und 1. Platz.
+
+Wenn du fertig bist, tippe auf „Hauptmenü“, um zurückzukehren und ein neues Spiel zu starten.
+',
 	},
 	{
-		'en': 'Available at any time within every round are two buttons: a button in the upper left that lets each player change the playing card backgrounds displayed on their personal device and a ’?’ in the upper right to pop up a dialog explaining the rules of Liverpool Rummy. And that’s it! You’re now ready to play Multiplayer Liverpool Rummy with friends or solo against AI opponents. Good luck and have fun!',
-		'de': '',
+		# Step 7 – Extra Buttons and Wrap‑Up
+		'en': 'Every round has two helpful buttons.
+
+In the top-left corner, tap the button to change your card back design.
+
+In the top-right corner, tap “?” to open a quick help screen with Liverpool Rummy’s rules.
+
+That’s it — you’re ready to play! Have fun playing Liverpool Rummy solo or with friends, and good luck!
+',
+		'de': 'Jede Runde hat zwei nützliche Buttons.
+
+Oben links kannst du das Design der Kartenrückseiten ändern.
+
+Oben rechts öffnet das „?“-Symbol eine Hilfe mit den Regeln von Liverpool Rummy.
+
+Und das war’s – du bist bereit zu spielen! Viel Spaß beim Liverpool Rummy, allein oder mit Freunden, und viel Glück!
+',
 	},
 ]
