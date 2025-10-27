@@ -44,7 +44,7 @@ func _process(_delta):
 			# is_monitoring_keyboard = false
 		else:
 			# Add extra pixels to account for suggestion bars and decorations
-			var extra_padding = 250 # Adjust this value as needed
+			var extra_padding = 400
 			var adjusted_height = keyboard_height + extra_padding
 
 			print("Adjusted height: ", adjusted_height)

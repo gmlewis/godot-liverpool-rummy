@@ -90,4 +90,8 @@ var steps = [
 		'en': 'After each round, the host clicks the "Tally Scores" button where all players’ cards are totaled and counted against their scores. The host then clicks "Next Round" (or "Final Scores" after round 7). After all 7 rounds have been played, the player with the lowest score wins the game! A final scoreboard is displayed showing all players’ scores for each round as well as their total scores along with 3rd, 2nd, and 1st place trophies being awarded. After this, each player can click "Main Menu" to return to the main menu and start a new game if desired.',
 		'de': '',
 	},
+	{
+		'en': 'Available at any time within every round are two buttons: a button in the upper left that lets each player change the playing card backgrounds displayed on their personal device and a ’?’ in the upper right to pop up a dialog explaining the rules of Liverpool Rummy. And that’s it! You’re now ready to play Multiplayer Liverpool Rummy with friends or solo against AI opponents. Good luck and have fun!',
+		'de': '',
+	},
 ]
