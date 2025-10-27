@@ -2,6 +2,10 @@
 
 This is my first multi-player card game written using Godot 4.5 using GDScript.
 
+**NOTE** that I am planning on selling this on the Google Play store and the
+Apple App Store for $0.99 to offset development costs, so please do not
+contribute to this repo if you are not comfortable with this.
+
 # Backgrounds
 
 Believe it or not, this project started because of the backgrounds.
