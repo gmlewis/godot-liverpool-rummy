@@ -1588,9 +1588,11 @@ func _rpc_send_stock_pile_order_to_clients(stock_pile_order: Array) -> void:
 ## DEBUG/ERRORS
 ################################################################################
 
+var pid = OS.get_process_id()
+
 func dbg(s: String) -> void:
 	var my_peer_id = multiplayer.get_unique_id()
-	var display_id = "(%10d)" % my_peer_id if my_peer_id != 1 else "(SERVER)    "
+	var display_id = "(%10d PID %d)" % [my_peer_id, pid] if my_peer_id != 1 else "(SERVER PID %d)    " % pid
 	print("%d: %s: %s" % [get_system_time_msec(), display_id, s])
 
 var error_count = 0 # for unit testing purposes
