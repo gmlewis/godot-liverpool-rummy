@@ -827,10 +827,11 @@ static func add_group_possibilities(meld_area_keys: Array, post_meld_data: Dicti
 		var rank = parts[0]
 		if rank == 'JOKER':
 			# A JOKER can be added to any group.
-			for possibility in post_meld_data.all_public_group_ranks.values():
-				var new_possibility = possibility.duplicate(true)
-				new_possibility['card_key'] = card_key
-				all_possibilities.append(new_possibility)
+			for temp_rank in post_meld_data.all_public_group_ranks.keys():
+				for possibility in post_meld_data.all_public_group_ranks[temp_rank]:
+					var new_possibility = possibility.duplicate(true)
+					new_possibility['card_key'] = card_key
+					all_possibilities.append(new_possibility)
 			continue
 		if not post_meld_data.all_public_group_ranks.has(rank): continue
 		for possibility in post_meld_data.all_public_group_ranks[rank]:
@@ -844,10 +845,12 @@ static func add_run_possibilities(meld_area_keys: Array, post_meld_data: Diction
 		var rank = parts[0]
 		if rank == 'JOKER':
 			# A JOKER can be added to any run.
-			for possibility in post_meld_data.all_public_run_suits.values():
-				var new_possibility = possibility.duplicate(true)
-				new_possibility['card_key'] = card_key
-				all_possibilities.append(new_possibility)
+			for suit in post_meld_data.all_public_run_suits.keys():
+				for possibility in post_meld_data.all_public_run_suits[suit]:
+					var new_possibility = possibility.duplicate(true)
+					new_possibility['card_key'] = card_key
+					# Global.dbg("add_run_possibilities: Adding JOKER card_key=%s to possibility[suit='%s']; new_posibility=%s" % [card_key, suit, str(new_possibility)])
+					all_possibilities.append(new_possibility)
 			continue
 		var suit = parts[1]
 		if not post_meld_data.all_public_run_suits.has(suit): continue
