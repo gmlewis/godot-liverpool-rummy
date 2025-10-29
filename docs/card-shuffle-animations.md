@@ -1,6 +1,6 @@
 # Card Shuffle Animations
 
-Liverpool Rummy features 7 beautiful card shuffle animations that play between rounds. Each animation is carefully crafted to provide visual variety and maintain player interest throughout the game.
+Moonridge Rummy features 7 beautiful card shuffle animations that play between rounds. Each animation is carefully crafted to provide visual variety and maintain player interest throughout the game.
 
 ## Overview
 

@@ -1,6 +1,6 @@
 # Meld Validation and Scoring System
 
-This document provides a comprehensive overview of how melding and scoring work in Liverpool Rummy, from validation algorithms to final score calculation and presentation.
+This document provides a comprehensive overview of how melding and scoring work in Moonridge Rummy, from validation algorithms to final score calculation and presentation.
 
 ## Overview
 

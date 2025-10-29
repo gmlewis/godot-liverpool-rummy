@@ -1,10 +1,10 @@
 # Game Rules Implementation
 
-This document explains how the Liverpool Rummy game rules are implemented in code. It bridges the gap between the conceptual rules in [rules.md](../rules.md) and their technical realization.
+This document explains how the Moonridge Rummy game rules are implemented in code. It bridges the gap between the conceptual rules in [rules.md](../rules.md) and their technical realization.
 
-## Liverpool Rummy Rules Overview
+## Moonridge Rummy Rules Overview
 
-Liverpool Rummy is played over **7 rounds**, each with specific meld requirements. Players must form valid groups (books) and runs (sequences) to win each round.
+Moonridge Rummy is played over **7 rounds**, each with specific meld requirements. Players must form valid groups (books) and runs (sequences) to win each round.
 
 ### Round Requirements
 

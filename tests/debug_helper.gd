@@ -1,4 +1,4 @@
-# Debug Helper for Liverpool Rummy
+# Debug Helper for Moonridge Rummy
 # Utilities for debugging game logic and multiplayer issues
 
 class_name DebugHelper

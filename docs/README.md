@@ -1,6 +1,6 @@
-# Liverpool Rummy Documentation
+# Moonridge Rummy Documentation
 
-Welcome to the technical documentation for Liverpool Rummy! This documentation is intended for developers who want to understand, maintain, or contribute to the codebase.
+Welcome to the technical documentation for Moonridge Rummy! This documentation is intended for developers who want to understand, maintain, or contribute to the codebase.
 
 ## Architecture Documentation
 
@@ -76,7 +76,7 @@ godot-liverpool-rummy/
 ├── state_machine/       # Game state management
 ├── tests/               # Unit and integration tests
 ├── global.gd            # Global state and multiplayer management
-├── rules.md             # Game rules for Liverpool Rummy
+├── rules.md             # Game rules for Moonridge Rummy
 └── test-all.sh          # Run all tests
 ```
 

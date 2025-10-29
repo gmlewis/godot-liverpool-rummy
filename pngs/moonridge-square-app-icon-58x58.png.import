@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://be8c14e5v4u4p"
-path="res://.godot/imported/icon.svg-96a96250ed08feb90409f9abde785004.ctex"
+uid="uid://6lrxe4d1nu2v"
+path="res://.godot/imported/moonridge-square-app-icon-58x58.png-af791259e9b141dc58eb5acaad916106.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://svgs/icon.svg"
-dest_files=["res://.godot/imported/icon.svg-96a96250ed08feb90409f9abde785004.ctex"]
+source_file="res://pngs/moonridge-square-app-icon-58x58.png"
+dest_files=["res://.godot/imported/moonridge-square-app-icon-58x58.png-af791259e9b141dc58eb5acaad916106.ctex"]
 
 [params]
 
@@ -38,6 +38,3 @@ process/hdr_as_srgb=false
 process/hdr_clamp_exposure=false
 process/size_limit=0
 detect_3d/compress_to=1
-svg/scale=1.0
-editor/scale_with_editor_scale=false
-editor/convert_colors_with_editor_theme=false

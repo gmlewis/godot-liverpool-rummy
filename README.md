@@ -1,8 +1,9 @@
-# Liverpool Rummy
+# Moonridge Rummy
 
-This is my first multi-player card game written using Godot 4.5 using GDScript.
+This is my first multi-player and multi-platform card game written using
+Godot 4.5 and GDScript.
 
-**NOTE** that I am planning on selling this on the Google Play store and the
+**NOTE** that I am selling this on the Google Play store and the
 Apple App Store for $0.99 to offset development costs, so please do not
 contribute to this repo if you are not comfortable with this.
 
@@ -37,11 +38,14 @@ Also, [OpenArt](https://openart.ai/) did a fine job creating a splash screen:
 Godot is a powerful and performant game engine that is free and open-source.
 It also provides multi-player support with no required addons.
 
-# Why Liverpool Rummy?
+# Why Moonridge Rummy?
 
 As a kid, my Grandma loved to play card games with anyone and everyone
 who would play with her. Liverpool Rummy was her favorite card game and
 loved to teach it to others. This game is dedicated to her.
+
+The Apple App Store rejected the name "Liverpool Rummy" and therefore the
+game has been renamed to "Moonridge Rummy".
 
 # Playing Cards
 
@@ -123,18 +127,12 @@ For developers interested in understanding the codebase, see the [docs/](docs/) 
 - **[Game State Machine](docs/game-state-machine.md)** - Complete overview of game flow, states, and round progression
 - **[Card Shuffle Animations](docs/card-shuffle-animations.md)** - Guide to the 7 shuffle animation types and how to create new ones
 - **[Bot AI System](docs/bot-ai-system.md)** - Deep dive into bot decision-making, evaluation algorithms, and personalities
-- **[Game Rules Implementation](docs/game-rules-implementation.md)** - How Liverpool Rummy rules are enforced in code
+- **[Game Rules Implementation](docs/game-rules-implementation.md)** - How Moonridge Rummy rules are enforced in code
 - **[UI/UX Interaction Patterns](docs/ui-ux-interaction-patterns.md)** - Player interactions, meld areas, and visual feedback
 
 # Status
 
-I completely ripped out the hand evaluation logic and auto-meld grouping
-from the player's hand, and instead added "meld areas" where the player
-manually decides how they want to group their cards. This eliminates a huge
-nightmare of trying to optimally meld the cards and I much prefer the gameplay
-now.
-
-Currently, melding upon other players' hands is not yet implemented.
+The game has been released to production.
 
 ----------------------------------------------------------------------
 

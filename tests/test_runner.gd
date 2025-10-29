@@ -1,4 +1,4 @@
-# Test Runner for Liverpool Rummy
+# Test Runner for Moonridge Rummy
 # Main test runner that executes all test suites
 
 class_name TestRunner
@@ -26,7 +26,7 @@ func _ready():
 
 func run_all_tests() -> bool:
 	print("\n" + "=".repeat(60))
-	print("   LIVERPOOL RUMMY - UNIT TEST SUITE")
+	print("   MOONRIDGE RUMMY - UNIT TEST SUITE")
 	print("=".repeat(60))
 	print("Running comprehensive tests for game logic...\n")
 

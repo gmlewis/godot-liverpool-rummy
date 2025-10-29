@@ -1,4 +1,4 @@
-# Test Framework for Liverpool Rummy
+# Test Framework for Moonridge Rummy
 # Simple, lightweight test framework for GDScript
 
 class_name TestFramework

@@ -1,7 +1,6 @@
 [gd_scene load_steps=38 format=3 uid="uid://cr0477tbltrwb"]
 
 [ext_resource type="Script" uid="uid://c0vhxe5f80og6" path="res://scenes/root_node.gd" id="1_3twdq"]
-[ext_resource type="Texture2D" uid="uid://cvo43b68mb4qu" path="res://backgrounds/openart-image_HhP98Etm_1749088776837_raw.jpg" id="1_elm8r"]
 [ext_resource type="Script" uid="uid://cvmk4pgftvt6w" path="res://scenes/title_page_ui.gd" id="1_hfq42"]
 [ext_resource type="PackedScene" uid="uid://dd0vu47oxmnsf" path="res://rounds/round_1.tscn" id="2_hppme"]
 [ext_resource type="PackedScene" uid="uid://cm3iwahu07coy" path="res://players/player.tscn" id="2_mf67k"]
@@ -27,6 +26,7 @@
 [ext_resource type="Texture2D" uid="uid://byuey0008j7l1" path="res://pngs/3rd-place.png" id="18_75b8u"]
 [ext_resource type="Script" uid="uid://dihjp01ho4hqa" path="res://state_machine/11-tutorial_state.gd" id="19_75b8u"]
 [ext_resource type="Script" uid="uid://c6p36hxv0lv2q" path="res://state_machine/12-options_state.gd" id="20_4481k"]
+[ext_resource type="Texture2D" uid="uid://cgns82it2bkyr" path="res://backgrounds/moonridge-openart-1408x736.png" id="21_qei8u"]
 [ext_resource type="Script" uid="uid://cnk44o8m2ndvj" path="res://scripts/virtual-keyboard-adjuster.gd" id="23_jwwji"]
 [ext_resource type="Texture2D" uid="uid://y0buryq4reqa" path="res://svgs/glossy-green-button-with-blue-circular-arrow.svg" id="26_qei8u"]
 [ext_resource type="Texture2D" uid="uid://bwscpmvqx5oje" path="res://svgs/purple-glossy-button-with-green-checkmark.svg" id="27_gr8vi"]
@@ -167,7 +167,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-texture = ExtResource("1_elm8r")
+texture = ExtResource("21_qei8u")
 expand_mode = 5
 stretch_mode = 5
 
@@ -440,12 +440,13 @@ vertical_scroll_mode = 2
 layout_mode = 2
 theme_override_fonts/font = ExtResource("4_3twdq")
 theme_override_font_sizes/font_size = 40
-text = "# Liverpool Rummy: All Rounds and Their Requirements
+text = "# Moonridge Rummy: All Rounds and Their Requirements
 
-Liverpool Rummy is played over seven rounds, each with a specific
-combination of sets (books) and runs (sequences) that players must
-lay down to go out. The requirements for each round become progressively
-more challenging. Here are the round-by-round requirements:
+Moonridge Rummy is a variation of Liverpool Rummy that is played
+over seven rounds, each with a specific combination of sets (books)
+and runs (sequences) that players must lay down to go out. The
+requirements for each round become progressively more
+challenging. Here are the round-by-round requirements:
 
 	      |                                                             | Total Cards
 Round | Requirement                                                 | Needed
@@ -498,7 +499,7 @@ anchor_right = 1.0
 offset_bottom = 23.0
 grow_horizontal = 2
 theme_override_font_sizes/font_size = 50
-text = "Liverpool Rummy Rules"
+text = "Moonridge Rummy Rules"
 horizontal_alignment = 1
 
 [node name="StateAdvanceButton" type="TextureButton" parent="HUDLayer/Control"]

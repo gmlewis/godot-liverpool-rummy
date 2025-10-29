@@ -1,11 +1,11 @@
 #!/usr/bin/env godot
-# Test execution script for Liverpool Rummy
+# Test execution script for Moonridge Rummy
 # This script can be run from the command line to execute all tests
 
 extends Node
 
 func _initialize():
-	print("Starting Liverpool Rummy test suite...")
+	print("Starting Moonridge Rummy test suite...")
 
 	# Create and run the test runner
 	var test_runner = TestRunner.new()

@@ -1,10 +1,10 @@
 # UI/UX Interaction Patterns
 
-This document describes how players interact with Liverpool Rummy, including card manipulation, meld areas, visual feedback, and touch/mouse controls.
+This document describes how players interact with Moonridge Rummy, including card manipulation, meld areas, visual feedback, and touch/mouse controls.
 
 ## Overview
 
-Liverpool Rummy features an intuitive drag-and-drop interface with real-time visual feedback. The UI adapts to both mouse (desktop) and touch (mobile/tablet) inputs.
+Moonridge Rummy features an intuitive drag-and-drop interface with real-time visual feedback. The UI adapts to both mouse (desktop) and touch (mobile/tablet) inputs.
 
 **Key Design Principles:**
 - **Direct Manipulation:** Players drag cards to organize their hand

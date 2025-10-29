@@ -1,22 +1,22 @@
-# Privacy Policy for Multiplayer Liverpool Rummy
+# Privacy Policy for Multiplayer Moonridge Rummy
 
 **Last Updated: October 19, 2025**
 
 ## Developer Information
 
-Liverpool Rummy is developed and maintained by on-demand-books.com.
+Moonridge Rummy is developed and maintained by on-demand-books.com.
 
 **Contact Email:** games@on-demand-books.com
 
 ## Overview
 
-This Privacy Policy describes how Multiplayer Liverpool Rummy ("we", "our", or "the app") handles user information. We are committed to protecting your privacy and ensuring transparency about our data practices.
+This Privacy Policy describes how Multiplayer Moonridge Rummy ("we", "our", or "the app") handles user information. We are committed to protecting your privacy and ensuring transparency about our data practices.
 
 ## Data Collection
 
 **We do not collect any user data.**
 
-Multiplayer Liverpool Rummy is designed to respect your privacy.
+Multiplayer Moonridge Rummy is designed to respect your privacy.
 
 The app does **NOT** :
 - Collect personal information
@@ -57,7 +57,7 @@ This app includes multiplayer features using peer-to-peer or local network conne
 
 ## Children's Privacy
 
-Multiplayer Liverpool Rummy is committed to complying with the Google Play Families Policy
+Multiplayer Moonridge Rummy is committed to complying with the Google Play Families Policy
 and applicable children's privacy laws, including the Children's Online Privacy Protection Act (COPPA).
 
 **We do not collect personal information from children.**
@@ -81,7 +81,7 @@ We are committed to ensuring the security of our app:
 
 ## Permissions
 
-Multiplayer Liverpool Rummy may request the following device permissions solely for core functionality:
+Multiplayer Moonridge Rummy may request the following device permissions solely for core functionality:
 - **Network Access** : Only for peer-to-peer multiplayer connections between players
 
 We do not use permissions to collect, transmit, or share any personal data.
@@ -120,7 +120,7 @@ We will respond to your inquiry as soon as reasonably possible.
 
 ## Consent
 
-By using Multiplayer Liverpool Rummy, you acknowledge that you have read and
+By using Multiplayer Moonridge Rummy, you acknowledge that you have read and
 understood this Privacy Policy and agree to its terms.
 If you do not agree with this Privacy Policy, please do not use the app.
 
@@ -128,6 +128,6 @@ If you do not agree with this Privacy Policy, please do not use the app.
 
 **Developer:** on-demand-books.com
 
-**App Name:** Multiplayer Liverpool Rummy
+**App Name:** Multiplayer Moonridge Rummy
 
 **Contact:** games@on-demand-books.com

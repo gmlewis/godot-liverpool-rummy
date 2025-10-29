@@ -220,7 +220,7 @@ func _on_main_menu_button_pressed() -> void:
 var steps = [
 	{
 		# Step 1 – Starting a Game
-		'en': 'Multiplayer Liverpool Rummy can be played either solo against AI opponents or online with friends — with or without extra bots.
+		'en': 'Multiplayer Moonridge Rummy can be played either solo against AI opponents or online with friends on any platform — with or without extra bots.
 
 To play solo, click “Host New Game” on the main menu and add one or more bots to your lobby.
 
@@ -228,7 +228,7 @@ To play with friends, it works best if everyone’s on the same Wi‑Fi or hotsp
 
 If it doesn’t show up automatically, the host can share their local IP (it’s shown in the lobby) so others can type it in and tap “Join Game”.
 ',
-		'de': 'Mehrspieler‑Liverpool Rummy kannst du entweder alleine gegen Computergegner oder online mit Freunden spielen – mit oder ohne zusätzliche Bots.
+		'de': 'Mehrspieler‑Moonridge Rummy kannst du entweder alleine gegen Computergegner oder online mit Freunden spielen – mit oder ohne zusätzliche Bots.
 
 Um solo zu spielen, klicke im Hauptmenü auf „Neues Spiel hosten“ und füge einen oder mehrere Bots zu deiner Lobby hinzu.
 
@@ -340,17 +340,17 @@ Wenn du fertig bist, tippe auf „Hauptmenü“, um zurückzukehren und ein neue
 
 In the top-left corner, tap the button to change your card back design.
 
-In the top-right corner, tap “?” to open a quick help screen with Liverpool Rummy’s rules.
+In the top-right corner, tap “?” to open a quick help screen with Moonridge Rummy’s rules.
 
-That’s it — you’re ready to play! Have fun playing Liverpool Rummy solo or with friends, and good luck!
+That’s it — you’re ready to play! Have fun playing Moonridge Rummy solo or with friends, and good luck!
 ',
 		'de': 'Jede Runde hat zwei nützliche Buttons.
 
 Oben links kannst du das Design der Kartenrückseiten ändern.
 
-Oben rechts öffnet das „?“-Symbol eine Hilfe mit den Regeln von Liverpool Rummy.
+Oben rechts öffnet das „?“-Symbol eine Hilfe mit den Regeln von Moonridge Rummy.
 
-Und das war’s – du bist bereit zu spielen! Viel Spaß beim Liverpool Rummy, allein oder mit Freunden, und viel Glück!
+Und das war’s – du bist bereit zu spielen! Viel Spaß beim Moonridge Rummy, allein oder mit Freunden, und viel Glück!
 ',
 	},
 ]

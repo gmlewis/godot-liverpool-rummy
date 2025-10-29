@@ -1,6 +1,6 @@
 # Game State Machine
 
-Liverpool Rummy uses a finite state machine to manage the game flow. Each state handles a specific phase of the game and transitions to the next state when its work is complete.
+Moonridge Rummy uses a finite state machine to manage the game flow. Each state handles a specific phase of the game and transitions to the next state when its work is complete.
 
 ## State Flow Overview
 
@@ -158,7 +158,7 @@ func transition_to(next_state: String):
 
 ## Round Progression
 
-Liverpool Rummy has 7 rounds with different meld requirements:
+Moonridge Rummy has 7 rounds with different meld requirements:
 
 | Round | Cards Initially Dealt | Required Melds |
 |-------|----------------------|----------------|
