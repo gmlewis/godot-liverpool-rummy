@@ -31,7 +31,7 @@ really nice:
 
 Also, [OpenArt](https://openart.ai/) did a fine job creating a splash screen:
 
-![Screenshot of splash screen](backgrounds/openart-image_HhP98Etm_1749088776837_raw.jpg)
+![Screenshot of splash screen](backgrounds/moonridge-openart-1408x736.png)
 
 # Why Godot?
 
