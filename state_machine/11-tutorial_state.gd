@@ -215,7 +215,7 @@ func _setup_main_menu_button() -> void:
 
 func _on_main_menu_button_pressed() -> void:
 	Global.dbg("Main Menu button pressed from tutorial, resetting game")
-	Global.reset_game_signal.emit()
+	Global.reset_game()
 
 var steps = [
 	{

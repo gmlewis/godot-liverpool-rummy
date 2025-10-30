@@ -62,5 +62,5 @@ func _setup_main_menu_button() -> void:
 		state_advance_button.pressed.connect(_on_main_menu_button_pressed)
 
 func _on_main_menu_button_pressed() -> void:
-	Global.dbg("Main Menu button pressed from tutorial, resetting game")
-	Global.reset_game_signal.emit()
+	Global.dbg("Main Menu button pressed from options, resetting game")
+	Global.reset_game()

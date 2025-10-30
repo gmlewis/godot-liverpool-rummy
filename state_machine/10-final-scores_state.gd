@@ -254,4 +254,4 @@ func _setup_state_advance_button() -> void:
 
 func _on_state_advance_button_pressed() -> void:
 	Global.dbg("Host pressed Main Menu button, resetting game")
-	Global.reset_game_signal.emit()
+	Global.reset_game()
