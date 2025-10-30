@@ -47,6 +47,7 @@ func _on_reset_game_signal() -> void:
 	$'../PlayingCardsControl'.hide()
 	$PanelPositionControl/StartGamePanel/HostNewGameButton.text = HOST_NEW_GAME_TEXT
 	$PanelPositionControl/StartGamePanel/HostNewGameButton.disabled = false
+	$PanelPositionControl/StartGamePanel/HostNewGameButton.show()
 	# Initially hide the Join Game button until a host is discovered.
 	$PanelPositionControl/StartGamePanel/JoinGameButton.hide()
 	$PanelPositionControl/StartGamePanel/JoinGameButton.text = JOIN_GAME_TEXT
@@ -162,6 +163,8 @@ func _on_refresh_name_button_pressed() -> void:
 
 func _on_connected_to_server() -> void:
 	$StatusLabel.text = CONNECTED_WAITING_FOR_HOST_TEXT # 'Connected! Waiting for host...'
+	# Stop scanning for a server once connected
+	_stop_udp_discovery()
 
 func _on_connection_failed() -> void:
 	$StatusLabel.text = FAILED_TO_CONNECT_TEXT # 'Failed to connect.'
