@@ -1,10 +1,10 @@
 extends Node
 
-# Test Scene for Liverpool Rummy
+# Test Scene for Moonridge Rummy
 # This scene can run tests in the proper Godot context with autoloads
 
 func _ready():
-	print("Starting Liverpool Rummy test suite...")
+	print("Starting Moonridge Rummy test suite...")
 
 	# Check for command line arguments to determine which tests to run
 	var args = OS.get_cmdline_user_args()

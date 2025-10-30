@@ -1,5 +1,5 @@
 #!/bin/bash -e
-# Test runner script for Liverpool Rummy
+# Test runner script for Moonridge Rummy
 # Makes it easier to run tests from the command line
 
 # Colors for output
@@ -166,7 +166,7 @@ run_tests() {
 
 # Function to show help
 show_help() {
-    echo "Liverpool Rummy Test Runner"
+    echo "Moonridge Rummy Test Runner"
     echo ""
     echo "Usage: $0 [OPTIONS] [TEST_TYPE]"
     echo ""
@@ -250,7 +250,7 @@ main() {
     # Print header
     if ! $quiet; then
         print_colored $YELLOW "====================================="
-        print_colored $YELLOW "  Liverpool Rummy Test Suite"
+        print_colored $YELLOW "  Moonridge Rummy Test Suite"
         print_colored $YELLOW "====================================="
     fi
 

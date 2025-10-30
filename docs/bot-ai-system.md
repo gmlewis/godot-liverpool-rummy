@@ -1,6 +1,6 @@
 # Bot AI System
 
-Liverpool Rummy features a sophisticated bot AI system with four different bot personalities, ranging from simple random play to strategic evaluation-based decision-making. This document explains how the bots think and make decisions.
+Moonridge Rummy features a sophisticated bot AI system with four different bot personalities, ranging from simple random play to strategic evaluation-based decision-making. This document explains how the bots think and make decisions.
 
 ## Overview
 

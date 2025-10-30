@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://qedddis3acrp"
-path="res://.godot/imported/app-icon-1024x1024.png-6103489ece3c5d03d353a8050177d123.ctex"
+uid="uid://dib0h5c6vh5br"
+path="res://.godot/imported/moonridge-app-icon-432x432.png-a521537c9cdbabed34c4d7e9a065a35e.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://pngs/app-icon-1024x1024.png"
-dest_files=["res://.godot/imported/app-icon-1024x1024.png-6103489ece3c5d03d353a8050177d123.ctex"]
+source_file="res://android/moonridge-app-icon-432x432.png"
+dest_files=["res://.godot/imported/moonridge-app-icon-432x432.png-a521537c9cdbabed34c4d7e9a065a35e.ctex"]
 
 [params]
 

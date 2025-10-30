@@ -72,14 +72,14 @@ signal clear_all_player_meldable_indicators_signal() # for local player to clear
 
 @onready var playing_cards_control: Control = $"/root/RootNode/PlayingCardsControl" if has_node("/root/RootNode/PlayingCardsControl") else null
 
-const VERSION = '0.15.0'
+const VERSION = '0.16.0'
 const GAME_PORT = 7000
 const DISCOVERY_PORT = 8910
 const MAX_PLAYERS = 10
 const CARD_SPACING_IN_STACK = 0.5 # Y-spacing for final stack in pixels
 const PLAYER_SCALE = Vector2(0.65, 0.65)
 const DEBUG_SHOW_CARD_INFO = false
-var OTHER_PLAYER_BUY_GRACE_PERIOD_SECONDS: float = 3.0 if OS.has_feature("mobile") else 0.1
+var OTHER_PLAYER_BUY_GRACE_PERIOD_SECONDS: float = 3.0 # if OS.has_feature("mobile") else 0.1
 const MELD_AREA_TOP_PERCENT = 0.7 # 70% down the screen
 const MELD_AREA_RIGHT_PERCENT = 0.5 # 50% across the screen
 const MELD_AREA_1_RIGHT_PERCENT = 0.333 * MELD_AREA_RIGHT_PERCENT # 16.65% across the screen
@@ -1588,9 +1588,11 @@ func _rpc_send_stock_pile_order_to_clients(stock_pile_order: Array) -> void:
 ## DEBUG/ERRORS
 ################################################################################
 
+var pid = OS.get_process_id()
+
 func dbg(s: String) -> void:
 	var my_peer_id = multiplayer.get_unique_id()
-	var display_id = "(%10d)" % my_peer_id if my_peer_id != 1 else "(SERVER)    "
+	var display_id = "(%10d PID %d)" % [my_peer_id, pid] if my_peer_id != 1 else "(SERVER PID %d)    " % pid
 	print("%d: %s: %s" % [get_system_time_msec(), display_id, s])
 
 var error_count = 0 # for unit testing purposes

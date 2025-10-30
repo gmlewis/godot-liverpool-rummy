@@ -1,10 +1,10 @@
 # Multiplayer Architecture
 
-This document describes how the multiplayer networking system works in Liverpool Rummy, including peer discovery, connection management, and game synchronization.
+This document describes how the multiplayer networking system works in Moonridge Rummy, including peer discovery, connection management, and game synchronization.
 
 ## Overview
 
-Liverpool Rummy uses a **client-server architecture** with UDP broadcast discovery for automatic host detection on local networks. The host acts as the authoritative server, and all other players are clients.
+Moonridge Rummy uses a **client-server architecture** with UDP broadcast discovery for automatic host detection on local networks. The host acts as the authoritative server, and all other players are clients.
 
 ## Key Components
 
