@@ -44,7 +44,7 @@ var player_hand_y_position: float
 
 signal player_connected_signal(peer_id, public_player_info)
 signal attach_bot_instance_to_player_signal(id, bot_instance)
-signal player_disconnected_signal(peer_id)
+signal player_disconnected_signal(peer_id, previous_current_player_id, new_current_player_id)
 signal server_disconnected_signal
 signal players_reordered_signal(new_order: Array)
 signal custom_card_back_texture_changed_signal
@@ -74,6 +74,7 @@ signal clear_all_player_meldable_indicators_signal() # for local player to clear
 
 const VERSION = '0.17.0'
 const GAME_PORT = 7000
+var current_game_port: int = GAME_PORT
 const DISCOVERY_PORT = 8910
 const MAX_PLAYERS = 10
 const CARD_SPACING_IN_STACK = 0.5 # Y-spacing for final stack in pixels
@@ -162,7 +163,7 @@ func player_hand_x_start() -> float:
 	return screen_size.x * MELD_AREA_RIGHT_PERCENT + 200 # Start just to the right of meld area 3
 
 func reset_game():
-	dbg("ENTER Global.reset_game_signal")
+	dbg("ENTER Global.reset_game")
 	game_state = {
 		'current_round_num': 1, # 1..7
 		# Placing [current_state_name] in the [game_state] causes race conditions
@@ -192,11 +193,11 @@ func reset_game():
 	playing_cards.clear()
 	request_change_round(null) # Remove any RoundNode
 	reset_game_signal.emit()
-	dbg("LEAVE Global.reset_game_signal")
+	dbg("LEAVE Global.reset_game")
 
-# Global.is_my_turn() is _NEVER_ true for a bot!
+# is_my_turn() is _NEVER_ true for a bot!
 func is_my_turn() -> bool:
-	# dbg("Global.is_my_turn: private_player_info=%s, game_state=%s" % [str(private_player_info), str(game_state)])
+	dbg("Global.is_my_turn: private_player_info=%s, game_state=%s" % [str(private_player_info), str(game_state)])
 	return private_player_info.turn_index == game_state.current_player_turn_index
 
 func number_human_players() -> int:
@@ -206,7 +207,7 @@ func number_human_players() -> int:
 			count += 1
 	return count
 
-func create_game():
+func create_game(port := 0):
 	var current_peer = multiplayer.multiplayer_peer
 	# Close existing connection if it exists
 	if current_peer:
@@ -215,8 +216,24 @@ func create_game():
 		multiplayer.multiplayer_peer = null
 
 	var peer = ENetMultiplayerPeer.new()
-	var err = peer.create_server(GAME_PORT, MAX_PLAYERS)
+	var err = -1
+	if port != 0:
+		err = peer.create_server(port, MAX_PLAYERS)
+		if err == OK:
+			current_game_port = port
+	else:
+		var rng = RandomNumberGenerator.new()
+		rng.randomize()
+		# Try up to 50 random ports in the ephemeral range
+		for attempt in range(50):
+			var try_port = rng.randi_range(7000, 65535)
+			err = peer.create_server(try_port, MAX_PLAYERS)
+			if err == OK:
+				current_game_port = try_port
+				break
+		# If still failed, return error
 	if err:
+		error("Global.create_game: could not create server on dynamic port: err=%d" % [err])
 		reset_game()
 		return err
 	multiplayer.multiplayer_peer = peer
@@ -276,9 +293,16 @@ func add_bot_to_game():
 	player_connected_signal.emit(id, bot_public_player_info)
 	attach_bot_instance_to_player_signal.emit(id, bot_instance)
 
-func join_game(address):
+func join_game(address, port := GAME_PORT):
+	# Allow address to optionally include a port like '1.2.3.4:7001'
+	var host = address
+	var use_port = port
+	if typeof(address) == TYPE_STRING and ':' in address:
+		var parts = address.split(':')
+		host = parts[0]
+		use_port = int(parts[1])
 	var peer = ENetMultiplayerPeer.new()
-	var err = peer.create_client(address, GAME_PORT)
+	var err = peer.create_client(host, use_port)
 	if err: return err
 	multiplayer.multiplayer_peer = peer
 
@@ -332,15 +356,24 @@ func _get_bots() -> Array:
 
 func _on_peer_disconnected(id):
 	var str_id = str(id)
+	var previous_current_player_id = game_state.public_players_info[game_state.current_player_turn_index]['id']
 	game_state.public_players_info = game_state.public_players_info.filter(func(pi): return pi.id != str_id)
-	#dbg("Global._on_peer_disconnected(id=%s): removed lost player from game_state: %s (now have %d players remaining)" %
-		#[str_id, str(matching_players[0]), len(game_state.public_players_info)])
-	dbg("Global._on_peer_disconnected(id=%s): removed lost player from game_state (now have %d players remaining)" %
-		[str_id, len(game_state.public_players_info)])
+	if game_state.current_player_turn_index >= len(game_state.public_players_info):
+		game_state.current_player_turn_index = 0
+	var new_current_player_id = game_state.public_players_info[game_state.current_player_turn_index]['id']
+	dbg("Global._on_peer_disconnected(id='%s'): removed lost player, now have %d players remaining; previous_current_player_id='%s', new_current_player_id='%s'" %
+		[str_id, len(game_state.public_players_info), previous_current_player_id, new_current_player_id])
 	if str_id == '1': # host disconnected. Reset game
+		dbg("Host has disconnected - resetting game")
 		reset_game()
 		return
-	player_disconnected_signal.emit(str_id)
+	player_disconnected_signal.emit(str_id, previous_current_player_id, new_current_player_id)
+	if is_server() and previous_current_player_id != new_current_player_id:
+		dbg("Current player has changed from %s to %s due to disconnection" %
+			[previous_current_player_id, new_current_player_id])
+		send_game_state()
+		# Sending an empty state name triggers all clients to re-enter their current state.
+		send_transition_all_clients_state_to_signal('')
 
 func _on_connected_to_server():
 	var peer_id = str(multiplayer.get_unique_id())
@@ -367,6 +400,13 @@ func send_game_state():
 	if is_not_server():
 		error("send_game_state called on a client")
 		return
+	# Make sure that every "turn_index" is updated to match the index of the public_players_info array.
+	for idx in range(len(game_state.public_players_info)):
+		game_state.public_players_info[idx]['turn_index'] = idx
+		var pi_id = game_state.public_players_info[idx]['id']
+		if bots_private_player_info.has(pi_id):
+			bots_private_player_info[pi_id]['turn_index'] = idx
+	dbg("Global: sending game_state to all clients: %s" % [str(game_state)])
 	# The following line has a race condition error when sending the game state to
 	# a just-disconnected client. Therefore, send the game state individually to
 	# known-good peers.
@@ -379,9 +419,16 @@ func send_game_state():
 
 @rpc('authority', 'call_remote', 'reliable')
 func _rpc_receive_game_state(state: Dictionary):
-	dbg("Global: received RPC receive_game_state: %s" % [str(state)])
+	dbg("Global._rpc_receive_game_state: received RPC receive_game_state: %s" % [str(state)])
 	game_state = state
-	dbg("Global: receive_game_state: calling game_state_updated_signal.emit()")
+	# When receiving the new game state, make sure the private turn index info
+	# matches the new turn index from the public info.
+	for pi in game_state.public_players_info:
+		if pi.id == private_player_info['id']:
+			private_player_info['turn_index'] = pi['turn_index']
+			dbg("Global._rpc_receive_game_state: updated private_player_info=%s" % [str(private_player_info)])
+			break
+	dbg("Global._rpc_receive_game_state: calling game_state_updated_signal.emit()")
 	game_state_updated_signal.emit()
 
 func get_players_by_id() -> Dictionary:
@@ -434,14 +481,15 @@ func _rpc_advance_to_next_round(new_round_num: int) -> void:
 
 func reset_remote_player_game(str_id) -> void:
 	game_state.public_players_info = game_state.public_players_info.filter(func(pi): return pi.id != str_id)
-	if not Global.bots_private_player_info.has(str_id):
+	if not bots_private_player_info.has(str_id):
 		var id = int(str_id)
 		_rpc_remote_reset_game.rpc_id(id)
 		multiplayer.multiplayer_peer.disconnect_peer(id)
-	Global.emit_player_disconnected_signal(str_id) # update buttons
+	emit_player_disconnected_signal(str_id) # update buttons
 
 @rpc('authority', 'call_remote', 'reliable')
 func _rpc_remote_reset_game():
+	dbg("Global._rpc_remote_reset_game: resetting local game state")
 	reset_game()
 
 func get_total_num_card_decks() -> int:
@@ -463,7 +511,7 @@ func gen_playing_card_key(rank: String, suit: String, deck: int) -> String:
 ################################################################################
 
 func emit_player_disconnected_signal(player_id: String) -> void:
-	player_disconnected_signal.emit(player_id)
+	player_disconnected_signal.emit(player_id, '', '')
 
 func emit_card_clicked_signal(playing_card, global_position):
 	card_clicked_signal.emit(playing_card, global_position)
@@ -648,7 +696,7 @@ func gen_all_public_group_ranks() -> Dictionary:
 	var ranks = {}
 	for pi in game_state.public_players_info:
 		if not pi.has('played_to_table'): continue
-		Global.dbg("gen_all_public_group_ranks: player id=%s, played_to_table=%s" % [pi.id, str(pi.played_to_table)])
+		dbg("gen_all_public_group_ranks: player id=%s, played_to_table=%s" % [pi.id, str(pi.played_to_table)])
 		for meld_group_index in range(len(pi.played_to_table)):
 			var meld = pi.played_to_table[meld_group_index]
 			dbg("gen_all_public_group_ranks: played_to_table meld=%s" % [str(meld)])
@@ -1215,11 +1263,11 @@ func server_personally_meld_hand(player_id: String, hand_evaluation: Dictionary)
 			sorted_meld['card_keys'] = sort_run_cards(meld['card_keys'])
 		sorted_melds.append(sorted_meld)
 
-	Global.dbg("server_personally_meld_hand: sorted_melds=%s" % [str(sorted_melds)])
-	Global.dbg("server_personally_meld_hand: BEFORE updating game_state.public_players_info[turn_index=%d]['played_to_table']: %s" %
+	dbg("server_personally_meld_hand: sorted_melds=%s" % [str(sorted_melds)])
+	dbg("server_personally_meld_hand: BEFORE updating game_state.public_players_info[turn_index=%d]['played_to_table']: %s" %
 		[turn_index, str(game_state.public_players_info[turn_index]['played_to_table'])])
 	game_state.public_players_info[turn_index]['played_to_table'].append_array(sorted_melds)
-	Global.dbg("server_personally_meld_hand: AFTER updating game_state.public_players_info[turn_index=%d]['played_to_table']: %s" %
+	dbg("server_personally_meld_hand: AFTER updating game_state.public_players_info[turn_index=%d]['played_to_table']: %s" %
 		[turn_index, str(game_state.public_players_info[turn_index]['played_to_table'])])
 	# Update hand_evaluation with sorted melds for RPC
 	var sorted_hand_evaluation = hand_evaluation.duplicate(true)
@@ -1460,8 +1508,8 @@ func register_ack_sync_state(operation_name: String, sync_args: Dictionary = {})
 # played on top of the player's hand.
 func sanitize_players_hand_z_index_values() -> int:
 	var players_cards = []
-	for card_key in Global.private_player_info['card_keys_in_hand']:
-		var playing_card = Global.playing_cards.get(card_key) as PlayingCard
+	for card_key in private_player_info['card_keys_in_hand']:
+		var playing_card = playing_cards.get(card_key) as PlayingCard
 		if playing_card:
 			players_cards.append(playing_card)
 	players_cards.sort_custom(func(a, b): return a.z_index < b.z_index)
@@ -1561,9 +1609,9 @@ func _rpc_send_stock_pile_order_to_clients(stock_pile_order: Array) -> void:
 	tween.set_parallel(true)
 	for child in playing_cards_control.get_children():
 		if child is PlayingCard:
-			# Global.dbg("B: Card key='%s', z_index=%d" % [child.key, child.z_index])
-			# if child.z_index != Global.playing_cards.get(child.key).z_index:
-				# push_error("Card '%s' z_index mismatch: %d != %d" % [child.key, child.z_index, Global.playing_cards.get(child.key).z_index])
+			# dbg("B: Card key='%s', z_index=%d" % [child.key, child.z_index])
+			# if child.z_index != playing_cards.get(child.key).z_index:
+				# push_error("Card '%s' z_index mismatch: %d != %d" % [child.key, child.z_index, playing_cards.get(child.key).z_index])
 			# Only update cards that are in the stock pile (have an entry in new_index_by_key)
 			if child.key in new_index_by_key:
 				var new_z_index = new_index_by_key[child.key]

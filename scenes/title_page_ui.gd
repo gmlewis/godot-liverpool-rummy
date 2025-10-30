@@ -6,6 +6,7 @@ var current_ip_address_idx = 0
 var ip_addresses = []
 var remote_host_player_name = {} # Keyed by host IP address.
 var remote_host_game_started = {} # Keyed by host IP address - tracks if host has started game.
+var remote_host_port = {} # Keyed by host IP address - discovered game port
 var udp_discovery_server: UDPServer
 var udp_discovery_client_scan_timer: Timer
 var game_has_started = false # Track if this host has started the game
@@ -126,8 +127,12 @@ func _on_join_game_button_pressed() -> void:
 	if $PanelPositionControl/StartGamePanel/JoinGameButton.text == ADD_BOT_TEXT:
 		_on_add_bot_button_pressed()
 		return
+	var join_ip_address = $PanelPositionControl/StartGamePanel/IPLineEdit.text
+	var join_port = Global.GAME_PORT
+	if join_ip_address in remote_host_port:
+		join_port = remote_host_port[join_ip_address]
 	$PanelPositionControl/StartGamePanel.hide()
-	Global.join_game($PanelPositionControl/StartGamePanel/IPLineEdit.text)
+	Global.join_game(join_ip_address, int(join_port))
 	$StatusLabel.text = CONNECTING_TEXT # 'Connecting...'
 
 func _on_add_bot_button_pressed() -> void:
@@ -153,7 +158,7 @@ func _update_add_bot_button_state():
 	# Also update the state of the 'Start Game' button
 	$PanelPositionControl/StartGamePanel/HostNewGameButton.disabled = n < 2 # Must have 2 players
 
-func _on_player_disconnected_signal(_id) -> void:
+func _on_player_disconnected_signal(_id, _previous_id, _new_id) -> void:
 	var n = len(Global.game_state.public_players_info)
 	Global.dbg('title_page_ui._on_player_disconnected_signal: n=%d' % [n])
 	_update_add_bot_button_state()
@@ -261,12 +266,13 @@ func _handle_discovery_request(peer: PacketPeerUDP):
 				var host_name = $PanelPositionControl/WelcomePanel/NameLineEdit.text
 				var server_info = {
 					'host_name': host_name,
-					'game_started': game_has_started
+					'game_started': game_has_started,
+					'game_port': Global.current_game_port
 				}
 				var response = JSON.stringify(server_info)
 
 				if response_socket.put_packet(response.to_utf8_buffer()) == OK:
-					# Global.dbg("Sent server info to: %s:%d (game_started: %s)" % [sender_ip, sender_port, game_has_started])
+					Global.dbg("Sent server info to: %s:%d (game_started: %s, game_port: %s)" % [sender_ip, sender_port, game_has_started, str(Global.current_game_port)])
 					pass
 				else:
 					Global.error("Failed to send response to: %s:%d" % [sender_ip, sender_port])
@@ -345,11 +351,13 @@ func parse_server_response(response: String, ip: String):
 		if 'host_name' in server_data:
 			var host_name = server_data['host_name']
 			var game_started = server_data.get('game_started', false)
+			var game_port = server_data.get('game_port', Global.GAME_PORT)
 
 			# Track the game state for this host
 			# var was_previously_discovered = ip in remote_host_player_name
 			remote_host_player_name[ip] = host_name
 			remote_host_game_started[ip] = game_started
+			remote_host_port[ip] = game_port
 
 			# if not was_previously_discovered:
 			# 	Global.dbg("Discovered server: %s at %s (game_started: %s)" % [host_name, ip, game_started])

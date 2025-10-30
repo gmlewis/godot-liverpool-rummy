@@ -53,9 +53,12 @@ func _physics_process(delta: float) -> void:
 func change_state(new_state_name: String, params: Dictionary) -> void:
 	Global.dbg("GSM:change_state('%s')" % [new_state_name])
 	var previous_state_name = get_current_state_name()
+	# new_state_name can be empty to force re-entry into the current state
 	if (new_state_name == previous_state_name):
 		# push_error("(%d)GSM:change_state('%s') same as current state!" % [multiplayer.get_unique_id(), new_state_name])
 		return
+	if new_state_name == '':
+		new_state_name = previous_state_name
 	var new_state = states.get(new_state_name)
 	if not new_state:
 		push_error("State '" + new_state_name + "' not found!")

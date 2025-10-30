@@ -166,7 +166,7 @@ func _on_game_state_updated_signal():
 		#	[ player_info.id, player_info.name, player_info.num_cards, player_info.score, player_info.turn_index])
 	await tween.finished
 
-func _on_player_disconnected_signal(id):
+func _on_player_disconnected_signal(id, _previous_id, _new_id):
 	# Global.dbg("root_node:_on_player_disconnected_signal: id=%s: removing from players_container" % [id])
 	var players = players_container.get_children().filter(func(node): return node.player_id == id)
 	if len(players) == 1:
