@@ -83,7 +83,9 @@ func _on_game_state_updated_signal():
 	if not public_player_info:
 		push_error("Player info not found for player_id: %s" % player_id)
 		return
-	# Global.dbg("Player('%s'): _on_game_state_updated_signal: public_player_info=%s" % [player_id, str(public_player_info)])
+	# Update private turn_index in case other players dropped out.
+	turn_index = public_player_info['turn_index']
+	Global.dbg("Player('%s'): _on_game_state_updated_signal: public_player_info=%s" % [player_id, str(public_player_info)])
 	_set_num_cards(public_player_info.num_cards)
 	_set_score(public_player_info.score)
 
@@ -396,7 +398,7 @@ func _input(event):
 		return
 	if current_state_name == 'FinalScoresState':
 		Global.dbg("Player('%s')._input: FinalScoresState, resetting game - calling set_input_as_handled()" % player_id)
-		Global.reset_game_signal.emit()
+		Global.reset_game()
 		if not get_viewport():
 			return # Happens in round 7 after a win.
 		get_viewport().set_input_as_handled()
