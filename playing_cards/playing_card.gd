@@ -218,8 +218,9 @@ func _input(event):
 				# This card is the topmost card under the mouse - claim it
 				# Global.dbg("PlayingCard._input: Hand card '%s' IS TOPMOST - CLAIMING INPUT and calling set_input_as_handled()" % key)
 				_card_handling_input = self
+				# Using "set_input_as_handled()" makes it impossible to use the pop-up modal!
 				# This card is the topmost card under the mouse - claim the input event immediately
-				get_viewport().set_input_as_handled()
+				# get_viewport().set_input_as_handled()
 				# Global.dbg("PlayingCard._input: Hand card '%s' - ACCEPTED CLICK at z_index=%d, position: %s" % [key, z_index, str(mouse_pos)])
 			else:
 				# Not a valid card to interact with - do NOT handle this input event!
@@ -236,7 +237,7 @@ func _input(event):
 			initial_touch_pos = mouse_pos # Store the initial touch position
 			drag_offset = mouse_pos - global_position
 			# Global.dbg("PlayingCard._input: LEFT BUTTON DOWN on card '%s' at z_index=%d, mouse_pos=%s, global_position=%s, drag_offset=%s - calling set_input_as_handled()" % [key, z_index, str(mouse_pos), str(global_position), str(drag_offset)])
-			get_viewport().set_input_as_handled()
+			# get_viewport().set_input_as_handled()
 
 		elif not event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
 			# Clear the input handling flag on release
@@ -256,7 +257,7 @@ func _input(event):
 				if is_tappable:
 					_handle_card_click()
 				# Global.dbg("PlayingCard._input: RELEASED (tap) card '%s' at z_index=%d, position: %s - calling set_input_as_handled()" % [key, z_index, str(mouse_pos)])
-			get_viewport().set_input_as_handled()
+			# get_viewport().set_input_as_handled()
 
 	elif event is InputEventMouseMotion:
 		if dragging:
@@ -264,7 +265,7 @@ func _input(event):
 			# var mouse_pos = get_global_mouse_position()
 			var mouse_pos = event.position
 			global_position = mouse_pos - drag_offset
-			get_viewport().set_input_as_handled()
+			# get_viewport().set_input_as_handled()
 		elif got_mouse_down:
 			# Check if we should start dragging
 			# NEVER USE get_global_mouse_position()!!! It is broken on desktop!
@@ -278,7 +279,7 @@ func _input(event):
 				else:
 					# If not draggable, just reset the mouse down state
 					got_mouse_down = false
-			get_viewport().set_input_as_handled()
+			# get_viewport().set_input_as_handled()
 
 func is_mouse_over_card(mouse_pos: Vector2) -> bool:
 	if not sprite or not sprite.texture:

@@ -419,7 +419,7 @@ script = ExtResource("4_l6opf")
 
 [node name="CustomRulesPanel" type="Panel" parent="HUDLayer/Control/CustomRulesDialog"]
 visible = false
-z_index = 100
+z_index = 3333
 offset_right = 2800.0
 offset_bottom = 1350.0
 theme_override_styles/panel = SubResource("StyleBoxFlat_pfi7e")

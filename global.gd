@@ -87,7 +87,7 @@ const MELD_AREA_1_RIGHT_PERCENT = 0.333 * MELD_AREA_RIGHT_PERCENT # 16.65% acros
 const MELD_AREA_2_RIGHT_PERCENT = 0.666 * MELD_AREA_RIGHT_PERCENT # 33.3% across the screen
 
 # This game can be compiled in different languages (currently, only 'en' or 'de').
-const LANGUAGE = 'en' # 'en', 'fr', 'de', etc.
+const LANGUAGE = 'de' # 'en', 'fr', 'de', 'jp', etc.
 
 func _ready():
 	_initialize_from_command_line_args()
@@ -1762,3 +1762,18 @@ func _calculate_sequence_gaps(cards: Array) -> int:
 		if diff > 0:
 			gaps += diff
 	return gaps
+
+func dbg_children(node_path: String) -> void:
+	var root = get_tree().root
+	var target_node = root.get_node_or_null(node_path)
+	if target_node == null:
+		error("dbg_children: node not found at '%s'" % node_path)
+		return
+	var children = target_node.get_children()
+	if children.is_empty():
+		error("dbg_children: node '%s' has no children" % node_path)
+		return
+	var total = children.size()
+	for idx in range(total):
+		var child = children[idx]
+		dbg("%s child %d/%d: '%s'" % [node_path, idx + 1, total, child.name])

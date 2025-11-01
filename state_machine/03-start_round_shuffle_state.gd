@@ -23,6 +23,9 @@ func enter(_params: Dictionary):
 	shuffle_completion_signal_emitted = false
 	var num_decks = Global.get_total_num_card_decks()
 	Global.dbg("ENTER StartRoundShuffleState using %d decks" % [num_decks])
+	await get_tree().process_frame
+	$'/root/RootNode/HUDLayer/Control/NewCardBackButton'.show()
+
 	if len(Global.playing_cards) == 0:
 		# Now instantiate all the cards in preparation for the shuffling animation
 		for idx in range(num_decks):
