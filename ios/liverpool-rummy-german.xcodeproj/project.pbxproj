@@ -8,14 +8,14 @@
 
 /* Begin PBXBuildFile section */
 		1F1575721F582BE20003B888 /* dylibs in Resources */ = {isa = PBXBuildFile; fileRef = 1F1575711F582BE20003B888 /* dylibs */; };
-		DEADBEEF2F582BE20003B888 /* liverpool-rummy-english.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = DEADBEEF1F582BE20003B888 /* liverpool-rummy-english.xcframework */; };
+		DEADBEEF2F582BE20003B888 /* liverpool-rummy-german.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = DEADBEEF1F582BE20003B888 /* liverpool-rummy-german.xcframework */; };
 		
 		
 		1FF8DBB11FBA9DE1009DE660 /* dummy.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1FF8DBB01FBA9DE1009DE660 /* dummy.cpp */; };
 		D07CD44E1C5D589C00B7FB28 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D07CD44D1C5D589C00B7FB28 /* Images.xcassets */; };
 		9039D3BE24C093AC0020482C /* MoltenVK.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9039D3BD24C093AC0020482C /* MoltenVK.xcframework */; };
 		D0BCFE4618AEBDA2004A7AAE /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = D0BCFE4418AEBDA2004A7AAE /* InfoPlist.strings */; };
-		D0BCFE7818AEBFEB004A7AAE /* liverpool-rummy-english.pck in Resources */ = {isa = PBXBuildFile; fileRef = D0BCFE7718AEBFEB004A7AAE /* liverpool-rummy-english.pck */; };
+		D0BCFE7818AEBFEB004A7AAE /* liverpool-rummy-german.pck in Resources */ = {isa = PBXBuildFile; fileRef = D0BCFE7718AEBFEB004A7AAE /* liverpool-rummy-german.pck */; };
 		F965960D2BC2C3A800579C7E /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = F965960C2BC2C3A800579C7E /* PrivacyInfo.xcprivacy */; };
 		90DD2D9E24B36E8000717FE1 /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 90DD2D9D24B36E8000717FE1 /* Launch Screen.storyboard */; };
 /* End PBXBuildFile section */
@@ -35,18 +35,18 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		1F1575711F582BE20003B888 /* dylibs */ = {isa = PBXFileReference; lastKnownFileType = folder; name = dylibs; path = "liverpool-rummy-english/dylibs"; sourceTree = "<group>"; };
-		DEADBEEF1F582BE20003B888 /* liverpool-rummy-english.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = godot; path = "liverpool-rummy-english.xcframework"; sourceTree = "<group>"; };
+		1F1575711F582BE20003B888 /* dylibs */ = {isa = PBXFileReference; lastKnownFileType = folder; name = dylibs; path = "liverpool-rummy-german/dylibs"; sourceTree = "<group>"; };
+		DEADBEEF1F582BE20003B888 /* liverpool-rummy-german.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = godot; path = "liverpool-rummy-german.xcframework"; sourceTree = "<group>"; };
 		
 		
-		1FF4C1881F584E6300A41E41 /* liverpool-rummy-english.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "liverpool-rummy-english.entitlements"; sourceTree = "<group>"; };
+		1FF4C1881F584E6300A41E41 /* liverpool-rummy-german.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "liverpool-rummy-german.entitlements"; sourceTree = "<group>"; };
 		1FF8DBB01FBA9DE1009DE660 /* dummy.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = dummy.cpp; sourceTree = "<group>"; };
 		9039D3BD24C093AC0020482C /* MoltenVK.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = MoltenVK; path = MoltenVK.xcframework; sourceTree = "<group>"; };
 		D07CD44D1C5D589C00B7FB28 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
-		D0BCFE3418AEBDA2004A7AAE /* liverpool-rummy-english.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "liverpool-rummy-english.app"; sourceTree = BUILT_PRODUCTS_DIR; };
-		D0BCFE4318AEBDA2004A7AAE /* liverpool-rummy-english-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "liverpool-rummy-english-Info.plist"; sourceTree = "<group>"; };
+		D0BCFE3418AEBDA2004A7AAE /* liverpool-rummy-german.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "liverpool-rummy-german.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		D0BCFE4318AEBDA2004A7AAE /* liverpool-rummy-german-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "liverpool-rummy-german-Info.plist"; sourceTree = "<group>"; };
 		D0BCFE4518AEBDA2004A7AAE /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
-				D0BCFE7718AEBFEB004A7AAE /* liverpool-rummy-english.pck */ = {isa = PBXFileReference; lastKnownFileType = file; path = "liverpool-rummy-english.pck"; sourceTree = "<group>"; };
+				D0BCFE7718AEBFEB004A7AAE /* liverpool-rummy-german.pck */ = {isa = PBXFileReference; lastKnownFileType = file; path = "liverpool-rummy-german.pck"; sourceTree = "<group>"; };
 		F965960C2BC2C3A800579C7E /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		90DD2D9D24B36E8000717FE1 = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = "Launch Screen.storyboard"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -59,7 +59,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				9039D3BE24C093AC0020482C /* MoltenVK.xcframework in Frameworks */,
-				DEADBEEF2F582BE20003B888 /* liverpool-rummy-english.xcframework */,
+				DEADBEEF2F582BE20003B888 /* liverpool-rummy-german.xcframework */,
 				
 				
 			);
@@ -72,8 +72,8 @@
 			isa = PBXGroup;
 			children = (
 				1F1575711F582BE20003B888 /* dylibs */,
-				D0BCFE7718AEBFEB004A7AAE /* liverpool-rummy-english.pck */,
-				D0BCFE4118AEBDA2004A7AAE /* liverpool-rummy-english */,
+				D0BCFE7718AEBFEB004A7AAE /* liverpool-rummy-german.pck */,
+				D0BCFE4118AEBDA2004A7AAE /* liverpool-rummy-german */,
 				D0BCFE3618AEBDA2004A7AAE /* Frameworks */,
 				D0BCFE3518AEBDA2004A7AAE /* Products */,
 				F965960C2BC2C3A800579C7E /* PrivacyInfo.xcprivacy */,
@@ -84,7 +84,7 @@
 		D0BCFE3518AEBDA2004A7AAE /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				D0BCFE3418AEBDA2004A7AAE /* liverpool-rummy-english.app */,
+				D0BCFE3418AEBDA2004A7AAE /* liverpool-rummy-german.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -93,30 +93,30 @@
 			isa = PBXGroup;
 			children = (
 				9039D3BD24C093AC0020482C /* MoltenVK.xcframework */,
-				DEADBEEF1F582BE20003B888 /* liverpool-rummy-english.xcframework */,
+				DEADBEEF1F582BE20003B888 /* liverpool-rummy-german.xcframework */,
 				
 				
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		D0BCFE4118AEBDA2004A7AAE /* liverpool-rummy-english */ = {
+		D0BCFE4118AEBDA2004A7AAE /* liverpool-rummy-german */ = {
 			isa = PBXGroup;
 			children = (
 				90DD2D9D24B36E8000717FE1 /* Launch Screen.storyboard */,
-				1FF4C1881F584E6300A41E41 /* liverpool-rummy-english.entitlements */,
+				1FF4C1881F584E6300A41E41 /* liverpool-rummy-german.entitlements */,
 				D07CD44D1C5D589C00B7FB28 /* Images.xcassets */,
 				D0BCFE4218AEBDA2004A7AAE /* Supporting Files */,
 				1FF8DBB01FBA9DE1009DE660 /* dummy.cpp */,
 				
 			);
-			path = "liverpool-rummy-english";
+			path = "liverpool-rummy-german";
 			sourceTree = "<group>";
 		};
 		D0BCFE4218AEBDA2004A7AAE /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
-				D0BCFE4318AEBDA2004A7AAE /* liverpool-rummy-english-Info.plist */,
+				D0BCFE4318AEBDA2004A7AAE /* liverpool-rummy-german-Info.plist */,
 				D0BCFE4418AEBDA2004A7AAE /* InfoPlist.strings */,
 			);
 			name = "Supporting Files";
@@ -125,9 +125,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		D0BCFE3318AEBDA2004A7AAE /* liverpool-rummy-english */ = {
+		D0BCFE3318AEBDA2004A7AAE /* liverpool-rummy-german */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = D0BCFE7118AEBDA3004A7AAE /* Build configuration list for PBXNativeTarget "liverpool-rummy-english" */;
+			buildConfigurationList = D0BCFE7118AEBDA3004A7AAE /* Build configuration list for PBXNativeTarget "liverpool-rummy-german" */;
 			buildPhases = (
 				D0BCFE3018AEBDA2004A7AAE /* Sources */,
 				D0BCFE3118AEBDA2004A7AAE /* Frameworks */,
@@ -138,9 +138,9 @@
 			);
 			dependencies = (
 			);
-			name = "liverpool-rummy-english";
+			name = "liverpool-rummy-german";
 			productName = "liverpool-rummy";
-			productReference = D0BCFE3418AEBDA2004A7AAE /* liverpool-rummy-english.app */;
+			productReference = D0BCFE3418AEBDA2004A7AAE /* liverpool-rummy-german.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -161,7 +161,7 @@
 					};
 				};
 			};
-			buildConfigurationList = D0BCFE2F18AEBDA2004A7AAE /* Build configuration list for PBXProject "liverpool-rummy-english" */;
+			buildConfigurationList = D0BCFE2F18AEBDA2004A7AAE /* Build configuration list for PBXProject "liverpool-rummy-german" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -174,7 +174,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				D0BCFE3318AEBDA2004A7AAE /* liverpool-rummy-english */,
+				D0BCFE3318AEBDA2004A7AAE /* liverpool-rummy-german */,
 			);
 		};
 /* End PBXProject section */
@@ -185,7 +185,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				D07CD44E1C5D589C00B7FB28 /* Images.xcassets in Resources */,
-				D0BCFE7818AEBFEB004A7AAE /* liverpool-rummy-english.pck in Resources */,
+				D0BCFE7818AEBFEB004A7AAE /* liverpool-rummy-german.pck in Resources */,
 				90DD2D9E24B36E8000717FE1 /* Launch Screen.storyboard in Resources */,
 				D0BCFE4618AEBDA2004A7AAE /* InfoPlist.strings in Resources */,
 				F965960D2BC2C3A800579C7E /* PrivacyInfo.xcprivacy in Resources */,
@@ -314,13 +314,13 @@
 			buildSettings = {
 				ARCHS = "arm64";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_ENTITLEMENTS = "liverpool-rummy-english/liverpool-rummy-english.entitlements";
+				CODE_SIGN_ENTITLEMENTS = "liverpool-rummy-german/liverpool-rummy-german.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Development";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Apple Development";
 				CODE_SIGN_STYLE = "Automatic";
 				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)";
 				DEVELOPMENT_TEAM = P4N43F569L;
-				INFOPLIST_FILE = "liverpool-rummy-english/liverpool-rummy-english-Info.plist";
+				INFOPLIST_FILE = "liverpool-rummy-german/liverpool-rummy-german-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -330,10 +330,10 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/**",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.github.gmlewis.liverpool-rummy-english;
+				PRODUCT_BUNDLE_IDENTIFIER = com.github.gmlewis.liverpool-rummy-german;
 				INFOPLIST_KEY_CFBundleDisplayName = "liverpool-rummy";
-				PRODUCT_NAME = "liverpool-rummy-english";
-				EXECUTABLE_NAME = "liverpool-rummy-english";
+				PRODUCT_NAME = "liverpool-rummy-german";
+				EXECUTABLE_NAME = "liverpool-rummy-german";
 				MARKETING_VERSION = 0.18.0;
 				CURRENT_PROJECT_VERSION = 0.18.0;
 				PROVISIONING_PROFILE = "";
@@ -350,13 +350,13 @@
 			buildSettings = {
 				ARCHS = "arm64";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_ENTITLEMENTS = "liverpool-rummy-english/liverpool-rummy-english.entitlements";
+				CODE_SIGN_ENTITLEMENTS = "liverpool-rummy-german/liverpool-rummy-german.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Development";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Apple Development";
 				CODE_SIGN_STYLE = "Automatic";
 				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)";
 				DEVELOPMENT_TEAM = P4N43F569L;
-				INFOPLIST_FILE = "liverpool-rummy-english/liverpool-rummy-english-Info.plist";
+				INFOPLIST_FILE = "liverpool-rummy-german/liverpool-rummy-german-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -366,10 +366,10 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/**",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.github.gmlewis.liverpool-rummy-english;
+				PRODUCT_BUNDLE_IDENTIFIER = com.github.gmlewis.liverpool-rummy-german;
 				INFOPLIST_KEY_CFBundleDisplayName = "liverpool-rummy";
-				PRODUCT_NAME = "liverpool-rummy-english";
-				EXECUTABLE_NAME = "liverpool-rummy-english";
+				PRODUCT_NAME = "liverpool-rummy-german";
+				EXECUTABLE_NAME = "liverpool-rummy-german";
 				MARKETING_VERSION = 0.18.0;
 				CURRENT_PROJECT_VERSION = 0.18.0;
 				PROVISIONING_PROFILE = "";
@@ -384,7 +384,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		D0BCFE2F18AEBDA2004A7AAE /* Build configuration list for PBXProject "liverpool-rummy-english" */ = {
+		D0BCFE2F18AEBDA2004A7AAE /* Build configuration list for PBXProject "liverpool-rummy-german" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				D0BCFE6F18AEBDA3004A7AAE /* Debug */,
@@ -393,7 +393,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Debug;
 		};
-		D0BCFE7118AEBDA3004A7AAE /* Build configuration list for PBXNativeTarget "liverpool-rummy-english" */ = {
+		D0BCFE7118AEBDA3004A7AAE /* Build configuration list for PBXNativeTarget "liverpool-rummy-german" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				D0BCFE7218AEBDA3004A7AAE /* Debug */,

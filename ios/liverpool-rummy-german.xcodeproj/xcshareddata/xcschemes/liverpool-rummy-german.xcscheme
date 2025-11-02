@@ -15,9 +15,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "A340BDFEBCA49239A941883D"
-               BuildableName = "liverpool-rummy-english.app"
-               BlueprintName = "liverpool-rummy-english"
-               ReferencedContainer = "container:liverpool-rummy-english.xcodeproj">
+               BuildableName = "liverpool-rummy-german.app"
+               BlueprintName = "liverpool-rummy-german"
+               ReferencedContainer = "container:liverpool-rummy-german.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -33,9 +33,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "A340BDFEBCA49239A941883D"
-               BuildableName = "liverpool-rummy-english.app"
-               BlueprintName = "liverpool-rummy-english"
-               ReferencedContainer = "container:liverpool-rummy-english.xcodeproj">
+               BuildableName = "liverpool-rummy-german.app"
+               BlueprintName = "liverpool-rummy-german"
+               ReferencedContainer = "container:liverpool-rummy-german.xcodeproj">
             </BuildableReference>
       </MacroExpansion>
       <AdditionalOptions>
@@ -56,9 +56,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "A340BDFEBCA49239A941883D"
-               BuildableName = "liverpool-rummy-english.app"
-               BlueprintName = "liverpool-rummy-english"
-               ReferencedContainer = "container:liverpool-rummy-english.xcodeproj">
+               BuildableName = "liverpool-rummy-german.app"
+               BlueprintName = "liverpool-rummy-german"
+               ReferencedContainer = "container:liverpool-rummy-german.xcodeproj">
             </BuildableReference>
       </BuildableProductRunnable>
       <CommandLineArguments>
@@ -77,9 +77,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "A340BDFEBCA49239A941883D"
-               BuildableName = "liverpool-rummy-english.app"
-               BlueprintName = "liverpool-rummy-english"
-               ReferencedContainer = "container:liverpool-rummy-english.xcodeproj">
+               BuildableName = "liverpool-rummy-german.app"
+               BlueprintName = "liverpool-rummy-german"
+               ReferencedContainer = "container:liverpool-rummy-german.xcodeproj">
             </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>

@@ -2,7 +2,7 @@
 <Workspace
    version = "1.0">
    <FileRef
-      location = "self:liverpool-rummy-english.xcodeproj">
+      location = "self:liverpool-rummy-german.xcodeproj">
    </FileRef>
 </Workspace>
 
