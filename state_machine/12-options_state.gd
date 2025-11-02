@@ -20,10 +20,11 @@ func exit():
 func _setup_main_menu_button() -> void:
 	# Load the appropriate SVG based on language
 	var texture_path: String
-	if Global.LANGUAGE == 'de':
-		texture_path = "res://svgs/main-menu-german.svg"
-	else:
-		texture_path = "res://svgs/main-menu-english.svg"
+	match Global.LANGUAGE:
+		'de':
+			texture_path = "res://svgs/main-menu-german.svg"
+		_:
+			texture_path = "res://svgs/main-menu-english.svg"
 
 	var texture = load(texture_path)
 	state_advance_button.texture_normal = texture

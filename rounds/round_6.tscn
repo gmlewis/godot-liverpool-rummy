@@ -1,5 +1,6 @@
-[gd_scene load_steps=5 format=3 uid="uid://d4f0lutipg6lf"]
+[gd_scene load_steps=6 format=3 uid="uid://d4f0lutipg6lf"]
 
+[ext_resource type="Script" uid="uid://eqa5mo3lc6ig" path="res://rounds/round_6_language.gd" id="1_j6040"]
 [ext_resource type="Shader" uid="uid://dj1sits4mc06j" path="res://shaders/fuzzyrect.gdshader" id="2_63lgo"]
 [ext_resource type="Texture2D" uid="uid://dmt4r3uxxnsxc" path="res://backgrounds/29de694b-143c-491d-9e07-13a47e7185eb.jpeg" id="2_w81d1"]
 [ext_resource type="Script" uid="uid://ds0jj8r0p5g5j" path="res://scripts/shader-switcher.gd" id="3_63lgo"]
@@ -16,6 +17,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+script = ExtResource("1_j6040")
 
 [node name="Background" type="TextureRect" parent="."]
 z_index = -10
