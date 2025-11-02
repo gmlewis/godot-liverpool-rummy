@@ -229,11 +229,8 @@ To play with friends, it works best if everyone’s on the same Wi‑Fi or hotsp
 If it doesn’t show up automatically, the host can share their local IP (it’s shown in the lobby) so others can type it in and tap “Join Game”.
 ',
 		'de': 'Mehrspieler‑Moonridge Rummy kannst du entweder alleine gegen Computergegner oder online mit Freunden spielen – mit oder ohne zusätzliche Bots.
-
 Um solo zu spielen, klicke im Hauptmenü auf „Neues Spiel hosten“ und füge einen oder mehrere Bots zu deiner Lobby hinzu.
-
 Zum Spielen mit Freunden klappt es am besten, wenn alle im selben WLAN oder Hotspot sind. Ein Spieler hostet, und die anderen können beitreten, sobald das Spiel in ihrer Lobby‑Liste erscheint.
-
 Falls es nicht automatisch angezeigt wird, kann der Gastgeber seine lokale IP‑Adresse (in der Lobby zu sehen) an andere weitergeben. Diese geben die IP‑Adresse ein und klicken dann auf „Spiel beitreten“.
 ',
 	},
@@ -291,20 +288,23 @@ Karten im unteren rechten Bereich kannst du an‑tippen, um sie während deines 
 First, draw a card — tap the left pile to draw from stock, or the right pile to take the top discard.
 
 Then, try to meet the current round’s requirements. Drag cards into the meld zones until they sparkle. When you’re ready, tap the “Meld!” icon to lay down your hand.
-
-After melding, keep adding cards to your melds or to others’. Tap “Meld!” again to confirm.
-
-In rounds 1–6, end your turn by tapping a card in the lower-right to discard it. If you’ve got no cards left, you’ve won the round!
-
-In round 7, the first person to meld must finish their hand completely and can’t add to others’ melds.
 ',
 		'de': 'Wenn du an der Reihe bist, leuchtet dein Spielersymbol oben mit einem orangefarbenen, pulsierenden Rahmen.
 
 Ziehe zuerst eine Karte – tippe auf den linken Stapel, um vom Nachziehstapel zu ziehen, oder auf den rechten, um die oberste Karte vom Ablagestapel zu nehmen.
 
 Versuche dann, die Anforderungen der Runde zu erfüllen. Ziehe Karten in die Ablageflächen, bis sie funkeln. Wenn du bereit bist, tippe auf „Melden!“, um deine Hand auszulegen.
+',
+	},
+		{
+		# Step 6 – After melding
+		'en': 'After melding, keep adding cards to your melds or to others’. Tap “Meld!” again to confirm.
 
-Danach kannst du weiter Karten an deine eigenen oder die Meldungen anderer Spieler anlegen. Tippe erneut auf „Melden!“, um das zu bestätigen.
+In rounds 1–6, end your turn by tapping a card in the lower-right to discard it. If you’ve got no cards left, you’ve won the round!
+
+In round 7, the first person to meld must finish their hand completely and can’t add to others’ melds.
+',
+		'de': 'Danach kannst du weiter Karten an deine eigenen oder die Meldungen anderer Spieler anlegen. Tippe erneut auf „Melden!“, um das zu bestätigen.
 
 In den Runden 1–6 beendest du deinen Zug, indem du im unteren rechten Bereich auf eine Karte tippst, um sie abzuwerfen. Wenn du danach keine Karten mehr auf der Hand hast, hast du die Runde gewonnen!
 
@@ -312,7 +312,7 @@ In Runde 7 muss der erste Spieler alle seine Karten ablegen und darf danach ni
 ',
 	},
 	{
-		# Step 6 – Scoring
+		# Step 7 – Scoring
 		'en': 'After each round, the host taps “Tally Scores” to total all cards and update each player’s score.
 
 Then tap “Next Round” (or “Final Scores” after round 7).
@@ -326,16 +326,14 @@ When you’re done, tap “Main Menu” to go back and start a new game anytime.
 		'de': 'Nach jeder Runde tippt der Gastgeber auf „Punkte zählen“, um alle Karten zusammenzurechnen und die Punktestände zu aktualisieren.
 
 Danach tippe auf „Nächste Runde“ (oder nach Runde 7 auf „Endergebnisse“).
-
 Nach allen sieben Runden gewinnt der Spieler mit der niedrigsten Gesamtpunktzahl!
-
 Die Endwertung zeigt alle Runden‑ und Gesamtpunkte – mit Pokalen für den 3., 2. und 1. Platz.
 
 Wenn du fertig bist, tippe auf „Hauptmenü“, um zurückzukehren und ein neues Spiel zu starten.
 ',
 	},
 	{
-		# Step 7 – Extra Buttons and Wrap‑Up
+		# Step 8 – Extra Buttons and Wrap‑Up
 		'en': 'Every round has two helpful buttons.
 
 In the top-left corner, tap the button to change your card back design.

@@ -8,7 +8,7 @@ extends GameState
 
 func enter(_params: Dictionary):
 	Global.dbg("ENTER PreGameSetupState")
-	$"../../TitlePageUI".connect('start_button_pressed_signal', _on_start_button_pressed_signal)
+	$'../../TitlePageUI'.connect('start_button_pressed_signal', _on_start_button_pressed_signal)
 
 	# Setup the "Start Tutorial" and "Options" buttons but keep them hidden initially
 	_setup_tutorial_and_options_buttons()

@@ -515,11 +515,14 @@ func _update_meld_area_counts_and_sparkles() -> void:
 	Global.emit_meld_areas_states()
 
 func _update_meld_area_label(meld_area_label: Label, count: int) -> void:
-	if meld_area_label.text.begins_with('Book '):
-		meld_area_label.text = meld_area_label.text.substr(0, 6) + ' (%d)' % count
-		return
-	# It must be a run
-	meld_area_label.text = meld_area_label.text.substr(0, 5) + ' (%d)' % count
+	# Get the index of the first '(' character
+	var paren_index = meld_area_label.text.find('(')
+	if paren_index == -1:
+		# No existing count, just append
+		meld_area_label.text += ' (%d)' % count
+	else:
+		# Replace existing count
+		meld_area_label.text = meld_area_label.text.substr(0, paren_index).strip_edges() + ' (%d)' % count
 
 ################################################################################
 ## Player hand evaluation functions

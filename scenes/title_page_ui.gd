@@ -54,6 +54,8 @@ func _on_reset_game_signal() -> void:
 	$PanelPositionControl/StartGamePanel/JoinGameButton.text = JOIN_GAME_TEXT
 	$PanelPositionControl/StartGamePanel/JoinGameButton.disabled = false
 	$PanelPositionControl/StartGamePanel/NextIPAddressButton.show()
+	# Hide the NewCardBackButton until game starts
+	$'../HUDLayer/Control/NewCardBackButton'.hide()
 	get_local_ip_addresses()
 	$PanelPositionControl/StartGamePanel/IPLineEdit.text = ip_addresses[current_ip_address_idx]
 	show()
