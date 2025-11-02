@@ -1,5 +1,6 @@
-[gd_scene load_steps=2 format=3 uid="uid://c3apl7x3mtso4"]
+[gd_scene load_steps=3 format=3 uid="uid://c3apl7x3mtso4"]
 
+[ext_resource type="Script" uid="uid://cqh25qhdc4fvd" path="res://rounds/options_language.gd" id="1_e3u66"]
 [ext_resource type="Texture2D" uid="uid://dtl2i04u3vlb2" path="res://backgrounds/b7e41b98-fdf8-440f-a74d-3f99ba48f594.jpeg" id="1_nemcv"]
 
 [node name="Options" type="Control"]
@@ -9,6 +10,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+script = ExtResource("1_e3u66")
 
 [node name="Background" type="TextureRect" parent="."]
 z_index = -10

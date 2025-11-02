@@ -2,8 +2,6 @@ extends GameState
 
 @onready var state_advance_button: TextureButton = $'../../HUDLayer/Control/StateAdvanceButton'
 
-const OPTIONS_ROUND_LABEL_PATH = '/root/RootNode/RoundNode/Options/RoundLabel'
-
 func enter(_params: Dictionary):
 	Global.dbg("ENTER OptionsState")
 
@@ -25,13 +23,6 @@ func _setup_main_menu_button() -> void:
 	match Global.LANGUAGE:
 		'de':
 			texture_path = "res://svgs/main-menu-german.svg"
-			await get_tree().process_frame # Wait a frame to ensure nodes are ready
-			var round_label: Label = get_node_or_null(OPTIONS_ROUND_LABEL_PATH)
-			if round_label:
-				round_label.text = 'Optionen'
-			var grace_period_label: Label = get_node_or_null('/root/RootNode/RoundNode/Options/GracePeriodLabel')
-			if grace_period_label:
-				grace_period_label.text = 'Nachlass-Zeit'
 		_:
 			texture_path = "res://svgs/main-menu-english.svg"
 

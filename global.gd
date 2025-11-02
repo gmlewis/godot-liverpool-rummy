@@ -72,7 +72,7 @@ signal clear_all_player_meldable_indicators_signal() # for local player to clear
 
 @onready var playing_cards_control: Control = $"/root/RootNode/PlayingCardsControl" if has_node("/root/RootNode/PlayingCardsControl") else null
 
-const VERSION = '0.17.0'
+const VERSION = '0.18.0'
 const GAME_PORT = 7000
 var current_game_port: int = GAME_PORT
 const DISCOVERY_PORT = 8910
@@ -87,7 +87,7 @@ const MELD_AREA_1_RIGHT_PERCENT = 0.333 * MELD_AREA_RIGHT_PERCENT # 16.65% acros
 const MELD_AREA_2_RIGHT_PERCENT = 0.666 * MELD_AREA_RIGHT_PERCENT # 33.3% across the screen
 
 # This game can be compiled in different languages (currently, only 'en' or 'de').
-const LANGUAGE = 'de' # 'en', 'fr', 'de', 'jp', etc.
+const LANGUAGE = 'en' # 'en', 'fr', 'de', 'jp', etc.
 
 func _ready():
 	_initialize_from_command_line_args()
