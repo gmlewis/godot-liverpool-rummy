@@ -1,6 +1,7 @@
-[gd_scene load_steps=2 format=3 uid="uid://cbu01ly0ig3xf"]
+[gd_scene load_steps=3 format=3 uid="uid://cbu01ly0ig3xf"]
 
 [ext_resource type="Texture2D" uid="uid://c8tmbmr0fnj74" path="res://backgrounds/370d4436-2349-4178-b65b-0efbde28b8a3.jpeg" id="1_2r0d8"]
+[ext_resource type="Script" uid="uid://dojb8ewvq0wgk" path="res://rounds/final_scores_language.gd" id="1_ueov7"]
 
 [node name="FinalScores" type="Control"]
 layout_mode = 3
@@ -9,6 +10,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+script = ExtResource("1_ueov7")
 
 [node name="Background" type="TextureRect" parent="."]
 z_index = -10
