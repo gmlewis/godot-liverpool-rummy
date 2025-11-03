@@ -249,11 +249,11 @@ func _setup_tutorial_and_options_buttons() -> void:
 	var tutorial_texture_path: String
 	var options_texture_path: String
 	if Global.LANGUAGE == 'de':
-		tutorial_texture_path = "res://svgs/start-tutorial-german.svg"
-		options_texture_path = "res://svgs/options-german.svg"
+		tutorial_texture_path = "res://svgs/start-tutorial-de.svg"
+		options_texture_path = "res://svgs/options-de.svg"
 	else:
-		tutorial_texture_path = "res://svgs/start-tutorial-english.svg"
-		options_texture_path = "res://svgs/options-english.svg"
+		tutorial_texture_path = "res://svgs/start-tutorial-en.svg"
+		options_texture_path = "res://svgs/options-en.svg"
 
 	_initialize_button(tutorial_texture_path, state_advance_button, 0.65)
 	_initialize_button(options_texture_path, options_button, 0.80)

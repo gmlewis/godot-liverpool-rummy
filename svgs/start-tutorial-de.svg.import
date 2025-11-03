@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://btvqg64ow4xpd"
-path="res://.godot/imported/tally-scores-english.svg-cb9ad6553d97d7deb2d32d6a53339922.ctex"
+uid="uid://blbg2ea1ilfc7"
+path="res://.godot/imported/start-tutorial-de.svg-b3e2f661645b1a3ad9640eeae3f94ec7.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://svgs/tally-scores-english.svg"
-dest_files=["res://.godot/imported/tally-scores-english.svg-cb9ad6553d97d7deb2d32d6a53339922.ctex"]
+source_file="res://svgs/start-tutorial-de.svg"
+dest_files=["res://.godot/imported/start-tutorial-de.svg-b3e2f661645b1a3ad9640eeae3f94ec7.ctex"]
 
 [params]
 

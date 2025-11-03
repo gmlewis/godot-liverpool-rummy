@@ -171,15 +171,15 @@ func _setup_state_advance_button() -> void:
 	if current_round >= 1 and current_round <= 6:
 		# Rounds 1-6: Show "Next Round" button
 		if Global.LANGUAGE == 'de':
-			texture_path = "res://svgs/next-round-german.svg"
+			texture_path = "res://svgs/next-round-de.svg"
 		else:
-			texture_path = "res://svgs/next-round-english.svg"
+			texture_path = "res://svgs/next-round-en.svg"
 	else:
 		# Round 7: Show "Final Scores" button
 		if Global.LANGUAGE == 'de':
-			texture_path = "res://svgs/final-scores-german.svg"
+			texture_path = "res://svgs/final-scores-de.svg"
 		else:
-			texture_path = "res://svgs/final-scores-english.svg"
+			texture_path = "res://svgs/final-scores-en.svg"
 
 	var texture = load(texture_path)
 	state_advance_button.texture_normal = texture

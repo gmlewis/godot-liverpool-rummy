@@ -212,9 +212,9 @@ func _setup_state_advance_button() -> void:
 	# Load the appropriate SVG based on language
 	var texture_path: String
 	if Global.LANGUAGE == 'de':
-		texture_path = "res://svgs/main-menu-german.svg"
+		texture_path = "res://svgs/main-menu-de.svg"
 	else:
-		texture_path = "res://svgs/main-menu-english.svg"
+		texture_path = "res://svgs/main-menu-en.svg"
 
 	var texture = load(texture_path)
 	state_advance_button.texture_normal = texture

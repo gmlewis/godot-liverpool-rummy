@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://1pvkne13i1fh"
-path="res://.godot/imported/options-english.svg-db8f3e542cb6a005f7e0d0179a0cb622.ctex"
+uid="uid://dwuk45s4ds48r"
+path="res://.godot/imported/splash@3x.png-7a9078e694e53483447afcf789a8459b.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://svgs/options-english.svg"
-dest_files=["res://.godot/imported/options-english.svg-db8f3e542cb6a005f7e0d0179a0cb622.ctex"]
+source_file="res://ios/liverpool-rummy-english/Images.xcassets/SplashImage.imageset/splash@3x.png"
+dest_files=["res://.godot/imported/splash@3x.png-7a9078e694e53483447afcf789a8459b.ctex"]
 
 [params]
 
@@ -38,6 +38,3 @@ process/hdr_as_srgb=false
 process/hdr_clamp_exposure=false
 process/size_limit=0
 detect_3d/compress_to=1
-svg/scale=1.0
-editor/scale_with_editor_scale=false
-editor/convert_colors_with_editor_theme=false

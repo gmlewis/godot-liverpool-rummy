@@ -22,9 +22,9 @@ func _setup_main_menu_button() -> void:
 	var texture_path: String
 	match Global.LANGUAGE:
 		'de':
-			texture_path = "res://svgs/main-menu-german.svg"
+			texture_path = "res://svgs/main-menu-de.svg"
 		_:
-			texture_path = "res://svgs/main-menu-english.svg"
+			texture_path = "res://svgs/main-menu-en.svg"
 
 	var texture = load(texture_path)
 	state_advance_button.texture_normal = texture
