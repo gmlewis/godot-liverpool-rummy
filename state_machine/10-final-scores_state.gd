@@ -23,13 +23,6 @@ const TROPHY_SPACING_FACTOR = 8 # as if fitting # items next to each other, cent
 func enter(_params: Dictionary):
 	Global.dbg("ENTER FinalScoresState")
 
-	# Update RoundLabel text based on language
-	var round_node = get_tree().root.get_node_or_null("/root/RootNode/RoundNode")
-	if round_node:
-		var round_label = round_node.get_node_or_null("RoundLabel")
-		if round_label and Global.LANGUAGE == 'de':
-			round_label.text = "Spiel Vorbei! - Endergebnis"
-
 	# Step 0: Create trophy sprites but keep them hidden for now.
 	trophy1 = make_trophy(trophy1_image)
 	trophy2 = make_trophy(trophy2_image)
@@ -210,11 +203,7 @@ static func next_winners(remaining_players: Array) -> Dictionary:
 
 func _setup_state_advance_button() -> void:
 	# Load the appropriate SVG based on language
-	var texture_path: String
-	if Global.LANGUAGE == 'de':
-		texture_path = "res://svgs/main-menu-de.svg"
-	else:
-		texture_path = "res://svgs/main-menu-en.svg"
+	const texture_path = "res://svgs/main-menu-%s.svg" % Global.LANGUAGE
 
 	var texture = load(texture_path)
 	state_advance_button.texture_normal = texture

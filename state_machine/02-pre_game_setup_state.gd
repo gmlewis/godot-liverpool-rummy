@@ -246,14 +246,8 @@ func _on_start_button_pressed_signal(): # only run on host/server
 
 func _setup_tutorial_and_options_buttons() -> void:
 	# Load the appropriate SVG based on language
-	var tutorial_texture_path: String
-	var options_texture_path: String
-	if Global.LANGUAGE == 'de':
-		tutorial_texture_path = "res://svgs/start-tutorial-de.svg"
-		options_texture_path = "res://svgs/options-de.svg"
-	else:
-		tutorial_texture_path = "res://svgs/start-tutorial-en.svg"
-		options_texture_path = "res://svgs/options-en.svg"
+	const tutorial_texture_path = "res://svgs/start-tutorial-%s.svg" % Global.LANGUAGE
+	const options_texture_path = "res://svgs/options-%s.svg" % Global.LANGUAGE
 
 	_initialize_button(tutorial_texture_path, state_advance_button, 0.65)
 	_initialize_button(options_texture_path, options_button, 0.80)

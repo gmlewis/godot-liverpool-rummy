@@ -28,9 +28,7 @@ func exit():
 
 func _setup_tally_scores_button() -> void:
 	# Load the appropriate SVG based on language
-	var texture_path = "res://svgs/tally-scores-en.svg"
-	if Global.LANGUAGE == 'de':
-		texture_path = "res://svgs/tally-scores-de.svg"
+	const texture_path = "res://svgs/tally-scores-%s.svg" % Global.LANGUAGE
 
 	var texture = load(texture_path)
 	state_advance_button.texture_normal = texture
