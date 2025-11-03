@@ -88,17 +88,25 @@ const MELD_AREA_2_RIGHT_PERCENT = 0.666 * MELD_AREA_RIGHT_PERCENT # 33.3% across
 
 # This game can be compiled for the following languages:
 # * 'ar' - Arabic
+# * 'bn' - Bengali
 # * 'de' - German
 # * 'en' - English
 # * 'es' - Spanish
 # * 'fr' - French
 # * 'he' - Hebrew
+# * 'hi' - Hindi
+# * 'id' - Indonesian
 # * 'it' - Italian
 # * 'ja' - Japanese
 # * 'ko' - Korean
+# * 'nl' - Dutch
+# * 'pl' - Polish
 # * 'pt' - Portuguese
 # * 'ru' - Russian
-# * 'zh' - Chinese (Simplified)
+# * 'th' - Thai
+# * 'tr' - Turkish
+# * 'zh-Hans' - Chinese (Simplified)
+# * 'zh-Hant' - Chinese (Traditional)
 const LANGUAGE = 'en'
 
 func _ready():

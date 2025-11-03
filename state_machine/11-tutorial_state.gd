@@ -281,13 +281,21 @@ Se não aparecer automaticamente, o anfitrião pode compartilhar o IP local (mos
 
 Если игра не показалась автоматически, хост может поделиться своим локальным IP (он виден в лобби), чтобы остальные ввели его и нажали « Присоединиться к игре ».
 ',
-		'zh': '多人 Moonridge Rummy 可以单人对战 AI，也可以跨平台和朋友在线同乐，可选是否加入更多机器人。
+		'zh-Hans': '多人 Moonridge Rummy 可以单人对战 AI，也可以跨平台和朋友在线同乐，可选是否加入更多机器人。
 
 单人游玩时，在主菜单点“主持新游戏”，再往大厅里加上一个或多个机器人。
 
 和朋友一起玩时，大家连在同一个 Wi-Fi 或热点会最顺。有人负责开房，其他人在大厅列表看到游戏后就能加入。
 
 如果列表里没有自动出现，房主可以把大厅里显示的本地 IP 告诉大家，其他人输入后点“加入游戏”即可。
+',
+		'zh-Hant': '多人 Moonridge Rummy 可以單人對戰 AI，也可以跨平台和朋友線上同樂，可選是否加入更多機器人。
+
+單人遊玩時，在主選單點「主持新遊戲」，再往大廳裡加上一個或多個機器人。
+
+和朋友一起玩時，大家連在同一個 Wi-Fi 或熱點會最順。有人負責開房，其他人在大廳列表看到遊戲後就能加入。
+
+如果列表裡沒有自動出現，房主可以把大廳裡顯示的本地 IP 告訴大家，其他人輸入後點「加入遊戲」即可。
 ',
 		'ar': 'يمكنك لعب Moonridge Rummy الجماعية بمفردك ضد خصوم ذكاء اصطناعي، أو عبر الإنترنت مع أصدقائك على أي منصة، مع أو بدون روبوتات إضافية.
 
@@ -312,6 +320,62 @@ Se não aparecer automaticamente, o anfitrião pode compartilhar o IP local (mos
 למשחק עם חברים, הכי נוח שכולם יהיו על אותה רשת Wi-Fi או הוטספוט. אחד מאחסן, והשאר נכנסים כשהמשחק מופיע ברשימת הלובי שלהם.
 
 אם זה לא מופיע אוטומטית, המארח יכול לשתף את כתובת ה-IP המקומית (שמופיעה בלובי), והאחרים מקלידים אותה ולוחצים על « הצטרף למשחק ».
+',
+		'hi': 'मल्टीप्लेयर मूनरिज रम्मी को अकेले AI विरोधियों के खिलाफ या दोस्तों के साथ ऑनलाइन किसी भी प्लेटफॉर्म पर खेला जा सकता है — अतिरिक्त बॉट्स के साथ या बिना।
+
+अकेले खेलने के लिए, मुख्य मेनू पर "नई गेम होस्ट करें" पर क्लिक करें और अपनी लॉबी में एक या अधिक बॉट जोड़ें।
+
+दोस्तों के साथ खेलने के लिए, यह सबसे अच्छा काम करता है यदि सभी एक ही वाई-फाई या हॉटस्पॉट पर हों। एक खिलाड़ी होस्ट करता है, और दूसरे तब शामिल होते हैं जब गेम उनकी लॉबी सूची में दिखाई देता है।
+
+यदि यह स्वचालित रूप से दिखाई नहीं देता है, तो होस्ट अपना स्थानीय आईपी (यह लॉबी में दिखाया गया है) साझा कर सकता है ताकि अन्य लोग इसे टाइप कर सकें और "गेम में शामिल हों" पर टैप कर सकें।
+',
+		'id': 'Multiplayer Moonridge Rummy dapat dimainkan sendiri melawan lawan AI atau online dengan teman di platform apa pun — dengan atau tanpa bot tambahan.
+
+Untuk bermain solo, klik "Host New Game" di menu utama dan tambahkan satu atau lebih bot ke lobi Anda.
+
+Untuk bermain dengan teman, paling baik jika semua orang berada di Wi-Fi atau hotspot yang sama. Satu pemain menjadi tuan rumah, dan yang lain bergabung ketika game muncul di daftar lobi mereka.
+
+Jika tidak muncul secara otomatis, tuan rumah dapat membagikan IP lokal mereka (ditampilkan di lobi) sehingga orang lain dapat mengetiknya dan mengetuk "Join Game".
+',
+		'bn': 'মাল্টিপ্লেয়ার মুনরিজ রামি একা এআই প্রতিপক্ষের বিরুদ্ধে বা বন্ধুদের সাথে অনলাইনে যেকোনো প্ল্যাটফর্মে খেলা যায় — অতিরিক্ত বট সহ বা ছাড়া।
+
+একা খেলতে, প্রধান মেনুতে "নতুন গেম হোস্ট করুন" এ ক্লিক করুন এবং আপনার লবিতে এক বা একাধিক বট যুক্ত করুন।
+
+বন্ধুদের সাথে খেলতে, সবাই একই Wi-Fi বা হটস্পটে থাকলে সবচেয়ে ভালো হয়। একজন খেলোয়াড় হোস্ট করে, এবং অন্যরা যখন তাদের লবি তালিকায় গেমটি উপস্থিত হয় তখন যোগদান করে।
+
+যদি এটি স্বয়ংক্রিয়ভাবে প্রদর্শিত না হয়, হোস্ট তাদের স্থানীয় আইপি (এটি লবিতে দেখানো হয়েছে) শেয়ার করতে পারে যাতে অন্যরা এটি টাইپ করতে এবং "গেমে যোগ দিন" ট্যাপ করতে পারে।
+',
+		'tr': 'Çok oyunculu Moonridge Rummy, yapay zeka rakiplere karşı tek başınıza veya arkadaşlarınızla çevrimiçi olarak herhangi bir platformda oynanabilir — ek botlarla veya botsuz.
+
+Tek başınıza oynamak için ana menüde "Yeni Oyun Kur" seçeneğine tıklayın ve lobinize bir veya daha fazla bot ekleyin.
+
+Arkadaşlarınızla oynamak için herkesin aynı Wi-Fi veya ortak erişim noktasında olması en iyisidir. Bir oyuncu ev sahipliği yapar ve diğerleri oyun lobi listelerinde göründüğünde katılır.
+
+Otomatik olarak görünmezse, ev sahibi yerel IP\'sini (lobide gösterilir) paylaşabilir, böylece diğerleri bunu yazıp "Oyuna Katıl" a dokunabilir.
+',
+		'pl': 'Wieloosobową grę Moonridge Rummy można rozgrywać solo przeciwko przeciwnikom AI lub online z przyjaciółmi na dowolnej platformie — z dodatkowymi botami lub bez.
+
+Aby grać solo, kliknij "Host New Game" w menu głównym i dodaj jednego lub więcej botów do swojego lobby.
+
+Aby grać z przyjaciółmi, najlepiej, jeśli wszyscy są w tej samej sieci Wi-Fi lub hotspocie. Jeden gracz jest gospodarzem, a pozostali dołączają, gdy gra pojawi się na ich liście w lobby.
+
+Jeśli nie pojawi się automatycznie, gospodarz może udostępnić swój lokalny adres IP (jest on pokazany w lobby), aby inni mogli go wpisać i dotknąć "Join Game".
+',
+		'nl': 'Multiplayer Moonridge Rummy kan solo worden gespeeld tegen AI-tegenstanders of online met vrienden op elk platform — met of zonder extra bots.
+
+Om solo te spelen, klik op "Host New Game" in het hoofdmenu en voeg een of meer bots toe aan je lobby.
+
+Om met vrienden te spelen, werkt het het beste als iedereen op dezelfde Wi-Fi of hotspot zit. Eén speler host, en de anderen doen mee wanneer het spel in hun lobbylijst verschijnt.
+
+Als het niet automatisch verschijnt, kan de host zijn lokale IP delen (het wordt getoond in de lobby) zodat anderen het kunnen intypen en op "Join Game" kunnen tikken.
+',
+		'th': 'มัลติเพลเยอร์ Moonridge Rummy สามารถเล่นคนเดียวกับคู่ต่อสู้ AI หรือเล่นออนไลน์กับเพื่อน ๆ บนแพลตฟอร์มใดก็ได้ — มีหรือไม่มีบอทเสริมก็ได้
+
+ในการเล่นคนเดียว คลิก "โฮสต์เกมใหม่" บนเมนูหลักและเพิ่มบอทหนึ่งตัวหรือมากกว่าในล็อบบี้ของคุณ
+
+ในการเล่นกับเพื่อน ๆ จะดีที่สุดถ้าทุกคนอยู่ใน Wi-Fi หรือฮอตสปอตเดียวกัน ผู้เล่นคนหนึ่งเป็นโฮสต์ และคนอื่น ๆ จะเข้าร่วมเมื่อเกมปรากฏในรายการล็อบบี้ของพวกเขา
+
+หากไม่ปรากฏขึ้นโดยอัตโนมัติ โฮสต์สามารถแชร์ IP ท้องถิ่นของตน (ที่แสดงในล็อบบี้) เพื่อให้ผู้อื่นสามารถพิมพ์และแตะ "เข้าร่วมเกม" ได้
 ',
 	},
 	{
@@ -344,25 +408,57 @@ Cuando todos estén listos en la sala, el anfitrión toca "Start Game" para empe
 
 Quando todo mundo estiver pronto no lobby, o anfitrião toca "Start Game" para começar!
 ',
-		'ru': 'Пока игроки подключаются, хост может добавлять или удалять ботов (или игроков), нажимая "Add Bot" либо перетаскивая значок игрока на "Remove".
+		'ru': 'Пока игроки подключаются, хост может добавлять или удалять ботов (или игроков), нажимая «Добавить бота» либо перетаскивая значок игрока на «Удалить».
 
-Когда все готовы в лобби, хост нажимает "Start Game" — и поехали!
+Когда все готовы в лобби, хост нажимает «Начать игру» — и поехали!
 ',
-		'zh': '玩家陆续加入时，房主可以点“Add Bot”来增删机器人（或把玩家头像拖到“Remove”来移除玩家）。
+		'zh-Hans': '玩家陆续加入时，房主可以点“添加机器人”来增删机器人（或把玩家头像拖到“移除”来移除玩家）。
 
-等大厅里的人都准备好后，房主点一下“Start Game”就能开局！
+等大厅里的人都准备好后，房主点一下“开始游戏”就能开局！
 ',
-		'ar': 'بينما ينضم اللاعبون، يمكن للمضيف إضافة أو إزالة بوتات (أو لاعبين) بالضغط على "Add Bot" أو بسحب أيقونة لاعب إلى "Remove".
+		'zh-Hant': '玩家陸續加入時，房主可以點「新增機器人」來增刪機器人（或把玩家頭像拖到「移除」來移除玩家）。
 
-عندما يكون الجميع جاهزًا في الردهة، يضغط المضيف "Start Game" ونبدأ!
+等大廳裡的人都準備好後，房主點一下「開始遊戲」就能開局！
 ',
-		'ko': '플레이어들이 들어오는 동안, 호스트는 "Add Bot"을 눌러 봇을 추가하거나, 플레이어 아이콘을 "Remove"로 끌어다 제거할 수 있어요.
+		'ar': 'بينما ينضم اللاعبون، يمكن للمضيف إضافة أو إزالة بوتات (أو لاعبين) بالضغط على « إضافة بوت » أو بسحب أيقونة لاعب إلى « إزالة ».
 
-모두 준비가 끝나면 호스트가 "Start Game"을 눌러서 바로 시작!
+عندما يكون الجميع جاهزًا في الردهة، يضغط المضيف « بدء اللعبة » ونبدأ!
 ',
-		'he': 'בזמן שהשחקנים מצטרפים, המארח יכול להוסיף או להסיר בוטים (או שחקנים) בלחיצה על "Add Bot" או על ידי גרירת האווטאר של השחקן אל "Remove".
+		'ko': '플레이어들이 들어오는 동안, 호스트는 « 봇 추가 »를 눌러 봇을 추가하거나, 플레이어 아이콘을 « 제거 »로 끌어다 제거할 수 있어요.
 
-כשכולם מוכנים בלובי, המארח לוחץ על "Start Game" ויוצאים לדרך!
+모두 준비가 끝나면 호스트가 « 게임 시작 »을 눌러서 바로 시작!
+',
+		'he': 'בזמן שהשחקנים מצטרפים, המארח יכול להוסיף או להסיר בוטים (או שחקנים) בלחיצה על « הוסף בוט » או על ידי גרירת האווטאר של השחקן אל « הסר ».
+
+כשכולם מוכנים בלובי, המארח לוחץ על « התחל משחק » ויוצאים לדרך!
+',
+		'hi': 'जब खिलाड़ी शामिल हो रहे हों, तो होस्ट "बॉट जोड़ें" पर क्लिक करके या खिलाड़ी के आइकन को "निकालें" पर खींचकर बॉट (या खिलाड़ियों) को जोड़ या हटा सकता है।
+
+जब सभी लॉबी में तैयार हों, तो होस्ट शुरू करने के लिए "गेम शुरू करें" पर क्लिक करता है!
+',
+		'id': 'Saat pemain bergabung, tuan rumah dapat menambah atau menghapus bot (atau pemain) dengan mengklik "Tambah Bot" atau dengan menyeret ikon pemain ke "Hapus".
+
+Ketika semua orang siap di lobi, tuan rumah mengklik "Mulai Game" untuk memulai!
+',
+		'bn': 'খেলোয়াড়রা যখন যোগদান করছে, হোস্ট "বট যোগ করুন" এ ক্লিক করে বা খেলোয়াড়ের আইকনটিকে "সরান" এ টেনে বট (বা খেলোয়াড়) যোগ বা সরাতে পারে।
+
+যখন সবাই লবিতে প্রস্তুত, হোস্ট শুরু করার জন্য "গেম শুরু করুন" এ ক্লিক করে!
+',
+		'tr': 'Oyuncular katılırken, ev sahibi "Bot Ekle" seçeneğine tıklayarak veya bir oyuncunun simgesini "Kaldır" seçeneğine sürükleyerek bot (veya oyuncu) ekleyebilir veya kaldırabilir.
+
+Herkes lobide hazır olduğunda, ev sahibi başlamak için "Oyunu Başlat" seçeneğine tıklar!
+',
+		'pl': 'Podczas gdy gracze dołączają, gospodarz może dodawać lub usuwać boty (lub graczy), klikając "Dodaj bota" lub przeciągając ikonę gracza na "Usuń".
+
+Gdy wszyscy będą gotowi w lobby, gospodarz klika "Rozpocznij grę", aby rozpocząć!
+',
+		'nl': 'Terwijl spelers meedoen, kan de host bots (of spelers) toevoegen of verwijderen door op "Bot toevoegen" te klikken of door het icoon van een speler naar "Verwijderen" te slepen.
+
+Wanneer iedereen klaar is in de lobby, klikt de host op "Start Spel" om te beginnen!
+',
+		'th': 'ในขณะที่ผู้เล่นกำลังเข้าร่วม โฮสต์สามารถเพิ่มหรือลบพอท (หรือผู้เล่น) ได้โดยคลิก "เพิ่มพอท" หรือโดยการลากไอคอนของผู้เล่นไปที่ "ลบ"
+
+เมื่อทุกคนพร้อมในล็อบบี้ โฮสต์จะคลิก "เริ่มเกม" เพื่อเริ่มต้น!
 ',
 	},
 	{
@@ -431,13 +527,21 @@ A rodada 7 é especial: você precisa esvaziar totalmente a mão para ganhar!
 
 Раунд 7 особенный — чтобы выиграть, нужно полностью избавиться от карт в руке!
 ',
-		'zh': '每一回合都有自己必须完成的组牌条件才能获胜。
+		'zh-Hans': '每一回合都有自己必须完成的组牌条件才能获胜。
 
 在回合界面的顶部会显示需要多少个“书”（3 张以上同点数）和多少个“顺子”（4 张以上同花）的组合。
 
 在第 1 到 6 回合里，你得先完成自己的要求，才能往别人已经下的牌堆里加牌。
 
 第 7 回合很特别——必须把整手牌全部打光才能赢！
+',
+		'zh-Hant': '每一回合都有自己必須完成的組牌條件才能獲勝。
+
+在回合介面的頂部會顯示需要多少個「書」（3 張以上同點數）和多少個「順子」（4 張以上同花）的組合。
+
+在第 1 到 6 回合裡，你得先完成自己的要求，才能往別人已經下的牌堆裡加牌。
+
+第 7 回合很特別——必須把整手牌全部打光才能贏！
 ',
 		'ar': 'كل جولة لها متطلبات طرح خاصة يجب تحقيقها للفوز.
 
@@ -451,7 +555,7 @@ A rodada 7 é especial: você precisa esvaziar totalmente a mão para ganhar!
 
 라운드 화면 위쪽에는 필요한 북(같은 숫자 3장 이상)과 런(같은 무늬 4장 이상)이 몇 개인지 보여 줘요.
 
-1~6라운드에서는 내 조건
+1~6라운드에서는 내 조건을 먼저 만족해야 다른 플레이어의 멜드에 카드를 추가할 수 있습니다.
 
 7라운드는 특별해요 — 손패를 전부 털어야 승리합니다!
 ',
@@ -462,6 +566,62 @@ A rodada 7 é especial: você precisa esvaziar totalmente a mão para ganhar!
 בסיבובים 1‑6 אתה חייב להשלים קודם את הדרישות שלך לפני שתוסיף לקלפים של אחרים.
 
 סיבוב 7 מיוחד — צריך להתרוקן מכל הקלפים כדי לנצח!
+',
+		'hi': 'प्रत्येक दौर की अपनी मेल्डिंग आवश्यकताएं होती हैं जिन्हें जीतने के लिए पूरा करना होता है।
+
+प्रत्येक दौर की स्क्रीन के शीर्ष पर, आपको दिखाई देगा कि कितनी किताबें (एक ही रैंक के 3+ कार्ड के समूह) और रन (एक ही सूट के 4+ कार्ड के क्रम) की आवश्यकता है।
+
+दौर 1-6 में, आपको अन्य खिलाड़ियों के मेल्ड पर मेल्ड करने से पहले अपनी खुद की मेल्डिंग आवश्यकताओं को पूरा करना होगा।
+
+दौर 7 विशेष है - आपको जीतने के लिए बिना किसी कार्ड के अपना हाथ पूरी तरह से खत्म करना होगा!
+',
+		'id': 'Setiap putaran memiliki persyaratan meld sendiri yang harus dipenuhi untuk menang.
+
+Di bagian atas layar setiap putaran, Anda akan melihat berapa banyak buku (kelompok 3+ kartu dengan peringkat yang sama) dan lari (urutan 4+ kartu dengan jenis yang sama) yang dibutuhkan.
+
+Di putaran 1–6, Anda harus memenuhi persyaratan meld Anda sendiri sebelum Anda dapat meld di meld pemain lain.
+
+Putaran 7 istimewa — Anda harus menyelesaikan tangan Anda sepenuhnya tanpa kartu tersisa untuk menang!
+',
+		'bn': 'প্রতিটি রাউন্ডের নিজস্ব মেল্ডিং প্রয়োজনীয়তা রয়েছে যা জিততে পূরণ করতে হবে।
+
+প্রতিটি রাউন্ডের স্ক্রিনের শীর্ষে, আপনি দেখতে পাবেন কতগুলি বই (একই র‍্যাঙ্কের 3+ কার্ডের গ্রুপ) এবং রান (একই স্যুটের 4+ কার্ডের ক্রম) প্রয়োজন।
+
+রাউন্ড 1-6-এ, আপনাকে অন্য খেলোয়াড়দের মেল্ডে মেল্ড করার আগে আপনার নিজের মেল্ডিং প্রয়োজনীয়তা পূরণ করতে হবে।
+
+রাউন্ড 7 বিশেষ — আপনাকে জিততে কোনো কার্ড ছাড়াই আপনার হাত পুরোপুরি শেষ করতে হবে!
+',
+		'tr': 'Her turun kazanmak için karşılanması gereken kendi birleştirme gereksinimleri vardır.
+
+Her turun ekranının üst kısmında, kaç tane kitap (aynı değerde 3+ kart grubu) ve kaç tane dizi (aynı türden 4+ kart dizisi) gerektiği gösterilir.
+
+1-6. turlarda, diğer oyuncuların birleştirmelerine birleştirme yapmadan önce kendi birleştirme gereksinimlerinizi karşılamanız gerekir.
+
+7. tur özeldir — kazanmak için elinizi tamamen bitirmeniz ve hiç kartınızın kalmaması gerekir!
+',
+		'pl': 'Każda runda ma swoje własne wymagania dotyczące meldunku, które muszą zostać spełnione, aby wygrać.
+
+Na górze ekranu każdej rundy zobaczysz, ile książek (grup 3+ kart o tej samej wartości) i ile sekwensów (sekwencji 4+ kart tego samego koloru) jest potrzebnych.
+
+W rundach 1-6 musisz spełnić własne wymagania dotyczące meldunku, zanim będziesz mógł meldować na meldunki innych graczy.
+
+Runda 7 jest wyjątkowa — musisz całkowicie zakończyć rękę bez żadnych kart, aby wygrać!
+',
+		'nl': 'Elke ronde heeft zijn eigen meldvereisten waaraan moet worden voldaan om te winnen.
+
+Bovenaan het scherm van elke ronde zie je hoeveel boeken (groepen van 3+ kaarten van dezelfde waarde) en runs (reeksen van 4+ kaarten van dezelfde soort) nodig zijn.
+
+In rondes 1-6 moet je aan je eigen meldvereisten voldoen voordat je op de melds van andere spelers kunt meldden.
+
+Ronde 7 is speciaal — je moet je hand volledig afmaken zonder kaarten over om te winnen!
+',
+		'th': 'แต่ละรอบมีข้อกำหนดการรวมกลุ่มของตัวเองที่ต้องทำให้สำเร็จเพื่อที่จะชนะ
+
+ที่ด้านบนของหน้าจอแต่ละรอบ คุณจะเห็นว่าต้องใช้หนังสือกี่เล่ม (กลุ่มไพ่ 3+ ใบที่มีแต้มเท่ากัน) และวิ่งกี่ครั้ง (ลำดับไพ่ 4+ ใบที่มีดอกเดียวกัน)
+
+ในรอบที่ 1-6 คุณต้องปฏิบัติตามข้อกำหนดการรวมกลุ่มของคุณเองก่อนจึงจะสามารถรวมกลุ่มกับผู้เล่นคนอื่นได้
+
+รอบที่ 7 เป็นรอบพิเศษ — คุณต้องจบไพ่ในมือให้หมดโดยไม่เหลือไพ่เลยจึงจะชนะ!
 ',
 	},
 	{
@@ -522,12 +682,89 @@ As cartas no canto inferior direito ainda podem ser tocadas para descartá-las n
 
 Карты в правом нижнем углу всё ещё можно тапнуть, чтобы сбросить их в свой ход.
 ',
-		'zh': '游戏界面主要分成两块。
+		'zh-Hans': '游戏界面主要分成两块。
 上方显示所有玩家的公开合牌，下方是你的私有区域，可以随意整理手牌。
 
 左侧是合牌区，把牌拖过去即可组合。放在合牌区的牌，在你的回合中不会被误点到弃掉。
 
 右下角的牌仍然可以在你的回合轻点来弃牌。
+',
+		'zh-Hant': '遊戲介面主要分成兩塊。
+上方顯示所有玩家的公開合牌，下方是你的私有區域，可以隨意整理手牌。
+
+左側是合牌區，把牌拖過去即可組合。放在合牌區的牌，在你的回合中不會被誤點到棄掉。
+
+右下角的牌仍然可以在你的回合輕點來棄牌。
+',
+		'ar': 'منطقة اللعب لها جزأين رئيسيين.
+الجزء العلوي يعرض مجموعات كل لاعب العامة، بينما الجزء السفلي خاص بك. يمكنك تحريك وترتيب أوراقك بأي طريقة تريد.
+
+على اليسار توجد مناطق الطرح — اسحب الأوراق إلى هناك لبناء مجموعاتك. بمجرد أن تكون الورقة في منطقة الطرح، لا يمكنك التخلص منها عن طريق الخطأ أثناء دورك بالضغط عليها.
+
+لا يزال من الممكن الضغط على الأوراق في أسفل اليمين للتخلص منها أثناء دورك.
+',
+		'ko': '게임 영역은 크게 두 부분으로 나뉩니다.
+상단에는 모든 플레이어의 공개 멜드가 표시되고 하단은 당신에게만 비공개입니다. 원하는 방식으로 카드를 이동하고 배열할 수 있습니다.
+
+왼쪽에는 멜드 영역이 있습니다. 카드를 그곳으로 끌어 멜드를 만드세요. 카드가 멜드 영역에 있으면 턴 중에 실수로 탭하여 버릴 수 없습니다.
+
+오른쪽 하단에 있는 카드는 턴 중에 탭하여 버릴 수 있습니다.
+',
+		'he': 'לאזור המשחק שני חלקים עיקריים.
+החלק העליון מציג את המלדים הציבוריים של כל שחקן, בעוד שהחלק התחתון פרטי לך. אתה יכול להזיז ולסדר את הקלפים שלך בכל דרך שתרצה.
+
+בצד שמאל נמצאים אזורי המלד - גרור לשם קלפים כדי לבנות את המלדים שלך. ברגע שקלף נמצא באזור מלד, אינך יכול להשליך אותו בטעות במהלך תורך על ידי הקשה עליו.
+
+עדיין ניתן להקיש על קלפים בפינה הימנית התחתונה כדי להשליך אותם במהלך תורך.
+',
+		'hi': 'खेल क्षेत्र के दो मुख्य भाग हैं।
+शीर्ष पर हर खिलाड़ी के सार्वजनिक मेल्ड दिखाई देते हैं, जबकि नीचे का भाग आपके लिए निजी है। आप अपने कार्ड को किसी भी तरह से स्थानांतरित और व्यवस्थित कर सकते हैं।
+
+बाईं ओर मेल्ड क्षेत्र हैं - अपने मेल्ड बनाने के लिए कार्ड वहां खींचें। एक बार जब कोई कार्ड मेल्ड क्षेत्र में होता है, तो आप अपनी बारी के दौरान गलती से उस पर टैप करके उसे त्याग नहीं सकते।
+
+आपकी बारी के दौरान उन्हें त्यागने के लिए निचले-दाएं कोने में कार्ड पर अभी भी टैप किया जा सकता है।
+',
+		'id': 'Area permainan memiliki dua bagian utama.
+Bagian atas menunjukkan meld publik setiap pemain, sedangkan bagian bawah bersifat pribadi bagi Anda. Anda dapat memindahkan dan mengatur kartu Anda sesuka Anda.
+
+Di sebelah kiri adalah area meld — seret kartu ke sana untuk membangun meld Anda. Setelah kartu berada di area meld, Anda tidak dapat secara tidak sengaja membuangnya secara tidak sengaja selama giliran Anda dengan mengetuknya.
+
+Kartu di kanan bawah masih bisa diketuk untuk dibuang selama giliran Anda.
+',
+		'bn': 'খেলার ক্ষেত্রটির দুটি প্রধান অংশ রয়েছে।
+শীর্ষে প্রতিটি খেলোয়াড়ের পাবলিক মেল্ডগুলি দেখানো হয়, যখন নীচের অংশটি আপনার জন্য ব্যক্তিগত। আপনি আপনার পছন্দ মতো আপনার কার্ডগুলি সরাতে এবং সাজাতে পারেন।
+
+বাম দিকে মেল্ড অঞ্চল রয়েছে — আপনার মেল্ডগুলি তৈরি করতে সেখানে কার্ডগুলি টেনে আনুন। একবার কোনও কার্ড মেল্ড অঞ্চলে থাকলে, আপনি আপনার পালা চলাকালীন ভুলবশত এটিতে ট্যাপ করে বাতিল করতে পারবেন না।
+
+আপনার পালা চলাকালীন সেগুলি বাতিল করতে নীচের-ডানদিকের কার্ডগুলিতে এখনও ট্যাপ করা যেতে পারে।
+',
+		'tr': 'Oyun alanının iki ana bölümü vardır.
+Üst kısım her oyuncunun genel birleştirmelerini gösterirken, alt kısım size özeldir. Kartlarınızı istediğiniz gibi taşıyabilir ve düzenleyebilirsiniz.
+
+Solda birleştirme alanları bulunur — birleştirmelerinizi oluşturmak için kartları oraya sürükleyin. Bir kart birleştirme alanına girdiğinde, sıranız sırasında yanlışlıkla üzerine dokunarak atamazsınız.
+
+Sıranız sırasında atmak için sağ alttaki kartlara hala dokunulabilir.
+',
+		'pl': 'Obszar gry ma dwie główne części.
+Górna część pokazuje publiczne meldunki każdego gracza, podczas gdy dolna jest prywatna dla Ciebie. Możesz przesuwać i układać swoje karty w dowolny sposób.
+
+Po lewej stronie znajdują się obszary meldunku — przeciągnij tam karty, aby zbudować swoje meldunki. Gdy karta znajdzie się w obszarze meldunku, nie możesz jej przypadkowo odrzucić przez pomyłkę podczas swojej tury, dotykając jej.
+
+Karty w prawym dolnym rogu nadal można dotknąć, aby je odrzucić podczas swojej tury.
+',
+		'nl': 'Het speelveld heeft twee hoofdonderdelen.
+De bovenkant toont de openbare melds van elke speler, terwijl de onderkant privé voor jou is. Je kunt je kaarten verplaatsen en rangschikken zoals je wilt.
+
+Aan de linkerkant zijn meldgebieden — sleep kaarten daarheen om je melds te bouwen. Zodra een kaart zich in een meldgebied bevindt, kun je deze tijdens je beurt niet per ongeluk weggooien door erop te tikken.
+
+Kaarten rechtsonder kunnen nog steeds worden aangetikt om ze tijdens je beurt weg te gooien.
+',
+		'th': 'พื้นที่เกมมีสองส่วนหลัก
+ด้านบนแสดงการรวมกลุ่มสาธารณะของผู้เล่นทุกคน ในขณะที่ด้านล่างเป็นส่วนตัวสำหรับคุณ คุณสามารถย้ายและจัดเรียงไพ่ของคุณได้ตามที่คุณต้องการ
+
+ทางด้านซ้ายคือพื้นที่รวมกลุ่ม — ลากไพ่ไปที่นั่นเพื่อสร้างการรวมกลุ่มของคุณ เมื่อไพ่อยู่ในพื้นที่รวมกลุ่มแล้ว คุณจะไม่สามารถทิ้งไพ่โดยไม่ได้ตั้งใจในระหว่างตาของคุณโดยการแตะที่ไพ่
+
+ไพ่ที่มุมล่างขวายังคงสามารถแตะเพื่อทิ้งได้ในระหว่างตาของคุณ
 ',
 	},
 	{
@@ -578,13 +815,19 @@ Depois tente cumprir os requisitos da rodada. Arraste as cartas para as zonas de
 
 Сначала возьми карту: тапни левую стопку, чтобы взять из колоды, или правую, чтобы забрать верхнюю карту сброса.
 
-Затем постарайся выполнить требования раунда. Перетаскивай карты в зоны раскладок, пока они не начнут сиять. Как только готов, нажимай на значок « Meld! » и выкладывай руку.
+Затем постарайся выполнить требования раунда. Перетаскивай карты в зоны раскладок, пока они не начнут сиять. Как только готов, нажимай на значок « Выложить! » и выкладывай руку.
 ',
-		'zh': '轮到你时，顶部的头像会亮起一圈橙色光晕。
+		'zh-Hans': '轮到你时，顶部的头像会亮起一圈橙色光晕。
 
 先抽一张牌：点左边的牌堆从库存抓牌，或点右边的牌堆拿走顶牌。
 
 接着尝试完成这一回合的要求，把牌拖到合牌区域，直到它们闪烁。准备好了就点“合牌！”图标，把手牌打出去。
+',
+		'zh-Hant': '輪到你時，頂部的頭像會亮起一圈橙色光暈。
+
+先抽一張牌：點左邊的牌堆從庫存抓牌，或點右邊的牌堆拿走頂牌。
+
+接著嘗試完成這一回合的要求，把牌拖到合牌區域，直到它們閃爍。準備好了就點「合牌！」圖示，把手牌打出去。
 ',
 		'ar': 'عندما يحين دورك سيضيء رمز اللاعب الخاص بك في الأعلى بإطار برتقالي نابض.
 
@@ -603,6 +846,48 @@ Depois tente cumprir os requisitos da rodada. Arraste as cartas para as zonas de
 קודם שולפים קלף — הקש על הערימה השמאלית כדי לשלוף מהחפיסה, או על הימנית כדי לקחת את הקלף העליון מהשלכה.
 
 אחר כך נסה לעמוד בדרישות של הסיבוב. גרור קלפים לאזורי המלט עד שהם מנצנצים. כשאתה מוכן, לחץ על « הנח! » כדי להניח את היד.
+',
+		'hi': 'जब आपकी बारी आती है, तो शीर्ष पर आपका खिलाड़ी आइकन एक धड़कते नारंगी बॉर्डर के साथ चमकता है।
+
+सबसे पहले, एक कार्ड बनाएं - स्टॉक से ड्रॉ करने के लिए बाएं ढेर पर टैप करें, या शीर्ष डिस्कार्ड को लेने के लिए दाएं ढेर पर टैप करें।
+
+फिर, चालू दौर की आवश्यकताओं को पूरा करने का प्रयास करें। जब तक वे चमक न जाएं, तब तक कार्ड को मेल्ड ज़ोन में खींचें। जब आप तैयार हों, तो अपना हाथ नीचे रखने के लिए "मेल्ड!" आइकन पर टैप करें।
+',
+		'id': 'Saat giliran Anda, ikon pemain Anda di bagian atas akan bersinar dengan batas oranye yang berdenyut.
+
+Pertama, ambil kartu — ketuk tumpukan kiri untuk mengambil dari stok, atau tumpukan kanan untuk mengambil kartu buangan teratas.
+
+Kemudian, coba penuhi persyaratan putaran saat ini. Seret kartu ke zona meld hingga berkilau. Saat Anda siap, ketuk ikon "Meld!" untuk meletakkan tangan Anda.
+',
+		'bn': 'যখন আপনার পালা, শীর্ষে আপনার প্লেয়ার আইকনটি একটি স্পন্দিত কমলা সীমানা দিয়ে জ্বলজ্বল করবে।
+
+প্রথমে, একটি কার্ড আঁকুন — স্টক থেকে আঁকতে বাম স্তূপে আলতো চাপুন, বা উপরের বাতিলটি নিতে ডান স্তূপে আলতো চাপুন।
+
+তারপরে, বর্তমান রাউন্ডের প্রয়োজনীয়তাগুলি পূরণ করার চেষ্টা করুন। কার্ডগুলিকে মেল্ড জোনে টেনে আনুন যতক্ষণ না সেগুলি ঝকঝকে হয়। আপনি যখন প্রস্তুত হন, আপনার হাত নিচে রাখতে "মেল্ড!" আইকনে আলতো চাপুন।
+',
+		'tr': 'Sıra size geldiğinde, üstteki oyuncu simgeniz titreşen turuncu bir kenarlıkla parlayacaktır.
+
+İlk olarak, bir kart çekin — stoktan çekmek için sol desteye veya en üstteki atılanı almak için sağ desteye dokunun.
+
+Ardından, mevcut turun gereksinimlerini karşılamaya çalışın. Parıldayana kadar kartları birleştirme bölgelerine sürükleyin. Hazır olduğunuzda, elinizi açmak için "Birleştir!" simgesine dokunun.
+',
+		'pl': 'Kiedy nadejdzie Twoja kolej, Twoja ikona gracza na górze zaświeci się pulsującą pomarańczową ramką.
+
+Najpierw dobierz kartę — dotknij lewego stosu, aby dobrać ze stosu, lub prawego stosu, aby wziąć wierzchnią kartę odrzuconą.
+
+Następnie spróbuj spełnić wymagania bieżącej rundy. Przeciągaj karty do stref meldunku, aż zaczną błyszczeć. Kiedy będziesz gotowy, dotknij ikony "Meld!", aby wyłożyć rękę.
+',
+		'nl': 'Wanneer het jouw beurt is, zal je spelericoon bovenaan oplichten met een pulserende oranje rand.
+
+Trek eerst een kaart — tik op de linkerstapel om uit de voorraad te trekken, of op de rechterstapel om de bovenste aflegger te nemen.
+
+Probeer vervolgens te voldoen aan de vereisten van de huidige ronde. Sleep kaarten naar de meldzones totdat ze fonkelen. Wanneer je klaar bent, tik je op het "Meld!"-icoon om je hand neer te leggen.
+',
+		'th': 'เมื่อถึงตาของคุณ ไอคอนผู้เล่นของคุณที่ด้านบนจะสว่างขึ้นพร้อมกับเส้นขอบสีส้มที่กะพริบ
+
+ขั้นแรก จั่วไพ่ — แตะกองซ้ายเพื่อจั่วจากสต็อก หรือกองขวาเพื่อหยิบไพ่ที่ทิ้งบนสุด
+
+จากนั้น พยายามทำตามข้อกำหนดของรอบปัจจุบัน ลากไพ่ไปยังโซนรวมกลุ่มจนกว่าไพ่จะเปล่งประกาย เมื่อคุณพร้อมแล้ว ให้แตะไอคอน "รวมกลุ่ม!" เพื่อวางไพ่ในมือของคุณ
 ',
 	},
 		{
@@ -649,17 +934,23 @@ Nas rodadas 1 a 6, termine o turno tocando uma carta no canto inferior direito p
 
 Na rodada 7, o primeiro a meldar precisa esvaziar a mão inteira e não pode mais anexar cartas aos melds dos outros.
 ',
-		'ru': 'После выкладки продолжай добавлять карты к своим комбинациям или к чужим. Нажми « Meld! » ещё раз, чтобы подтвердить.
+		'ru': 'После выкладки продолжай добавлять карты к своим комбинациям или к чужим. Нажми « Выложить! » ещё раз, чтобы подтвердить.
 
 В раундах 1–6 заверши ход, тапнув карту в правом нижнем углу и отправив её в сброс. Если карт не осталось — раунд твой!
 
-В раунде 7 игрок, который meldнул первым, должен полностью разыграть руку и не может добавлять карты к чужим раскладкам.
+В раунде 7 игрок, который выложил первым, должен полностью разыграть руку и не может добавлять карты к чужим раскладкам.
 ',
-		'zh': '合牌之后，还可以继续往自己的牌堆或别人的牌堆加牌。再点一次“合牌！”来确认。
+		'zh-Hans': '合牌之后，还可以继续往自己的牌堆或别人的牌堆加牌。再点一次“合牌！”来确认。
 
 在第 1～6 回合，点右下角的一张牌把它弃掉，就结束回合。手牌清空就算赢得这一回合！
 
 第 7 回合里，最先合牌的玩家必须把整手牌都打完，不能再往别人牌堆里加牌。
+',
+		'zh-Hant': '合牌之後，還可以繼續往自己的牌堆或別人的牌堆加牌。再點一次「合牌！」來確認。
+
+在第 1～6 回合，點右下角的一張牌把它棄掉，就結束回合。手牌清空就算贏得這一回合！
+
+第 7 回合裡，最先合牌的玩家必須把整手牌都打完，不能再往別人牌堆裡加牌。
 ',
 		'ar': 'بعد أن تطرح أوراقك، يمكنك الاستمرار في إضافة أوراق إلى مجموعاتك أو إلى مجموعات الآخرين. اضغط « اطرح! » مرة ثانية للتأكيد.
 
@@ -678,6 +969,48 @@ Na rodada 7, o primeiro a meldar precisa esvaziar a mão inteira e não pode mai
 בסיבובים 1‑6 מסיימים את התור בלחיצה על קלף בפינה הימנית־תחתונה כדי להשליך אותו. אם נשארת בלי קלפים – ניצחת בסיבוב!
 
 בסיבוב 7 מי שמניח ראשון חייב לגמור את כל היד ואסור לו להוסיף למלטים של אחרים.
+',
+		'hi': 'मेल्डिंग के बाद, अपने मेल्ड में या दूसरों के मेल्ड में कार्ड जोड़ते रहें। पुष्टि करने के लिए फिर से "मेल्ड!" पर टैप करें।
+
+राउंड 1-6 में, इसे त्यागने के लिए निचले-दाएं कोने में एक कार्ड पर टैप करके अपनी बारी समाप्त करें। यदि आपके पास कोई कार्ड नहीं बचा है, तो आपने राउंड जीत लिया है!
+
+राउंड 7 में, मेल्ड करने वाले पहले व्यक्ति को अपना हाथ पूरी तरह से खत्म करना होगा और वह दूसरों के मेल्ड में नहीं जोड़ सकता है।
+',
+'id': 'Setelah melakukan meld, terus tambahkan kartu ke meld Anda atau ke milik orang lain. Ketuk "Meld!" lagi untuk mengonfirmasi.
+
+Di ronde 1–6, akhiri giliran Anda dengan mengetuk kartu di kanan bawah untuk membuangnya. Jika Anda tidak punya kartu tersisa, Anda telah memenangkan ronde tersebut!
+
+Di ronde 7, orang pertama yang melakukan meld harus menyelesaikan tangannya sepenuhnya dan tidak dapat menambahkan ke meld orang lain.
+',
+		'bn': 'মেল্ডিংয়ের পরে, আপনার মেল্ডগুলিতে বা অন্যদের মেল্ডগুলিতে কার্ড যুক্ত করতে থাকুন। নিশ্চিত করতে আবার "মেল্ড!" এ আলতো চাপুন।
+
+রাউন্ড 1-6-এ, এটি বাতিল করতে নীচের-ডানদিকের একটি কার্ডে ট্যাপ করে আপনার পালা শেষ করুন। যদি আপনার কোনও কার্ড বাকি না থাকে তবে আপনি রাউন্ডটি জিতেছেন!
+
+রাউন্ড 7-এ, প্রথম যে ব্যক্তি মেল্ড করে তাকে অবশ্যই তার হাত পুরোপুরি শেষ করতে হবে এবং অন্যের মেল্ডে যোগ করতে পারবে না।
+',
+		'tr': 'Birleştirdikten sonra, birleştirmelerinize veya başkalarınınkine kart eklemeye devam edin. Onaylamak için tekrar "Birleştir!" e dokunun.
+
+1-6. turlarda, atmak için sağ alttaki bir karta dokunarak sıranızı bitirin. Hiç kartınız kalmadıysa, turu kazandınız!
+
+7. turda, ilk birleştiren kişi elini tamamen bitirmeli ve başkalarının birleştirmelerine ekleme yapamaz.
+',
+		'pl': 'Po zameldowniu kontynuuj dodawanie kart do swoich meldunków lub do meldunków innych. Stuknij ponownie "Meld!", aby potwierdzić.
+
+W rundach 1-6 zakończ swoją turę, dotykając karty w prawym dolnym rogu, aby ją odrzucić. Jeśli nie masz już żadnych kart, wygrałeś rundę!
+
+W rundzie 7 pierwsza osoba, która zamelduje, musi całkowicie zakończyć swoją rękę i nie może dodawać do meldunków innych.
+',
+		'nl': 'Na het melden, blijf kaarten toevoegen aan je melds of aan die van anderen. Tik nogmaals op "Meld!" om te bevestigen.
+
+In rondes 1-6, beëindig je beurt door op een kaart rechtsonder te tikken om deze af te leggen. Als je geen kaarten meer over hebt, heb je de ronde gewonnen!
+
+In ronde 7 moet de eerste persoon die meldt zijn hand volledig afmaken en kan hij niet toevoegen aan de melds van anderen.
+',
+		'th': 'หลังจากรวมกลุ่มแล้ว ให้เพิ่มไพ่ลงในกลุ่มของคุณหรือของคนอื่นต่อไป แตะ "รวมกลุ่ม!" อีกครั้งเพื่อยืนยัน
+
+ในรอบที่ 1-6 จบตาของคุณโดยการแตะไพ่ที่มุมล่างขวาเพื่อทิ้ง หากคุณไม่เหลือไพ่แล้ว แสดงว่าคุณชนะในรอบนั้น!
+
+ในรอบที่ 7 ผู้ที่รวมกลุ่มเป็นคนแรกจะต้องจบไพ่ในมือให้หมดและไม่สามารถเพิ่มไพ่ลงในกลุ่มของคนอื่นได้
 ',
 	},
 	{
@@ -740,7 +1073,7 @@ Verás un marcador con los puntos de cada ronda y el resultado final, con trofeo
 
 Cuando terminen, toca « Menú principal » para volver y arrancar otra partida cuando quieras.
 ',
-		'pt': 'Depois de cada rodada, o anfitrião toca « Tally Scores » para somar as cartas e atualizar os pontos de todo mundo.
+		'pt': 'Depois de cada rodada, o anfitrião toca « Contar Pontos » para somar as cartas e atualizar os pontos de todo mundo.
 
 Em seguida toque « Próxima Rodada » (ou « Pontuações Finais » depois da rodada 7).
 
@@ -760,7 +1093,7 @@ Quando terminar, toque « Menu Principal » para voltar e iniciar outra partida 
 
 Когда все закончено, нажми « Главное меню », чтобы вернуться и запустить новую игру в любое время.
 ',
-		'zh': '每回合结束后，房主会点“计分”把牌面分数相加并更新所有人的积分。
+		'zh-Hans': '每回合结束后，房主会点“计分”把牌面分数相加并更新所有人的积分。
 
 然后点“下一回合”（第 7 回合之后改点“最终分数”）。
 
@@ -769,6 +1102,16 @@ Quando terminar, toque « Menu Principal » para voltar e iniciar outra partida 
 榜单会显示每回合的得分和最终结果，还会给第 3、2、1 名配上奖杯。
 
 结束时点“主菜单”，随时可以回到主菜单再开一局。
+',
+		'zh-Hant': '每回合結束後，房主會點「計分」把牌面分數相加並更新所有人的積分。
+
+然後點「下一回合」（第 7 回合之後改點「最終分數」）。
+
+七個回合打完後，總分最低的玩家獲勝！
+
+榜單會顯示每回合的得分和最終結果，還會給第 3、2、1 名配上獎杯。
+
+結束時點「主選單」，隨時可以回到主選單再開一局。
 ',
 		'ar': 'بعد كل جولة يضغط المضيف على « إحصاء النقاط » لحساب كل الأوراق وتحديث نقاط اللاعبين.
 
@@ -799,6 +1142,76 @@ Quando terminar, toque « Menu Principal » para voltar e iniciar outra partida 
 תופיע טבלת ניקוד עם תוצאות כל הסיבובים והגמר — כולל גביעים למקום שלישי, שני וראשון.
 
 כשתסיימו, לחצו על « תפריט ראשי » כדי לחזור ולפתוח משחק חדש מתי שרוצים.
+',
+		'hi': 'प्रत्येक दौर के बाद, मेजबान सभी कार्डों को जोड़ने और प्रत्येक खिलाड़ी के स्कोर को अपडेट करने के लिए "स्कोर टैली करें" पर टैप करता है।
+
+फिर "अगला दौर" (या दौर 7 के बाद "अंतिम स्कोर") पर टैप करें।
+
+सभी सात दौरों के बाद, सबसे कम कुल वाला खिलाड़ी जीतता है!
+
+एक स्कोरबोर्ड प्रत्येक दौर के स्कोर और अंतिम परिणामों के साथ दिखाई देता है - तीसरे, दूसरे और पहले स्थान के लिए ट्रॉफी के साथ पूरा।
+
+जब आप समाप्त कर लें, तो वापस जाने के लिए "मुख्य मेनू" पर टैप करें और किसी भी समय एक नया गेम शुरू करें।
+',
+		'id': 'Setelah setiap putaran, tuan rumah mengetuk "Tally Skor" untuk menjumlahkan semua kartu dan memperbarui skor setiap pemain.
+
+Kemudian ketuk "Putaran Berikutnya" (atau "Skor Akhir" setelah putaran 7).
+
+Setelah tujuh putaran, pemain dengan total terendah menang!
+
+Papan skor muncul dengan skor setiap putaran dan hasil akhir — lengkap dengan piala untuk juara ke-3, ke-2, dan ke-1.
+
+Setelah selesai, ketuk "Menu Utama" untuk kembali dan memulai permainan baru kapan saja.
+',
+		'bn': 'প্রতিটি রাউন্ডের পরে, হোস্ট সমস্ত কার্ডের যোগফল এবং প্রতিটি খেলোয়াড়ের স্কোর আপডেট করতে "স্কোর গণনা করুন" এ ট্যাপ করে।
+
+তারপরে "পরবর্তী রাউন্ড" (বা রাউন্ড 7 এর পরে "চূড়ান্ত স্কোর") এ আলতো চাপুন।
+
+সাতটি রাউন্ডের পরে, সর্বনিম্ন মোট সহ খেলোয়াড় জয়ী হয়!
+
+একটি স্কোরবোর্ড প্রতিটি রাউন্ডের স্কোর এবং চূড়ান্ত ফলাফল সহ উপস্থিত হয় — ৩য়, ২য় এবং ১ম স্থানের জন্য ট্রফি সহ সম্পূর্ণ।
+
+আপনি যখন শেষ করেন, ফিরে যেতে "প্রধান মেনু" তে আলতো চাপুন এবং যেকোনো সময় একটি নতুন গেম শুরু করুন।
+',
+		'tr': 'Her turdan sonra, ev sahibi tüm kartları toplamak ve her oyuncunun puanını güncellemek için "Puanları Say" a dokunur.
+
+Ardından "Sonraki Tur" a (veya 7. turdan sonra "Nihai Puanlar" a) dokunun.
+
+Yedi turun ardından en düşük toplam puana sahip oyuncu kazanır!
+
+Her turun puanlarını ve nihai sonuçları içeren bir puan tablosu belirir — 3., 2. ve 1.lik için kupalarla tamamlanır.
+
+Bitirdiğinizde, geri dönmek ve istediğiniz zaman yeni bir oyuna başlamak için "Ana Menü" ye dokunun.
+',
+		'pl': 'Po każdej rundzie gospodarz dotyka "Podlicz wyniki", aby zsumować wszystkie karty i zaktualizować wynik każdego gracza.
+
+Następnie dotknij "Następna runda" (lub "Wyniki końcowe" po rundzie 7).
+
+Po siedmiu rundach wygrywa gracz z najniższym łącznym wynikiem!
+
+Pojawi się tablica wyników z wynikami każdej rundy i wynikami końcowymi — wraz z trofeami za 3., 2. i 1. miejsce.
+
+Gdy skończysz, dotknij "Menu główne", aby wrócić i rozpocząć nową grę w dowolnym momencie.
+',
+		'nl': 'Na elke ronde tikt de host op "Scores tellen" om alle kaarten op te tellen en de score van elke speler bij te werken.
+
+Tik vervolgens op "Volgende ronde" (of "Eindscores" na ronde 7).
+
+Na alle zeven rondes wint de speler met de laagste totaalscore!
+
+Er verschijnt een scorebord met de scores van elke ronde en de eindresultaten — compleet met trofeeën voor de 3e, 2e en 1e plaats.
+
+Als je klaar bent, tik je op "Hoofdmenu" om terug te gaan en op elk moment een nieuw spel te starten.
+',
+		'th': 'หลังจากแต่ละรอบ โฮสต์จะแตะ "นับคะแนน" เพื่อรวมไพ่ทั้งหมดและอัปเดตคะแนนของผู้เล่นแต่ละคน
+
+จากนั้นแตะ "รอบถัดไป" (หรือ "คะแนนสุดท้าย" หลังจากรอบที่ 7)
+
+หลังจากเจ็ดรอบ ผู้เล่นที่มีคะแนนรวมต่ำที่สุดจะเป็นผู้ชนะ!
+
+ป้ายคะแนนจะปรากฏขึ้นพร้อมกับคะแนนของแต่ละรอบและผลลัพธ์สุดท้าย — พร้อมถ้วยรางวัลสำหรับอันดับที่ 3, 2 และ 1
+
+เมื่อคุณทำเสร็จแล้ว ให้แตะ "เมนูหลัก" เพื่อย้อนกลับและเริ่มเกมใหม่ได้ทุกเมื่อ
 ',
 	},
 	{
@@ -867,13 +1280,21 @@ No canto superior direito, toque "?" para abrir uma ajuda rápida com as regras 
 
 Вот и всё — можно играть! Наслаждайся Moonridge Rummy в одиночку или с друзьями, удачи!
 ',
-		'zh': '每回合都有两个实用的小按钮。
+		'zh-Hans': '每回合都有两个实用的小按钮。
 
 左上角的按钮可以切换牌背样式。
 
 右上角点一下“?”，就能打开 Moonridge Rummy 的快速规则说明。
 
 就这些啦——准备好开玩吧！无论单人还是和朋友一起玩，都祝你好运！
+',
+		'zh-Hant': '每回合都有兩個實用的小按鈕。
+
+左上角的按鈕可以切換牌背樣式。
+
+右上角點一下「?」，就能打開 Moonridge Rummy 的快速規則說明。
+
+就這些啦——準備好開玩吧！無論單人還是和朋友一起玩，都祝你好運！
 ',
 		'ar': 'كل جولة فيها زرين مفيدين.
 
@@ -898,6 +1319,62 @@ No canto superior direito, toque "?" para abrir uma ajuda rápida com as regras 
 בפינה הימנית־עליונה הקשה על "?" תפתח מסך עזרה קצר עם חוקי Moonridge Rummy.
 
 וזהו — מוכנים לשחק! תיהנו מ‑Moonridge Rummy לבד או עם חברים, ובהצלחה!
+',
+		'hi': 'हर दौर में दो सहायक बटन होते हैं।
+
+ऊपरी-बाएँ कोने में, अपने कार्ड के पिछले डिज़ाइन को बदलने के लिए बटन पर टैप करें।
+
+ऊपरी-दाएँ कोने में, मूनरिज रम्मी के नियमों के साथ एक त्वरित सहायता स्क्रीन खोलने के लिए "?" पर टैप करें।
+
+बस इतना ही - आप खेलने के लिए तैयार हैं! अकेले या दोस्तों के साथ मूनरिज रम्मी खेलने का मज़ा लें, और शुभकामनाएँ!
+',
+		'id': 'Setiap putaran memiliki dua tombol yang membantu.
+
+Di sudut kiri atas, ketuk tombol untuk mengubah desain belakang kartu Anda.
+
+Di sudut kanan atas, ketuk "?" untuk membuka layar bantuan cepat dengan aturan Moonridge Rummy.
+
+Itu saja — Anda siap bermain! Bersenang-senang bermain Moonridge Rummy sendirian atau bersama teman, dan semoga berhasil!
+',
+		'bn': 'প্রতিটি রাউন্ডে দুটি সহায়ক বোতাম রয়েছে।
+
+উপরের-বাম কোণে, আপনার কার্ডের পিছনের নকশা পরিবর্তন করতে বোতামটিতে আলতো চাপুন।
+
+উপরের-ডান কোণে, মুনরিজ রামি-এর নিয়মাবলী সহ একটি দ্রুত সহায়তা স্ক্রিন খুলতে "?" এ আলতো চাপুন।
+
+এটাই — আপনি খেলতে প্রস্তুত! একা বা বন্ধুদের সাথে মুনরিজ রামি খেলতে মজা নিন, এবং সৌভাগ্য!
+',
+		'tr': 'Her turda iki yardımcı düğme bulunur.
+
+Sol üst köşede, kartınızın arka tasarımını değiştirmek için düğmeye dokunun.
+
+Sağ üst köşede, Moonridge Rummy kurallarıyla hızlı bir yardım ekranı açmak için "?" simgesine dokunun.
+
+İşte bu kadar — oynamaya hazırsınız! Moonridge Rummy\'yi tek başınıza veya arkadaşlarınızla oynarken iyi eğlenceler ve iyi şanslar!
+',
+		'pl': 'Każda runda ma dwa pomocne przyciski.
+
+W lewym górnym rogu dotknij przycisku, aby zmienić wygląd rewersu karty.
+
+W prawym górnym rogu dotknij "?", aby otworzyć ekran szybkiej pomocy z zasadami gry Moonridge Rummy.
+
+To wszystko — jesteś gotowy do gry! Baw się dobrze grając w Moonridge Rummy solo lub z przyjaciółmi i powodzenia!
+',
+		'nl': 'Elke ronde heeft twee handige knoppen.
+
+Tik in de linkerbovenhoek op de knop om het ontwerp van de achterkant van je kaart te wijzigen.
+
+Tik in de rechterbovenhoek op "?" om een snel helpscherm te openen met de regels van Moonridge Rummy.
+
+Dat is alles — je bent klaar om te spelen! Veel plezier met het spelen van Moonridge Rummy, alleen of met vrienden, en veel geluk!
+',
+		'th': 'แต่ละรอบมีปุ่มที่เป็นประโยชน์สองปุ่ม
+
+ที่มุมซ้ายบน แตะปุ่มเพื่อเปลี่ยนดีไซน์หลังไพ่ของคุณ
+
+ที่มุมขวาบน แตะ "?" เพื่อเปิดหน้าจอช่วยเหลือด่วนพร้อมกฎของ Moonridge Rummy
+
+เพียงเท่านี้ — คุณก็พร้อมที่จะเล่นแล้ว! ขอให้สนุกกับการเล่น Moonridge Rummy คนเดียวหรือกับเพื่อน ๆ และขอให้โชคดี!
 ',
 	},
 ]
