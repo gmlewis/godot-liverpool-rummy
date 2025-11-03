@@ -233,85 +233,85 @@ Um solo zu spielen, klicke im Hauptmenü auf „Neues Spiel hosten“ und füge 
 Zum Spielen mit Freunden klappt es am besten, wenn alle im selben WLAN oder Hotspot sind. Ein Spieler hostet, und die anderen können beitreten, sobald das Spiel in ihrer Lobby‑Liste erscheint.
 Falls es nicht automatisch angezeigt wird, kann der Gastgeber seine lokale IP‑Adresse (in der Lobby zu sehen) an andere weitergeben. Diese geben die IP‑Adresse ein und klicken dann auf „Spiel beitreten“.
 ',
-		'ja': 'マルチプレイ対応の Moonridge Rummy は、AI 相手にひとりで遊ぶことも、プラットフォームを問わず友だちとオンラインで遊ぶこともできます。ボットを追加しても追加しなくても OK です。
+		'ja': 'マルチプレイヤー対応の Moonridge Rummy は、AI 相手にひとりで遊ぶことも、プラットフォームを問わず友だちとオンラインで遊ぶこともできます。ボットを追加しても追加しなくても OK です。
 
-ひとりで遊ぶときは、メインメニューで "Host New Game" を押して、ロビーにボットを1体以上追加しましょう。
+ひとりで遊ぶときは、メインメニューで「新しいゲームをホスト」を押して、ロビーにボットを1体以上追加しましょう。
 
 友だちと遊ぶなら、全員が同じ Wi-Fi やテザリングにつながっているとスムーズです。誰かがホストになり、ほかのメンバーはロビー一覧にゲームが表示されたら参加します。
 
-自動で表示されない場合は、ホストがロビーに表示されているローカル IP を共有してください。ほかの人はその IP を入力して "Join Game" をタップすれば参加できます。
+自動で表示されない場合は、ホストがロビーに表示されているローカル IP を共有してください。ほかの人はその IP を入力して「ゲームに参加」をタップすれば参加できます。
 ',
-		'fr': 'Multiplayer Moonridge Rummy se joue soit en solo contre l\'IA, soit en ligne avec tes amis sur n\'importe quelle plateforme, avec ou sans bots supplémentaires.
+		'fr': 'Le Moonridge Rummy multijoueur se joue soit en solo contre l\'IA, soit en ligne avec tes amis sur n\'importe quelle plateforme, avec ou sans bots supplémentaires.
 
-Pour jouer seul, clique sur "Host New Game" dans le menu principal et ajoute un ou plusieurs bots à ton salon.
+Pour jouer seul, clique sur « Héberger une nouvelle partie » dans le menu principal et ajoute un ou plusieurs bots à ton salon.
 
 Pour jouer avec des amis, c\'est plus simple si tout le monde est sur le même Wi-Fi ou hotspot. Un joueur héberge, les autres rejoignent dès que la partie apparaît dans leur liste.
 
-Si elle n\'apparaît pas, l\'hôte peut partager son IP locale (affichée dans le salon) afin que les autres la saisissent puis appuient sur "Join Game".
+Si elle n\'apparaît pas, l\'hôte peut partager son IP locale (affichée dans le salon) afin que les autres la saisissent puis appuient sur « Rejoindre la partie ».
 ',
-		'it': 'Multiplayer Moonridge Rummy può essere giocato da solo contro l\'IA oppure online con gli amici su qualsiasi piattaforma, con o senza bot extra.
+		'it': 'Il Moonridge Rummy multigiocatore può essere giocato da solo contro l\'IA oppure online con gli amici su qualsiasi piattaforma, con o senza bot extra.
 
-Per una partita in solitaria, premi "Host New Game" dal menu principale e aggiungi uno o più bot alla lobby.
+Per una partita in solitaria, premi « Ospita Nuova Partita » dal menu principale e aggiungi uno o più bot alla lobby.
 
 Per giocare con gli amici conviene che tutti siano sulla stessa rete Wi-Fi o hotspot. Uno fa da host e gli altri si uniscono quando vedono la partita nella loro lista.
 
-Se non compare in automatico, l\'host può condividere il proprio IP locale (lo vedi nella lobby) così gli altri lo inseriscono e toccano "Join Game".
+Se non compare in automatico, l\'host può condividere il proprio IP locale (lo vedi nella lobby) così gli altri lo inseriscono e toccano « Unisciti alla Partita ».
 ',
-		'es': 'Multiplayer Moonridge Rummy se puede jugar solo contra la IA o en línea con tus amigos en cualquier plataforma, con o sin bots adicionales.
+		'es': 'El Moonridge Rummy multijugador se puede jugar solo contra la IA o en línea con tus amigos en cualquier plataforma, con o sin bots adicionales.
 
-Para jugar solo, toca "Host New Game" en el menú principal y agrega uno o más bots a tu lobby.
+Para jugar solo, toca « Crear nueva partida » en el menú principal y agrega uno o más bots a tu lobby.
 
 Para jugar con amigos, lo ideal es que todos estén en la misma red Wi-Fi o punto de acceso. Una persona crea la partida y el resto se une cuando aparece en su lista.
 
-Si no se muestra automáticamente, el anfitrión puede compartir su IP local (sale en la lobby) para que los demás la escriban y pulsen "Join Game".
+Si no se muestra automáticamente, el anfitrión puede compartir su IP local (sale en la lobby) para que los demás la escriban y pulsen « Unirse a la partida ».
 ',
-		'pt': 'Multiplayer Moonridge Rummy pode ser jogado sozinho contra a IA ou online com os amigos em qualquer plataforma, com ou sem bots extras.
+		'pt': 'O Moonridge Rummy multijogador pode ser jogado sozinho contra a IA ou online com os amigos em qualquer plataforma, com ou sem bots extras.
 
-Para jogar sozinho, toque em "Host New Game" no menu principal e adicione um ou mais bots ao lobby.
+Para jogar sozinho, toque em « Hospedar Novo Jogo » no menu principal e adicione um ou mais bots ao lobby.
 
 Para jogar com amigos, ajuda se todo mundo estiver na mesma rede Wi-Fi ou hotspot. Uma pessoa hospeda e o restante entra quando a partida aparecer na lista.
 
-Se não aparecer automaticamente, o anfitrião pode compartilhar o IP local (mostrado no lobby) para que os outros digitem e toquem em "Join Game".
+Se não aparecer automaticamente, o anfitrião pode compartilhar o IP local (mostrado no lobby) para que os outros digitem e toquem em « Entrar no Jogo ».
 ',
-		'ru': 'Multiplayer Moonridge Rummy можно играть в одиночку против ИИ или онлайн с друзьями на любой платформе — с дополнительными ботами или без них.
+		'ru': 'Многопользовательский Moonridge Rummy можно играть в одиночку против ИИ или онлайн с друзьями на любой платформе — с дополнительными ботами или без них.
 
-Чтобы сыграть соло, нажми "Host New Game" в главном меню и добавь в лобби одного или нескольких ботов.
+Чтобы сыграть соло, нажми « Создать новую игру » в главном меню и добавь в лобби одного или нескольких ботов.
 
 Для игры с друзьями лучше всего, чтобы все были в одной сети Wi-Fi или точке доступа. Один игрок хостит, остальные подключаются, когда игра появляется в их списке.
 
-Если игра не показалась автоматически, хост может поделиться своим локальным IP (он виден в лобби), чтобы остальные ввели его и нажали "Join Game".
+Если игра не показалась автоматически, хост может поделиться своим локальным IP (он виден в лобби), чтобы остальные ввели его и нажали « Присоединиться к игре ».
 ',
-		'zh': 'Multiplayer Moonridge Rummy 可以单人对战 AI，也可以跨平台和朋友在线同乐，可选是否加入更多机器人。
+		'zh': '多人 Moonridge Rummy 可以单人对战 AI，也可以跨平台和朋友在线同乐，可选是否加入更多机器人。
 
-单人游玩时，在主菜单点“Host New Game”，再往大厅里加上一个或多个机器人。
+单人游玩时，在主菜单点“主持新游戏”，再往大厅里加上一个或多个机器人。
 
 和朋友一起玩时，大家连在同一个 Wi-Fi 或热点会最顺。有人负责开房，其他人在大厅列表看到游戏后就能加入。
 
-如果列表里没有自动出现，房主可以把大厅里显示的本地 IP 告诉大家，其他人输入后点“Join Game”即可。
+如果列表里没有自动出现，房主可以把大厅里显示的本地 IP 告诉大家，其他人输入后点“加入游戏”即可。
 ',
 		'ar': 'يمكنك لعب Moonridge Rummy الجماعية بمفردك ضد خصوم ذكاء اصطناعي، أو عبر الإنترنت مع أصدقائك على أي منصة، مع أو بدون روبوتات إضافية.
 
-للعب منفردًا، اضغط على "Host New Game" في القائمة الرئيسية وأضف بوتًا واحدًا أو أكثر إلى الردهة.
+للعب منفردًا، اضغط على « استضافة لعبة جديدة » في القائمة الرئيسية وأضف بوتًا واحدًا أو أكثر إلى الردهة.
 
 للعب مع الأصدقاء، من الأفضل أن يكون الجميع على نفس شبكة الـWi-Fi أو نقطة الاتصال. أحدهم يستضيف، والبقية ينضمون عندما تظهر اللعبة في قائمة الردهة لديهم.
 
-إذا لم تظهر اللعبة تلقائيًا، يمكن للمضيف مشاركة عنوان الـIP المحلي (المعروض في الردهة) ليكتبه الآخرون ثم يضغطوا "Join Game".
+إذا لم تظهر اللعبة تلقائيًا، يمكن للمضيف مشاركة عنوان الـIP المحلي (المعروض في الردهة) ليكتبه الآخرون ثم يضغطوا « الانضمام للعبة ».
 ',
-		'ko': '멀티플레이 Moonridge Rummy는 AI 봇과 1인으로 즐길 수도 있고, 어떤 플랫폼이든 친구들과 온라인으로 즐길 수도 있어요. 봇을 더 넣어도 되고 안 넣어도 돼요.
+		'ko': '멀티플레이어 Moonridge Rummy는 AI 봇과 1인으로 즐길 수도 있고, 어떤 플랫폼이든 친구들과 온라인으로 즐길 수도 있어요. 봇을 더 넣어도 되고 안 넣어도 돼요.
 
-혼자 놀고 싶다면 메인 메뉴에서 "Host New Game"을 눌러 로비에 봇을 한 명 이상 추가하세요.
+혼자 놀고 싶다면 메인 메뉴에서 « 새 게임 호스트 »를 눌러 로비에 봇을 한 명 이상 추가하세요.
 
 친구들과 할 때는 모두가 같은 Wi-Fi나 핫스팟에 있으면 가장 편해요. 한 명이 호스트를 열면, 나머지는 로비 목록에 게임이 뜨는 순간 참가하면 됩니다.
 
-자동으로 안 뜬다면, 호스트가 로비에 표시된 로컬 IP를 공유하면 돼요. 다른 친구들은 그 주소를 입력하고 "Join Game"을 눌러서 합류하세요.
+자동으로 안 뜬다면, 호스트가 로비에 표시된 로컬 IP를 공유하면 돼요. 다른 친구들은 그 주소를 입력하고 « 게임 참가 »를 눌러서 합류하세요.
 ',
-		'he': 'את Moonridge Rummy מרובי־השחקנים אפשר לשחק לבד מול בוטים או עם חברים אונליין בכל פלטפורמה, עם או בלי בוטים נוספים.
+		'he': 'את Moonridge Rummy מרובה־המשתתפים אפשר לשחק לבד מול בוטים או עם חברים אונליין בכל פלטפורמה, עם או בלי בוטים נוספים.
 
-למשחק סולו, לחץ על "Host New Game" בתפריט הראשי והוסף אחד או יותר בוטים ללובי.
+למשחק סולו, לחץ על « אירוח משחק חדש » בתפריט הראשי והוסף אחד או יותר בוטים ללובי.
 
 למשחק עם חברים, הכי נוח שכולם יהיו על אותה רשת Wi-Fi או הוטספוט. אחד מאחסן, והשאר נכנסים כשהמשחק מופיע ברשימת הלובי שלהם.
 
-אם זה לא מופיע אוטומטית, המארח יכול לשתף את כתובת ה-IP המקומית (שמופיעה בלובי), והאחרים מקלידים אותה ולוחצים על "Join Game".
+אם זה לא מופיע אוטומטית, המארח יכול לשתף את כתובת ה-IP המקומית (שמופיעה בלובי), והאחרים מקלידים אותה ולוחצים על « הצטרף למשחק ».
 ',
 	},
 	{
@@ -548,61 +548,61 @@ Versuche dann, die Anforderungen der Runde zu erfüllen. Ziehe Karten in die Abl
 
 まずはカードを1枚引きましょう。左の山をタップすると山札、右の山をタップすると捨て札の一番上が取れます。
 
-そのあと、今のラウンドの条件を満たせるようにカードをメルドゾーンへドラッグ。きらっと光ったら準備OK。用意ができたら「Meld!」アイコンをタップして手札を場に出します。
+そのあと、今のラウンドの条件を満たせるようにカードをメルドゾーンへドラッグ。きらっと光ったら準備OK。用意ができたら「メルド！」アイコンをタップして手札を場に出します。
 ',
 		'fr': 'Quand vient ton tour, ton icône en haut s\'illumine avec un contour orange pulsé.
 
 Commence par piocher une carte : tape sur la pile de gauche pour piocher dans la pioche, ou sur celle de droite pour prendre la défausse.
 
-Ensuite essaye de remplir les exigences de la manche. Fais glisser tes cartes dans les zones de meld jusqu\'à ce qu\'elles scintillent. Quand tu es prêt, tape sur l\'icône "Meld!" pour poser ta main.
+Ensuite essaye de remplir les exigences de la manche. Fais glisser tes cartes dans les zones de meld jusqu\'à ce qu\'elles scintillent. Quand tu es prêt, tape sur l\'icône « Meld ! » pour poser ta main.
 ',
 		'it': 'Quando è il tuo turno, la tua icona in alto lampeggia con un bordo arancione.
 
 Per prima cosa pesca una carta: tocca il mazzo a sinistra per pescare dal tallone oppure quello a destra per prendere la carta scartata.
 
-Poi cerca di soddisfare i requisiti del round. Trascina le carte nelle zone meld finché non brillano. Quando sei pronto, tocca l\'icona "Meld!" per calare la mano.
+Poi cerca di soddisfare i requisiti del round. Trascina le carte nelle zone meld finché non brillano. Quando sei pronto, tocca l\'icona « Meld! » per calare la mano.
 ',
 		'es': 'Cuando te toca, tu icono arriba brilla con un borde naranja pulsante.
 
 Primero roba una carta: toca el montón izquierdo para robar del mazo, o el derecho para tomar la carta de descarte.
 
-Luego intenta cumplir los requisitos de la ronda. Arrastra cartas a las zonas de meld hasta que brillen. Cuando estés listo, toca el icono "Meld!" para bajar tu mano.
+Luego intenta cumplir los requisitos de la ronda. Arrastra cartas a las zonas de meld hasta que brillen. Cuando estés listo, toca el icono « ¡Meld! » para bajar tu mano.
 ',
 		'pt': 'Quando é a sua vez, seu ícone no topo fica com uma borda laranja pulsante.
 
 Primeiro compre uma carta: toque no monte da esquerda para comprar do baralho ou no da direita para pegar a carta do descarte.
 
-Depois tente cumprir os requisitos da rodada. Arraste as cartas para as zonas de meld até elas brilharem. Quando estiver pronto, toque no ícone "Meld!" para baixar sua mão.
+Depois tente cumprir os requisitos da rodada. Arraste as cartas para as zonas de meld até elas brilharem. Quando estiver pronto, toque no ícone « Meld! » para baixar sua mão.
 ',
 		'ru': 'Когда ход переходит к тебе, твой значок наверху подсвечивается пульсирующей оранжевой рамкой.
 
 Сначала возьми карту: тапни левую стопку, чтобы взять из колоды, или правую, чтобы забрать верхнюю карту сброса.
 
-Затем постарайся выполнить требования раунда. Перетаскивай карты в зоны раскладок, пока они не начнут сиять. Как только готов, нажимай на значок "Meld!" и выкладывай руку.
+Затем постарайся выполнить требования раунда. Перетаскивай карты в зоны раскладок, пока они не начнут сиять. Как только готов, нажимай на значок « Meld! » и выкладывай руку.
 ',
 		'zh': '轮到你时，顶部的头像会亮起一圈橙色光晕。
 
 先抽一张牌：点左边的牌堆从库存抓牌，或点右边的牌堆拿走顶牌。
 
-接着尝试完成这一回合的要求，把牌拖到合牌区域，直到它们闪烁。准备好了就点“Meld!”图标，把手牌打出去。
+接着尝试完成这一回合的要求，把牌拖到合牌区域，直到它们闪烁。准备好了就点“合牌！”图标，把手牌打出去。
 ',
 		'ar': 'عندما يحين دورك سيضيء رمز اللاعب الخاص بك في الأعلى بإطار برتقالي نابض.
 
 أولًا اسحب ورقة — اضغط على الكومة اليسرى للسحب من الرزمة، أو على الكومة اليمنى لأخذ أعلى ورقة من الرمي.
 
-بعدها حاول تحقيق متطلبات الجولة الحالية. اسحب الأوراق إلى مناطق الطرح حتى تلمع. عندما تكون جاهزًا اضغط على أيقونة "Meld!" لوضع يدك على الطاولة.
+بعدها حاول تحقيق متطلبات الجولة الحالية. اسحب الأوراق إلى مناطق الطرح حتى تلمع. عندما تكون جاهزًا اضغط على أيقونة « اطرح! » لوضع يدك على الطاولة.
 ',
 		'ko': '내 차례가 되면, 화면 위 플레이어 아이콘에 주황색 테두리가 반짝여요.
 
 먼저 카드를 한 장 뽑으세요. 왼쪽 더미를 탭하면 덱에서, 오른쪽 더미를 탭하면 버린 카드 맨 위를 가져옵니다.
 
-그다음 이번 라운드 조건을 맞춰 보세요. 카드가 반짝일 때까지 멜드 존으로 끌어다 놓고, 준비가 되면 "Meld!" 아이콘을 눌러 손패를 내려놓아요.
+그다음 이번 라운드 조건을 맞춰 보세요. 카드가 반짝일 때까지 멜드 존으로 끌어다 놓고, 준비가 되면 « 멜드! » 아이콘을 눌러 손패를 내려놓아요.
 ',
 		'he': 'כשהתור שלך מגיע, האווטאר שלך למעלה זוהר במסגרת כתומה ומחויכת.
 
 קודם שולפים קלף — הקש על הערימה השמאלית כדי לשלוף מהחפיסה, או על הימנית כדי לקחת את הקלף העליון מהשלכה.
 
-אחר כך נסה לעמוד בדרישות של הסיבוב. גרור קלפים לאזורי המלט עד שהם מנצנצים. כשאתה מוכן, לחץ על "Meld!" כדי להניח את היד.
+אחר כך נסה לעמוד בדרישות של הסיבוב. גרור קלפים לאזורי המלט עד שהם מנצנצים. כשאתה מוכן, לחץ על « הנח! » כדי להניח את היד.
 ',
 	},
 		{
@@ -619,61 +619,61 @@ In den Runden 1–6 beendest du deinen Zug, indem du im unteren rechten Bereic
 
 In Runde 7 muss der erste Spieler alle seine Karten ablegen und darf danach nicht mehr an andere Meldungen anlegen.
 ',
-		'ja': 'メルドしたあとも、自分や他プレイヤーのメルドにカードをどんどん追加できます。確定させるときはもう一度「Meld!」をタップ。
+		'ja': 'メルドしたあとも、自分や他プレイヤーのメルドにカードをどんどん追加できます。確定させるときはもう一度「メルド！」をタップ。
 
 ラウンド1〜6では、右下のカードをタップして捨て札にし、ターンを終わらせます。手札がゼロになればそのラウンドの勝者です！
 
 ラウンド7では、最初にメルドしたプレイヤーは手札を完全に出し切らなければならず、他人のメルドに追加することもできません。
 ',
-		'fr': 'Après avoir meldé, continue d\'ajouter des cartes sur tes melds ou ceux des autres. Tape à nouveau sur "Meld!" pour confirmer.
+		'fr': 'Après avoir meldé, continue d\'ajouter des cartes sur tes melds ou ceux des autres. Tape à nouveau sur « Meld ! » pour confirmer.
 
 Dans les manches 1 à 6, termine ton tour en tapant une carte en bas à droite pour la défausser. Si tu restes sans cartes, tu gagnes la manche !
 
 À la manche 7, le premier à meld doit finir sa main complètement et ne peut plus ajouter sur les melds adverses.
 ',
-		'it': 'Dopo aver calato, puoi continuare ad aggiungere carte ai tuoi meld o a quelli degli altri. Tocca di nuovo "Meld!" per confermare.
+		'it': 'Dopo aver calato, puoi continuare ad aggiungere carte ai tuoi meld o a quelli degli altri. Tocca di nuovo « Meld! » per confermare.
 
 Nei round 1-6 chiudi il turno toccando una carta in basso a destra per scartarla. Se resti senza carte, hai vinto il round!
 
 Nel round 7 chi cala per primo deve liberarsi di tutta la mano e non può attaccarsi alle combinazioni altrui.
 ',
-		'es': 'Después de bajar tus cartas, sigue sumando a tus melds o a los de los demás. Toca otra vez "Meld!" para confirmar.
+		'es': 'Después de bajar tus cartas, sigue sumando a tus melds o a los de los demás. Toca otra vez « ¡Meld! » para confirmar.
 
 En las rondas 1 a 6 termina tu turno tocando una carta en la esquina inferior derecha para descartarla. ¡Si te quedas sin cartas, ganas la ronda!
 
 En la ronda 7, quien baja primero debe acabar la mano completa y no puede engancharse a las bajadas ajenas.
 ',
-		'pt': 'Depois de baixar suas cartas, continue adicionando às suas combinações ou às dos outros. Toque "Meld!" de novo para confirmar.
+		'pt': 'Depois de baixar suas cartas, continue adicionando às suas combinações ou às dos outros. Toque « Meld! » de novo para confirmar.
 
 Nas rodadas 1 a 6, termine o turno tocando uma carta no canto inferior direito para descartá-la. Se ficar sem cartas, você vence a rodada!
 
 Na rodada 7, o primeiro a meldar precisa esvaziar a mão inteira e não pode mais anexar cartas aos melds dos outros.
 ',
-		'ru': 'После выкладки продолжай добавлять карты к своим комбинациям или к чужим. Нажми "Meld!" ещё раз, чтобы подтвердить.
+		'ru': 'После выкладки продолжай добавлять карты к своим комбинациям или к чужим. Нажми « Meld! » ещё раз, чтобы подтвердить.
 
 В раундах 1–6 заверши ход, тапнув карту в правом нижнем углу и отправив её в сброс. Если карт не осталось — раунд твой!
 
 В раунде 7 игрок, который meldнул первым, должен полностью разыграть руку и не может добавлять карты к чужим раскладкам.
 ',
-		'zh': '合牌之后，还可以继续往自己的牌堆或别人的牌堆加牌。再点一次“Meld!”来确认。
+		'zh': '合牌之后，还可以继续往自己的牌堆或别人的牌堆加牌。再点一次“合牌！”来确认。
 
 在第 1～6 回合，点右下角的一张牌把它弃掉，就结束回合。手牌清空就算赢得这一回合！
 
 第 7 回合里，最先合牌的玩家必须把整手牌都打完，不能再往别人牌堆里加牌。
 ',
-		'ar': 'بعد أن تطرح أوراقك، يمكنك الاستمرار في إضافة أوراق إلى مجموعاتك أو إلى مجموعات الآخرين. اضغط "Meld!" مرة ثانية للتأكيد.
+		'ar': 'بعد أن تطرح أوراقك، يمكنك الاستمرار في إضافة أوراق إلى مجموعاتك أو إلى مجموعات الآخرين. اضغط « اطرح! » مرة ثانية للتأكيد.
 
 في الجولات 1‑6 أنهِ دورك بالضغط على ورقة في الركن السفلي الأيمن لرميها. إذا لم يتبق أي ورق فقد فزت بالجولة!
 
 في الجولة 7 يجب على أول شخص يطرح أن ينهي يده بالكامل ولا يمكنه الإضافة إلى مجموعات الآخرين.
 ',
-		'ko': '멜드를 끝낸 뒤에도 내 멜드나 다른 사람 멜드에 계속 카드를 붙일 수 있어요. 확정하려면 "Meld!"를 한 번 더 눌러 주세요.
+		'ko': '멜드를 끝낸 뒤에도 내 멜드나 다른 사람 멜드에 계속 카드를 붙일 수 있어요. 확정하려면 « 멜드! »를 한 번 더 눌러 주세요.
 
 1~6라운드에서는 오른쪽 아래 카드 하나를 탭해 버리면 차례가 끝나요. 손패가 0장이라면 그 라운드를 이긴 거예요!
 
 7라운드에서는 먼저 멜드한 사람이 손패를 완전히 털어야 하고, 다른 사람 멜드에 붙일 수 없어요.
 ',
-		'he': 'אחרי שהנחת מלט, אפשר להמשיך להוסיף קלפים למלטים שלך או של אחרים. לחץ שוב על "Meld!" כדי לאשר.
+		'he': 'אחרי שהנחת מלט, אפשר להמשיך להוסיף קלפים למלטים שלך או של אחרים. לחץ שוב על « הנח! » כדי לאשר.
 
 בסיבובים 1‑6 מסיימים את התור בלחיצה על קלף בפינה הימנית־תחתונה כדי להשליך אותו. אם נשארת בלי קלפים – ניצחת בסיבוב!
 
@@ -700,105 +700,105 @@ Die Endwertung zeigt alle Runden‑ und Gesamtpunkte – mit Pokalen für den 
 
 Wenn du fertig bist, tippe auf „Hauptmenü“, um zurückzukehren und ein neues Spiel zu starten.
 ',
-		'ja': '各ラウンド終了後は、ホストが「Tally Scores」をタップしてカードを集計し、スコアを更新します。
+		'ja': '各ラウンド終了後は、ホストが「スコアを集計」をタップしてカードを集計し、スコアを更新します。
 
-そのあと「Next Round」を押せば次のラウンドへ。（ラウンド7のあとなら「Final Scores」）
+そのあと「次のラウンド」を押せば次のラウンドへ。（ラウンド7のあとなら「最終スコア」）
 
 7ラウンドの合計が一番少ない人が優勝！
 
 スコアボードには各ラウンドの点数と最終結果が表示され、3位・2位・1位にはトロフィーも付きます。
 
-終わったら「Main Menu」を押して、いつでも新しいゲームを始めましょう。
+終わったら「メインメニュー」を押して、いつでも新しいゲームを始めましょう。
 ',
-		'fr': 'Après chaque manche, l\'hôte tape sur "Tally Scores" pour compter toutes les cartes et mettre à jour les scores.
+		'fr': 'Après chaque manche, l\'hôte tape sur « Compter les scores » pour compter toutes les cartes et mettre à jour les scores.
 
-Ensuite, tape sur "Next Round" (ou sur "Final Scores" après la manche 7).
+Ensuite, tape sur « Manche suivante » (ou sur « Scores finaux » après la manche 7).
 
 Après les sept manches, le joueur avec le total le plus bas l\'emporte !
 
 Un tableau s\'affiche avec les scores de chaque manche et le résultat final — avec des trophées pour la 3e, 2e et 1re place.
 
-Quand c\'est fini, tape sur "Main Menu" pour revenir et relancer une partie quand tu veux.
+Quand c\'est fini, tape sur « Menu principal » pour revenir et relancer une partie quand tu veux.
 ',
-		'it': 'Dopo ogni round, l\'host tocca "Tally Scores" per sommare tutte le carte e aggiornare i punteggi.
+		'it': 'Dopo ogni round, l\'host tocca « Calcola Punteggi » per sommare tutte le carte e aggiornare i punteggi.
 
-Poi tocca "Next Round" (o "Final Scores" dopo il round 7).
+Poi tocca « Prossimo Round » (o « Punteggi Finali » dopo il round 7).
 
 Dopo i sette round, vince chi ha il totale più basso!
 
 Appare un tabellone con i punteggi di ogni round e il risultato finale, completo di trofei per terzo, secondo e primo posto.
 
-Quando hai finito, tocca "Main Menu" per tornare indietro e avviare una nuova partita quando vuoi.
+Quando hai finito, tocca « Menu Principale » per tornare indietro e avviare una nuova partita quando vuoi.
 ',
-		'es': 'Al final de cada ronda, el anfitrión toca "Tally Scores" para sumar las cartas y actualizar los puntos.
+		'es': 'Al final de cada ronda, el anfitrión toca « Contar puntos » para sumar las cartas y actualizar los puntos.
 
-Luego toca "Next Round" (o "Final Scores" después de la ronda 7).
+Luego toca « Siguiente ronda » (o « Puntos finales » después de la ronda 7).
 
 Tras las siete rondas, gana quien tenga el total más bajo.
 
 Verás un marcador con los puntos de cada ronda y el resultado final, con trofeos para 3.º, 2.º y 1.º lugar.
 
-Cuando terminen, toca "Main Menu" para volver y arrancar otra partida cuando quieras.
+Cuando terminen, toca « Menú principal » para volver y arrancar otra partida cuando quieras.
 ',
-		'pt': 'Depois de cada rodada, o anfitrião toca "Tally Scores" para somar as cartas e atualizar os pontos de todo mundo.
+		'pt': 'Depois de cada rodada, o anfitrião toca « Tally Scores » para somar as cartas e atualizar os pontos de todo mundo.
 
-Em seguida toque "Next Round" (ou "Final Scores" depois da rodada 7).
+Em seguida toque « Próxima Rodada » (ou « Pontuações Finais » depois da rodada 7).
 
 Após as sete rodadas, vence quem tiver o menor total!
 
 Um placar aparece com os pontos de cada rodada e o resultado final — incluindo troféus para 3º, 2º e 1º lugar.
 
-Quando terminar, toque "Main Menu" para voltar e iniciar outra partida quando quiser.
+Quando terminar, toque « Menu Principal » para voltar e iniciar outra partida quando quiser.
 ',
-		'ru': 'После каждой раздачи хост нажимает "Tally Scores", чтобы подсчитать карты и обновить очки игроков.
+		'ru': 'После каждой раздачи хост нажимает « Подсчитать очки », чтобы подсчитать карты и обновить очки игроков.
 
-Затем жми "Next Round" (или "Final Scores" после 7-го раунда).
+Затем жми « Следующий раунд » (или « Итоговые очки » после 7-го раунда).
 
 После всех семи раундов побеждает тот, у кого общий счет минимальный!
 
 Появится таблица с результатами каждого раунда и финальным итогом — с трофеями за 3-е, 2-е и 1-е места.
 
-Когда все закончено, нажми "Main Menu", чтобы вернуться и запустить новую игру в любое время.
+Когда все закончено, нажми « Главное меню », чтобы вернуться и запустить новую игру в любое время.
 ',
-		'zh': '每回合结束后，房主会点“Tally Scores”把牌面分数相加并更新所有人的积分。
+		'zh': '每回合结束后，房主会点“计分”把牌面分数相加并更新所有人的积分。
 
-然后点“Next Round”（第 7 回合之后改点“Final Scores”）。
+然后点“下一回合”（第 7 回合之后改点“最终分数”）。
 
 七个回合打完后，总分最低的玩家获胜！
 
 榜单会显示每回合的得分和最终结果，还会给第 3、2、1 名配上奖杯。
 
-结束时点“Main Menu”，随时可以回到主菜单再开一局。
+结束时点“主菜单”，随时可以回到主菜单再开一局。
 ',
-		'ar': 'بعد كل جولة يضغط المضيف على "Tally Scores" لحساب كل الأوراق وتحديث نقاط اللاعبين.
+		'ar': 'بعد كل جولة يضغط المضيف على « إحصاء النقاط » لحساب كل الأوراق وتحديث نقاط اللاعبين.
 
-بعدها اضغط "Next Round" (أو "Final Scores" بعد الجولة السابعة).
+بعدها اضغط « الجولة التالية » (أو « النقاط النهائية » بعد الجولة السابعة).
 
 بعد سبع جولات يفوز من لديه أقل مجموع!
 
 ستظهر لوحة نتائج تعرض نقاط كل جولة والنتيجة النهائية، مع كؤوس للمركز الثالث والثاني والأول.
 
-عندما تنتهي، اضغط "Main Menu" للعودة وبدء لعبة جديدة في أي وقت.
+عندما تنتهي، اضغط « القائمة الرئيسية » للعودة وبدء لعبة جديدة في أي وقت.
 ',
-		'ko': '라운드가 끝날 때마다 호스트가 "Tally Scores"를 눌러 모든 카드를 합산하고 점수를 갱신해요.
+		'ko': '라운드가 끝날 때마다 호스트가 « 점수 집계 »를 눌러 모든 카드를 합산하고 점수를 갱신해요.
 
-그다음 "Next Round"를 누르세요. 7라운드가 끝났다면 "Final Scores"를 누르면 됩니다.
+그다음 « 다음 라운드 »를 누르세요. 7라운드가 끝났다면 « 최종 점수 »를 누르면 됩니다.
 
 일곱 라운드가 끝났을 때 총점이 제일 낮은 사람이 우승!
 
 라운드별 점수와 최종 결과가 표시되는 점수판이 뜨고, 3등·2등·1등에게 트로피도 붙어요.
 
-다 끝나면 "Main Menu"를 눌러 돌아가고, 언제든 새 게임을 시작하세요.
+다 끝나면 « 메인 메뉴 »를 눌러 돌아가고, 언제든 새 게임을 시작하세요.
 ',
-		'he': 'אחרי כל סיבוב המארח לוחץ על "Tally Scores" כדי לסכם את הקלפים ולעדכן את הניקוד של כולם.
+		'he': 'אחרי כל סיבוב המארח לוחץ על « ספירת נקודות » כדי לסכם את הקלפים ולעדכן את הניקוד של כולם.
 
-אחר כך לוחצים על "Next Round" (או על "Final Scores" אחרי סיבוב 7).
+אחר כך לוחצים על « סיבוב הבא » (או על « תוצאות סופיות » אחרי סיבוב 7).
 
 בסוף שבעת הסיבובים מנצח מי שסך הנקודות שלו הנמוך ביותר!
 
 תופיע טבלת ניקוד עם תוצאות כל הסיבובים והגמר — כולל גביעים למקום שלישי, שני וראשון.
 
-כשתסיימו, לחצו על "Main Menu" כדי לחזור ולפתוח משחק חדש מתי שרוצים.
+כשתסיימו, לחצו על « תפריט ראשי » כדי לחזור ולפתוח משחק חדש מתי שרוצים.
 ',
 	},
 	{
