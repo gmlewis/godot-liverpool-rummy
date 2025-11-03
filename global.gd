@@ -86,8 +86,20 @@ const MELD_AREA_RIGHT_PERCENT = 0.5 # 50% across the screen
 const MELD_AREA_1_RIGHT_PERCENT = 0.333 * MELD_AREA_RIGHT_PERCENT # 16.65% across the screen
 const MELD_AREA_2_RIGHT_PERCENT = 0.666 * MELD_AREA_RIGHT_PERCENT # 33.3% across the screen
 
-# This game can be compiled in different languages (currently, only 'en' or 'de').
-const LANGUAGE = 'en' # 'en', 'fr', 'de', 'jp', etc.
+# This game can be compiled for the following languages:
+# * 'ar' - Arabic
+# * 'de' - German
+# * 'en' - English
+# * 'es' - Spanish
+# * 'fr' - French
+# * 'he' - Hebrew
+# * 'it' - Italian
+# * 'ja' - Japanese
+# * 'ko' - Korean
+# * 'pt' - Portuguese
+# * 'ru' - Russian
+# * 'zh' - Chinese (Simplified)
+const LANGUAGE = 'en'
 
 func _ready():
 	_initialize_from_command_line_args()
