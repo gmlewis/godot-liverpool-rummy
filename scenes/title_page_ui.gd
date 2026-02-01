@@ -2,6 +2,8 @@ extends Control
 
 signal start_button_pressed_signal
 
+@onready var lang = $TitlePageLanguage
+
 var current_ip_address_idx = 0
 var ip_addresses = []
 var remote_host_player_name = {} # Keyed by host IP address.
@@ -23,11 +25,7 @@ func _ready() -> void:
 	Global.connect('player_connected_signal', _on_player_connected_signal)
 	Global.connect('player_disconnected_signal', _on_player_disconnected_signal)
 	Global.connect('reset_game_signal', _on_reset_game_signal)
-	if Global.LANGUAGE == 'de':
-		$PanelPositionControl/WelcomePanel/WelcomeLabel.text = 'Willkommen!'
-		$PanelPositionControl/WelcomePanel/WhatIsYourNameLabel.text = 'Wie heißt du?'
-		$PanelPositionControl/StartGamePanel/HostNewGameButton.text = HOST_NEW_GAME_TEXT
-		$PanelPositionControl/StartGamePanel/JoinGameButton.text = JOIN_GAME_TEXT
+	_update_text_for_language()
 
 func _exit_tree():
 	multiplayer.connection_failed.disconnect(_on_connection_failed)
@@ -46,12 +44,11 @@ func _on_reset_game_signal() -> void:
 	$PanelPositionControl/WelcomePanel.show()
 	$PanelPositionControl/StartGamePanel.hide()
 	$'../PlayingCardsControl'.hide()
-	$PanelPositionControl/StartGamePanel/HostNewGameButton.text = HOST_NEW_GAME_TEXT
+	_update_text_for_language()
 	$PanelPositionControl/StartGamePanel/HostNewGameButton.disabled = false
 	$PanelPositionControl/StartGamePanel/HostNewGameButton.show()
 	# Initially hide the Join Game button until a host is discovered.
 	$PanelPositionControl/StartGamePanel/JoinGameButton.hide()
-	$PanelPositionControl/StartGamePanel/JoinGameButton.text = JOIN_GAME_TEXT
 	$PanelPositionControl/StartGamePanel/JoinGameButton.disabled = false
 	$PanelPositionControl/StartGamePanel/NextIPAddressButton.show()
 	# Hide the NewCardBackButton until game starts
@@ -67,7 +64,7 @@ func _restart_host_or_join() -> void:
 	$PanelPositionControl/WelcomePanel.hide()
 	$PanelPositionControl/StartGamePanel.show()
 	$StatusLabel.text = 'Version %s' % [Global.VERSION]
-	$PanelPositionControl/StartGamePanel/HostNewGameButton.text = HOST_NEW_GAME_TEXT
+	$PanelPositionControl/StartGamePanel/HostNewGameButton.text = lang.HOST_NEW_GAME_TEXT[Global.LANGUAGE]
 	$PanelPositionControl/StartGamePanel/HostNewGameButton.disabled = false
 	$PanelPositionControl/StartGamePanel/HostNewGameButton.show()
 	$PanelPositionControl/StartGamePanel/JoinGameButton.hide()
@@ -100,14 +97,14 @@ func _on_line_edit_text_submitted(new_text: String) -> void:
 
 func _on_host_new_game_button_pressed() -> void:
 	_start_udp_discovery_server()
-	if $PanelPositionControl/StartGamePanel/HostNewGameButton.text == START_GAME_TEXT:
+	if $PanelPositionControl/StartGamePanel/HostNewGameButton.text == lang.START_GAME_TEXT[Global.LANGUAGE]:
 		_on_start_button_pressed()
 		return
 	$StatusLabel.text = '' # Hosting!'
-	$PanelPositionControl/StartGamePanel/HostNewGameButton.text = START_GAME_TEXT
+	$PanelPositionControl/StartGamePanel/HostNewGameButton.text = lang.START_GAME_TEXT[Global.LANGUAGE]
 	var n = len(Global.game_state.public_players_info)
 	$PanelPositionControl/StartGamePanel/HostNewGameButton.disabled = n < 2 # Must have 2 players
-	$PanelPositionControl/StartGamePanel/JoinGameButton.text = ADD_BOT_TEXT
+	$PanelPositionControl/StartGamePanel/JoinGameButton.text = lang.ADD_BOT_TEXT[Global.LANGUAGE]
 	$PanelPositionControl/StartGamePanel/JoinGameButton.show()
 	$PanelPositionControl/StartGamePanel/NextIPAddressButton.hide()
 	_update_add_bot_button_state()
@@ -126,7 +123,7 @@ func _rpc_hide_title_page_ui():
 	$'../PlayingCardsControl'.show()
 
 func _on_join_game_button_pressed() -> void:
-	if $PanelPositionControl/StartGamePanel/JoinGameButton.text == ADD_BOT_TEXT:
+	if $PanelPositionControl/StartGamePanel/JoinGameButton.text == lang.ADD_BOT_TEXT[Global.LANGUAGE]:
 		_on_add_bot_button_pressed()
 		return
 	var join_ip_address = $PanelPositionControl/StartGamePanel/IPLineEdit.text
@@ -135,7 +132,7 @@ func _on_join_game_button_pressed() -> void:
 		join_port = remote_host_port[join_ip_address]
 	$PanelPositionControl/StartGamePanel.hide()
 	Global.join_game(join_ip_address, int(join_port))
-	$StatusLabel.text = CONNECTING_TEXT # 'Connecting...'
+	$StatusLabel.text = lang.CONNECTING_TEXT[Global.LANGUAGE]
 
 func _on_add_bot_button_pressed() -> void:
 	#Global.dbg('Add Bot button pressed')
@@ -169,12 +166,12 @@ func _on_refresh_name_button_pressed() -> void:
 	generate_new_random_name()
 
 func _on_connected_to_server() -> void:
-	$StatusLabel.text = CONNECTED_WAITING_FOR_HOST_TEXT # 'Connected! Waiting for host...'
+	$StatusLabel.text = lang.CONNECTED_WAITING_FOR_HOST_TEXT[Global.LANGUAGE]
 	# Stop scanning for a server once connected
 	_stop_udp_discovery()
 
 func _on_connection_failed() -> void:
-	$StatusLabel.text = FAILED_TO_CONNECT_TEXT # 'Failed to connect.'
+	$StatusLabel.text = lang.FAILED_TO_CONNECT_TEXT[Global.LANGUAGE]
 	$PanelPositionControl/StartGamePanel.show()
 
 func get_local_ip_addresses() -> void:
@@ -197,14 +194,11 @@ func _on_next_ip_address_button_pressed() -> void:
 	$PanelPositionControl/StartGamePanel/IPLineEdit.text = ip_addresses[current_ip_address_idx]
 	_restart_host_or_join()
 
-const ADD_BOT_TEXT = 'Add Bot' if Global.LANGUAGE != 'de' else 'Bot\nHinzufügen'
-const CONNECTED_WAITING_FOR_HOST_TEXT = 'Connected! Waiting for host...' if Global.LANGUAGE != 'de' else 'Verbunden! Warte auf den Host...'
-const CONNECTING_TEXT = 'Connecting...' if Global.LANGUAGE != 'de' else 'Verbinde...'
-const FAILED_TO_CONNECT_TEXT = 'Failed to connect.' if Global.LANGUAGE != 'de' else 'Verbindung fehlgeschlagen.'
-const HOST_NEW_GAME_TEXT = 'Host New\nGame' if Global.LANGUAGE != 'de' else 'Neues Spiel\nStarten'
-const START_GAME_TEXT = 'Start Game' if Global.LANGUAGE != 'de' else 'Spiel\nStarten'
-# Allow this text to change based on discovered hosts, e.g. "Join\nBo Peep".
-var JOIN_GAME_TEXT = 'Join\nGame' if Global.LANGUAGE != 'de' else 'Spiel\nBeitreten'
+func _update_text_for_language() -> void:
+	$PanelPositionControl/WelcomePanel/WelcomeLabel.text = lang.WELCOME_TEXT[Global.LANGUAGE]
+	$PanelPositionControl/WelcomePanel/WhatIsYourNameLabel.text = lang.WHAT_IS_YOUR_NAME_TEXT[Global.LANGUAGE]
+	$PanelPositionControl/StartGamePanel/HostNewGameButton.text = lang.HOST_NEW_GAME_TEXT[Global.LANGUAGE]
+	$PanelPositionControl/StartGamePanel/JoinGameButton.text = lang.JOIN_GAME_TEXT[Global.LANGUAGE]
 
 func _on_accept_name_button_pressed() -> void:
 	var new_name = $PanelPositionControl/WelcomePanel/NameLineEdit.text
@@ -379,8 +373,7 @@ func parse_server_response(response: String, ip: String):
 			# Game hasn't started - allow joining only if no game has been detected as started
 			if not any_game_started_detected:
 				# Update the Join Game button text with the discovered host name
-				# JOIN_GAME_TEXT = "Join\n%s" % host_name if Global.LANGUAGE != 'de' else "Spiel\n%s beitreten" % host_name
-				$PanelPositionControl/StartGamePanel/JoinGameButton.text = JOIN_GAME_TEXT
+				$PanelPositionControl/StartGamePanel/JoinGameButton.text = lang.JOIN_GAME_TEXT[Global.LANGUAGE]
 				$PanelPositionControl/StartGamePanel/JoinGameButton.show()
 				$PanelPositionControl/StartGamePanel/HostNewGameButton.hide()
 			var lookup_ip_address_idx = -1
