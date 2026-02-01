@@ -9,6 +9,10 @@ contribute to this repo if you are not comfortable with this.
 
 [![Available on the App Store](https://toolbox.marketingtools.apple.com/api/v2/badges/download-on-the-app-store/black/en-us?releaseDate=1761782400)](https://apps.apple.com/us/app/multiplayer-moonridge-rummy/id6754576419?itscg=30200&itsct=apps_box_badge&mttnsubad=6754576419)
 
+This version is officially registered with the Indonesia Games Rating System (IGRS) and has an Age Rating of "3 Years and Above".
+
+![Age Rating 3 Years and Above](IGRS3-90x90.png)
+
 # Backgrounds
 
 Believe it or not, this project started because of the backgrounds.
