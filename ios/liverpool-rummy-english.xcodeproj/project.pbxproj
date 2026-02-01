@@ -334,8 +334,8 @@
 				INFOPLIST_KEY_CFBundleDisplayName = "liverpool-rummy";
 				PRODUCT_NAME = "liverpool-rummy-english";
 				EXECUTABLE_NAME = "liverpool-rummy-english";
-				MARKETING_VERSION = 0.18.0;
-				CURRENT_PROJECT_VERSION = 0.18.0;
+				MARKETING_VERSION = 0.18.1;
+				CURRENT_PROJECT_VERSION = 0.18.1;
 				PROVISIONING_PROFILE = "";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -370,8 +370,8 @@
 				INFOPLIST_KEY_CFBundleDisplayName = "liverpool-rummy";
 				PRODUCT_NAME = "liverpool-rummy-english";
 				EXECUTABLE_NAME = "liverpool-rummy-english";
-				MARKETING_VERSION = 0.18.0;
-				CURRENT_PROJECT_VERSION = 0.18.0;
+				MARKETING_VERSION = 0.18.1;
+				CURRENT_PROJECT_VERSION = 0.18.1;
 				PROVISIONING_PROFILE = "";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				TARGETED_DEVICE_FAMILY = "1,2";
