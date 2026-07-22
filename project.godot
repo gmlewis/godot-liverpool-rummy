@@ -27,9 +27,10 @@ shader_language/warnings/treat_warnings_as_errors=true
 
 window/size/viewport_width=2880
 window/size/viewport_height=1440
+window/size/resizable=true
 window/stretch/mode="canvas_items"
 window/stretch/aspect="expand"
-window/handheld/orientation=4
+window/handheld/orientation=6
 
 [rendering]
 
